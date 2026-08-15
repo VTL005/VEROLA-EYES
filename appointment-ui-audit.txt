@@ -1,0 +1,883 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Lá»‹ch háº¹n cá»§a tÃ´i - VELORA Eyes
+    </title>
+
+</head>
+
+
+<body>
+
+    <h1>
+        Lá»‹ch háº¹n cá»§a tÃ´i
+    </h1>
+
+
+    <p>
+
+        <a href="{{ route('home') }}">
+            â† Trang chá»§
+        </a>
+
+        |
+
+        <a href="{{ route('appointments.create') }}">
+            + Äáº·t lá»‹ch má»›i
+        </a>
+
+    </p>
+
+
+    @if(session('success'))
+
+        <p style="color:green;">
+            {{ session('success') }}
+        </p>
+
+    @endif
+
+
+    <hr>
+
+
+    <form
+        action="{{ route('appointments.index') }}"
+        method="GET"
+    >
+
+        <label>
+            Tráº¡ng thÃ¡i:
+        </label>
+
+
+        <select name="status">
+
+            <option value="">
+                -- Táº¥t cáº£ --
+            </option>
+
+
+            <option
+                value="pending"
+                {{ request('status') === 'pending'
+                    ? 'selected'
+                    : '' }}
+            >
+                Chá» xÃ¡c nháº­n
+            </option>
+
+
+            <option
+                value="confirmed"
+                {{ request('status') === 'confirmed'
+                    ? 'selected'
+                    : '' }}
+            >
+                ÄÃ£ xÃ¡c nháº­n
+            </option>
+
+
+            <option
+                value="completed"
+                {{ request('status') === 'completed'
+                    ? 'selected'
+                    : '' }}
+            >
+                HoÃ n thÃ nh
+            </option>
+
+
+            <option
+                value="cancelled"
+                {{ request('status') === 'cancelled'
+                    ? 'selected'
+                    : '' }}
+            >
+                ÄÃ£ há»§y
+            </option>
+
+
+            <option
+                value="no_show"
+                {{ request('status') === 'no_show'
+                    ? 'selected'
+                    : '' }}
+            >
+                KhÃ´ng Ä‘áº¿n
+            </option>
+
+        </select>
+
+
+        <button type="submit">
+            Lá»c
+        </button>
+
+
+        <a href="{{ route('appointments.index') }}">
+            Äáº·t láº¡i
+        </a>
+
+    </form>
+
+
+    <hr>
+
+
+    @if($appointments->isEmpty())
+
+        <p>
+            Báº¡n chÆ°a cÃ³ lá»‹ch háº¹n nÃ o.
+        </p>
+
+    @else
+
+        <table
+            border="1"
+            cellpadding="10"
+            cellspacing="0"
+            width="100%"
+        >
+
+            <thead>
+
+                <tr>
+
+                    <th>MÃ£ lá»‹ch</th>
+
+                    <th>NgÃ y</th>
+
+                    <th>Khung giá»</th>
+
+                    <th>Dá»‹ch vá»¥</th>
+
+                    <th>Tráº¡ng thÃ¡i</th>
+
+                    <th>Thao tÃ¡c</th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody>
+
+                @foreach($appointments as $appointment)
+
+                    <tr>
+
+                        <td>
+
+                            <strong>
+                                {{ $appointment->appointment_code }}
+                            </strong>
+
+                        </td>
+
+
+                        <td>
+
+                            {{ $appointment
+                                ->appointment_date
+                                ->format('d/m/Y') }}
+
+                        </td>
+
+
+                        <td>
+                            {{ $appointment->time_slot }}
+                        </td>
+
+
+                        <td>
+
+                            {{ $appointmentService
+                                ->serviceLabel(
+                                    $appointment->service_type
+                                ) }}
+
+                        </td>
+
+
+                        <td>
+
+                            {{ $appointmentService
+                                ->statusLabel(
+                                    $appointment->status
+                                ) }}
+
+                        </td>
+
+
+                        <td>
+
+                            <a
+                                href="{{ route(
+                                    'appointments.show',
+                                    $appointment
+                                ) }}"
+                            >
+                                Xem chi tiáº¿t
+                            </a>
+
+                        </td>
+
+                    </tr>
+
+                @endforeach
+
+            </tbody>
+
+        </table>
+
+
+        <br>
+
+
+        {{ $appointments->links() }}
+
+    @endif
+
+</body>
+
+</html>
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Äáº·t lá»‹ch Ä‘o máº¯t - VELORA Eyes
+    </title>
+</head>
+
+<body>
+
+    <h1>
+        Äáº·t lá»‹ch Ä‘o máº¯t
+    </h1>
+
+
+    <p>
+        <a href="{{ route('appointments.index') }}">
+            â† Lá»‹ch háº¹n cá»§a tÃ´i
+        </a>
+
+        |
+
+        <a href="{{ route('home') }}">
+            Trang chá»§
+        </a>
+    </p>
+
+
+    @if($errors->any())
+
+        <div style="color:red;">
+
+            <ul>
+
+                @foreach($errors->all() as $error)
+
+                    <li>
+                        {{ $error }}
+                    </li>
+
+                @endforeach
+
+            </ul>
+
+        </div>
+
+    @endif
+
+
+    <form
+        action="{{ route('appointments.store') }}"
+        method="POST"
+    >
+
+        @csrf
+
+
+        <div>
+
+            <label>
+                Há» tÃªn
+            </label>
+
+            <br>
+
+            <input
+                type="text"
+                name="customer_name"
+                value="{{ old(
+                    'customer_name',
+                    $user->name
+                ) }}"
+                maxlength="100"
+                required
+            >
+
+        </div>
+
+
+        <br>
+
+
+        <div>
+
+            <label>
+                Email
+            </label>
+
+            <br>
+
+            <input
+                type="email"
+                name="email"
+                value="{{ old(
+                    'email',
+                    $user->email
+                ) }}"
+                required
+            >
+
+        </div>
+
+
+        <br>
+
+
+        <div>
+
+            <label>
+                Sá»‘ Ä‘iá»‡n thoáº¡i
+            </label>
+
+            <br>
+
+            <input
+                type="text"
+                name="phone"
+                value="{{ old(
+                    'phone',
+                    $user->phone
+                ) }}"
+                maxlength="10"
+                required
+            >
+
+        </div>
+
+
+        <br>
+
+
+        <div>
+
+            <label>
+                NgÃ y háº¹n
+            </label>
+
+            <br>
+
+            <input
+                type="date"
+                name="appointment_date"
+                value="{{ old('appointment_date') }}"
+                min="{{ now()->format('Y-m-d') }}"
+                required
+            >
+
+        </div>
+
+
+        <br>
+
+
+        <div>
+
+            <label>
+                Khung giá»
+            </label>
+
+            <br>
+
+            <select
+                name="time_slot"
+                required
+            >
+
+                <option value="">
+                    -- Chá»n khung giá» --
+                </option>
+
+
+                <option
+                    value="08:00-09:00"
+                    {{ old('time_slot') === '08:00-09:00'
+                        ? 'selected'
+                        : '' }}
+                >
+                    08:00 - 09:00
+                </option>
+
+
+                <option
+                    value="09:00-10:00"
+                    {{ old('time_slot') === '09:00-10:00'
+                        ? 'selected'
+                        : '' }}
+                >
+                    09:00 - 10:00
+                </option>
+
+
+                <option
+                    value="10:00-11:00"
+                    {{ old('time_slot') === '10:00-11:00'
+                        ? 'selected'
+                        : '' }}
+                >
+                    10:00 - 11:00
+                </option>
+
+
+                <option
+                    value="14:00-15:00"
+                    {{ old('time_slot') === '14:00-15:00'
+                        ? 'selected'
+                        : '' }}
+                >
+                    14:00 - 15:00
+                </option>
+
+
+                <option
+                    value="15:00-16:00"
+                    {{ old('time_slot') === '15:00-16:00'
+                        ? 'selected'
+                        : '' }}
+                >
+                    15:00 - 16:00
+                </option>
+
+
+                <option
+                    value="16:00-17:00"
+                    {{ old('time_slot') === '16:00-17:00'
+                        ? 'selected'
+                        : '' }}
+                >
+                    16:00 - 17:00
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <br>
+
+
+        <div>
+
+            <label>
+                Dá»‹ch vá»¥
+            </label>
+
+            <br>
+
+            <select
+                name="service_type"
+                required
+            >
+
+                <option value="">
+                    -- Chá»n dá»‹ch vá»¥ --
+                </option>
+
+
+                <option
+                    value="eye_exam"
+                    {{ old('service_type') === 'eye_exam'
+                        ? 'selected'
+                        : '' }}
+                >
+                    Äo máº¯t cáº­n
+                </option>
+
+
+                <option
+                    value="recheck"
+                    {{ old('service_type') === 'recheck'
+                        ? 'selected'
+                        : '' }}
+                >
+                    Kiá»ƒm tra láº¡i Ä‘á»™ kÃ­nh
+                </option>
+
+
+                <option
+                    value="lens_consultation"
+                    {{ old('service_type') === 'lens_consultation'
+                        ? 'selected'
+                        : '' }}
+                >
+                    TÆ° váº¥n trÃ²ng kÃ­nh
+                </option>
+
+
+                <option
+                    value="frame_consultation"
+                    {{ old('service_type') === 'frame_consultation'
+                        ? 'selected'
+                        : '' }}
+                >
+                    TÆ° váº¥n chá»n gá»ng
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <br>
+
+
+        <div>
+
+            <label>
+                Ghi chÃº
+            </label>
+
+            <br>
+
+            <textarea
+                name="note"
+                rows="5"
+                cols="50"
+                maxlength="1000"
+                placeholder="VÃ­ dá»¥: TÃ´i Ä‘ang Ä‘eo kÃ­nh cáº­n khoáº£ng 2 Ä‘á»™..."
+            >{{ old('note') }}</textarea>
+
+        </div>
+
+
+        <br>
+
+
+        <button type="submit">
+            Äáº·t lá»‹ch
+        </button>
+
+    </form>
+
+</body>
+
+</html>
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Http\Requests\StoreAppointmentRequest;
+use App\Models\Appointment;
+use App\Services\AppointmentService;
+use Illuminate\Http\Request;
+
+class AppointmentController extends Controller
+{
+    /**
+     * Danh sÃ¡ch lá»‹ch háº¹n cá»§a Customer.
+     */
+    public function index(
+        Request $request,
+        AppointmentService $appointmentService
+    ) {
+        $user = auth()->user();
+
+
+        $appointments =
+            Appointment::query()
+                ->where(
+                    'user_id',
+                    $user->id
+                )
+
+                /*
+                 * Lá»c tráº¡ng thÃ¡i.
+                 */
+                ->when(
+                    $request->filled('status'),
+                    function ($query) use ($request) {
+
+                        $query->where(
+                            'status',
+                            $request->status
+                        );
+                    }
+                )
+
+                ->orderByDesc(
+                    'appointment_date'
+                )
+                ->orderByDesc(
+                    'time_slot'
+                )
+                ->paginate(10)
+                ->withQueryString();
+
+
+        return view(
+            'appointments.index',
+            compact(
+                'appointments',
+                'appointmentService'
+            )
+        );
+    }
+
+
+    /**
+     * Form Customer Ä‘áº·t lá»‹ch.
+     */
+    public function create()
+    {
+        $user = auth()->user();
+
+
+        return view(
+            'appointments.create',
+            compact('user')
+        );
+    }
+
+
+    /**
+     * LÆ°u lá»‹ch háº¹n.
+     */
+    public function store(
+        StoreAppointmentRequest $request,
+        AppointmentService $appointmentService
+    ) {
+        $appointment =
+            $appointmentService->create(
+                auth()->user(),
+                $request->validated()
+            );
+
+
+        return redirect()
+            ->route(
+                'appointments.show',
+                $appointment
+            )
+            ->with(
+                'success',
+                'Äáº·t lá»‹ch Ä‘o máº¯t thÃ nh cÃ´ng. Lá»‹ch Ä‘ang chá» xÃ¡c nháº­n.'
+            );
+    }
+
+
+    /**
+     * Chi tiáº¿t lá»‹ch háº¹n.
+     */
+    public function show(
+        Appointment $appointment,
+        AppointmentService $appointmentService
+    ) {
+        /*
+         * Customer chá»‰ Ä‘Æ°á»£c xem
+         * Appointment cá»§a chÃ­nh mÃ¬nh.
+         */
+        abort_if(
+            $appointment->user_id
+            !== auth()->id(),
+            403
+        );
+
+
+        $appointment->load([
+            'confirmer',
+        ]);
+
+
+        return view(
+            'appointments.show',
+            compact(
+                'appointment',
+                'appointmentService'
+            )
+        );
+    }
+
+
+    /**
+     * Customer há»§y lá»‹ch.
+     */
+    public function cancel(
+        Appointment $appointment,
+        AppointmentService $appointmentService
+    ) {
+        $appointmentService
+            ->cancelByCustomer(
+                auth()->user(),
+                $appointment
+            );
+
+
+        return redirect()
+            ->route(
+                'appointments.show',
+                $appointment
+            )
+            ->with(
+                'success',
+                'Há»§y lá»‹ch háº¹n thÃ nh cÃ´ng.'
+            );
+    }
+}
+<?php
+
+namespace App\Http\Requests;
+
+use App\Models\Appointment;
+use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
+
+class StoreAppointmentRequest extends FormRequest
+{
+    public function authorize(): bool
+    {
+        return auth()->check();
+    }
+
+
+    public function rules(): array
+    {
+        return [
+            'customer_name' => [
+                'required',
+                'string',
+                'min:2',
+                'max:100',
+            ],
+
+            'email' => [
+                'required',
+                'email',
+                'max:255',
+            ],
+
+            'phone' => [
+                'required',
+                'regex:/^0[0-9]{9}$/',
+            ],
+
+            'appointment_date' => [
+                'required',
+                'date',
+                'after_or_equal:today',
+            ],
+
+            'time_slot' => [
+                'required',
+
+                Rule::in([
+                    '08:00-09:00',
+                    '09:00-10:00',
+                    '10:00-11:00',
+                    '14:00-15:00',
+                    '15:00-16:00',
+                    '16:00-17:00',
+                ]),
+            ],
+
+            'service_type' => [
+                'required',
+
+                Rule::in([
+                    Appointment::SERVICE_EYE_EXAM,
+                    Appointment::SERVICE_RECHECK,
+                    Appointment::SERVICE_LENS_CONSULTATION,
+                    Appointment::SERVICE_FRAME_CONSULTATION,
+                ]),
+            ],
+
+            'note' => [
+                'nullable',
+                'string',
+                'max:1000',
+            ],
+        ];
+    }
+
+
+    public function messages(): array
+    {
+        return [
+            'customer_name.required' =>
+                'Vui lÃ²ng nháº­p há» tÃªn.',
+
+            'customer_name.min' =>
+                'Há» tÃªn pháº£i cÃ³ Ã­t nháº¥t 2 kÃ½ tá»±.',
+
+            'customer_name.max' =>
+                'Há» tÃªn khÃ´ng Ä‘Æ°á»£c vÆ°á»£t quÃ¡ 100 kÃ½ tá»±.',
+
+            'email.required' =>
+                'Vui lÃ²ng nháº­p email.',
+
+            'email.email' =>
+                'Email khÃ´ng Ä‘Ãºng Ä‘á»‹nh dáº¡ng.',
+
+            'phone.required' =>
+                'Vui lÃ²ng nháº­p sá»‘ Ä‘iá»‡n thoáº¡i.',
+
+            'phone.regex' =>
+                'Sá»‘ Ä‘iá»‡n thoáº¡i pháº£i gá»“m 10 chá»¯ sá»‘ vÃ  báº¯t Ä‘áº§u báº±ng sá»‘ 0.',
+
+            'appointment_date.required' =>
+                'Vui lÃ²ng chá»n ngÃ y háº¹n.',
+
+            'appointment_date.date' =>
+                'NgÃ y háº¹n khÃ´ng há»£p lá»‡.',
+
+            'appointment_date.after_or_equal' =>
+                'KhÃ´ng thá»ƒ Ä‘áº·t lá»‹ch vÃ o ngÃ y trong quÃ¡ khá»©.',
+
+            'time_slot.required' =>
+                'Vui lÃ²ng chá»n khung giá».',
+
+            'time_slot.in' =>
+                'Khung giá» khÃ´ng há»£p lá»‡.',
+
+            'service_type.required' =>
+                'Vui lÃ²ng chá»n dá»‹ch vá»¥.',
+
+            'service_type.in' =>
+                'Loáº¡i dá»‹ch vá»¥ khÃ´ng há»£p lá»‡.',
+
+            'note.max' =>
+                'Ghi chÃº khÃ´ng Ä‘Æ°á»£c vÆ°á»£t quÃ¡ 1000 kÃ½ tá»±.',
+        ];
+    }
+}

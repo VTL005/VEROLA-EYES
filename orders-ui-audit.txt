@@ -1,0 +1,1542 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        ÄÆ¡n hÃ ng cá»§a tÃ´i - VELORA Eyes
+    </title>
+
+</head>
+
+
+<body>
+
+    <h1>
+        ÄÆ¡n hÃ ng cá»§a tÃ´i
+    </h1>
+
+
+    <p>
+
+        <a href="{{ route('home') }}">
+            â† Trang chá»§
+        </a>
+
+        |
+
+        <a href="{{ route('products.index') }}">
+            Tiáº¿p tá»¥c mua sáº¯m
+        </a>
+
+    </p>
+
+
+    @if(session('success'))
+
+        <p style="color:green;">
+            {{ session('success') }}
+        </p>
+
+    @endif
+
+
+    @if(session('error'))
+
+        <p style="color:red;">
+            {{ session('error') }}
+        </p>
+
+    @endif
+
+
+    <hr>
+
+
+    @if($orders->isEmpty())
+
+        <p>
+            Báº¡n chÆ°a cÃ³ Ä‘Æ¡n hÃ ng nÃ o.
+        </p>
+
+
+        <p>
+
+            <a href="{{ route('products.index') }}">
+                Mua sáº¯m ngay
+            </a>
+
+        </p>
+
+    @else
+
+        <table
+            border="1"
+            cellpadding="10"
+            cellspacing="0"
+            width="100%"
+        >
+
+            <thead>
+
+                <tr>
+
+                    <th>
+                        MÃ£ Ä‘Æ¡n
+                    </th>
+
+                    <th>
+                        NgÃ y Ä‘áº·t
+                    </th>
+
+                    <th>
+                        Tá»•ng tiá»n
+                    </th>
+
+                    <th>
+                        Thanh toÃ¡n
+                    </th>
+
+                    <th>
+                        Tráº¡ng thÃ¡i Ä‘Æ¡n
+                    </th>
+
+                    <th>
+                        Thao tÃ¡c
+                    </th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody>
+
+                @foreach($orders as $order)
+
+                    <tr>
+
+                        {{-- MÃƒ ÄÆ N --}}
+                        <td>
+
+                            <strong>
+                                {{ $order->order_code }}
+                            </strong>
+
+                        </td>
+
+
+                        {{-- NGÃ€Y Äáº¶T --}}
+                        <td>
+
+                            {{ $order
+                                ->created_at
+                                ->format('d/m/Y H:i') }}
+
+                        </td>
+
+
+                        {{-- Tá»”NG TIá»€N --}}
+                        <td>
+
+                            <strong>
+
+                                {{ number_format(
+                                    (float) $order->total,
+                                    0,
+                                    ',',
+                                    '.'
+                                ) }}Ä‘
+
+                            </strong>
+
+                        </td>
+
+
+                        {{-- THANH TOÃN --}}
+                        <td>
+
+                            PhÆ°Æ¡ng thá»©c:
+
+                            <strong>
+
+                                @switch($order->payment_method)
+
+                                    @case('cod')
+
+                                        COD
+
+                                        @break
+
+
+                                    @case('qr')
+
+                                        QR
+
+                                        @break
+
+
+                                    @case('vnpay')
+
+                                        VNPay
+
+                                        @break
+
+
+                                    @default
+
+                                        {{ strtoupper(
+                                            $order->payment_method
+                                        ) }}
+
+                                @endswitch
+
+                            </strong>
+
+
+                            <br>
+
+
+                            Tráº¡ng thÃ¡i:
+
+                            @switch($order->payment_status)
+
+                                @case('unpaid')
+
+                                    <span style="color:orange;">
+                                        ChÆ°a thanh toÃ¡n
+                                    </span>
+
+                                    @break
+
+
+                                @case('pending')
+
+                                    <span style="color:orange;">
+                                        Äang chá» thanh toÃ¡n
+                                    </span>
+
+                                    @break
+
+
+                                @case('paid')
+
+                                    <span style="color:green;">
+                                        ÄÃ£ thanh toÃ¡n
+                                    </span>
+
+                                    @break
+
+
+                                @case('failed')
+
+                                    <span style="color:red;">
+                                        Thanh toÃ¡n tháº¥t báº¡i
+                                    </span>
+
+                                    @break
+
+
+                                @case('refunded')
+
+                                    <span style="color:blue;">
+                                        ÄÃ£ hoÃ n tiá»n
+                                    </span>
+
+                                    @break
+
+
+                                @default
+
+                                    {{ $order->payment_status }}
+
+                            @endswitch
+
+                        </td>
+
+
+                        {{-- TRáº NG THÃI ÄÆ N --}}
+                        <td>
+
+                            @switch($order->order_status)
+
+                                @case('pending')
+
+                                    <span style="color:orange;">
+                                        Chá» xÃ¡c nháº­n
+                                    </span>
+
+                                    @break
+
+
+                                @case('confirmed')
+
+                                    <span style="color:blue;">
+                                        ÄÃ£ xÃ¡c nháº­n
+                                    </span>
+
+                                    @break
+
+
+                                @case('preparing')
+
+                                    <span style="color:blue;">
+                                        Äang chuáº©n bá»‹ hÃ ng
+                                    </span>
+
+                                    @break
+
+
+                                @case('packed')
+
+                                    <span style="color:purple;">
+                                        ÄÃ£ Ä‘Ã³ng gÃ³i
+                                    </span>
+
+                                    @break
+
+
+                                @case('shipping')
+
+                                    <span style="color:purple;">
+                                        Äang giao hÃ ng
+                                    </span>
+
+                                    @break
+
+
+                                @case('completed')
+
+                                    <span style="color:green;">
+                                        HoÃ n thÃ nh
+                                    </span>
+
+                                    @break
+
+
+                                @case('cancelled')
+
+                                    <span style="color:red;">
+                                        ÄÃ£ há»§y
+                                    </span>
+
+                                    @break
+
+
+                                @default
+
+                                    {{ $order->order_status }}
+
+                            @endswitch
+
+                        </td>
+
+
+                        {{-- THAO TÃC --}}
+                        <td>
+
+                            <a
+                                href="{{ route(
+                                    'orders.show',
+                                    $order
+                                ) }}"
+                            >
+                                Xem chi tiáº¿t
+                            </a>
+
+                        </td>
+
+                    </tr>
+
+                @endforeach
+
+            </tbody>
+
+        </table>
+
+
+        <br>
+
+
+        {{ $orders->links() }}
+
+    @endif
+
+</body>
+
+</html>
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Chi tiáº¿t Ä‘Æ¡n hÃ ng - VELORA Eyes
+    </title>
+
+</head>
+
+
+<body>
+
+
+<h1>
+    Chi tiáº¿t Ä‘Æ¡n hÃ ng
+</h1>
+
+
+<p>
+
+    <a href="{{ route('orders.index') }}">
+        â† ÄÆ¡n hÃ ng cá»§a tÃ´i
+    </a>
+
+    |
+
+    <a href="{{ route('home') }}">
+        Trang chá»§
+    </a>
+
+</p>
+
+
+@if(session('success'))
+
+    <p style="color:green;">
+        {{ session('success') }}
+    </p>
+
+@endif
+
+
+@if(session('error'))
+
+    <p style="color:red;">
+        {{ session('error') }}
+    </p>
+
+@endif
+
+
+<hr>
+
+
+{{-- =========================================================
+     THÃ”NG TIN ÄÆ N HÃ€NG
+========================================================= --}}
+
+<h2>
+    ThÃ´ng tin Ä‘Æ¡n hÃ ng
+</h2>
+
+
+<p>
+
+    MÃ£ Ä‘Æ¡n:
+
+    <strong>
+        {{ $order->order_code }}
+    </strong>
+
+</p>
+
+
+<p>
+
+    NgÃ y Ä‘áº·t:
+
+    {{ $order->created_at->format('d/m/Y H:i') }}
+
+</p>
+
+
+<p>
+
+    Tráº¡ng thÃ¡i Ä‘Æ¡n:
+
+    <strong>
+
+        @switch($order->order_status)
+
+            @case('pending')
+                Chá» xÃ¡c nháº­n
+                @break
+
+            @case('confirmed')
+                ÄÃ£ xÃ¡c nháº­n
+                @break
+
+            @case('preparing')
+                Äang chuáº©n bá»‹ hÃ ng
+                @break
+
+            @case('packed')
+                ÄÃ£ Ä‘Ã³ng gÃ³i
+                @break
+
+            @case('shipping')
+                Äang giao hÃ ng
+                @break
+
+            @case('completed')
+                HoÃ n thÃ nh
+                @break
+
+            @case('cancelled')
+                ÄÃ£ há»§y
+                @break
+
+            @default
+                {{ $order->order_status }}
+
+        @endswitch
+
+    </strong>
+
+</p>
+
+
+{{-- =========================================================
+     Há»¦Y ÄÆ N HÃ€NG
+========================================================= --}}
+
+@if($order->order_status === 'pending')
+
+    <hr>
+
+
+    <h2>
+        Há»§y Ä‘Æ¡n hÃ ng
+    </h2>
+
+
+    <p style="color:red;">
+
+        ÄÆ¡n hÃ ng Ä‘ang chá» xÃ¡c nháº­n.
+
+        Báº¡n váº«n cÃ³ thá»ƒ há»§y Ä‘Æ¡n á»Ÿ thá»i Ä‘iá»ƒm nÃ y.
+
+    </p>
+
+
+    <form
+
+        action="{{ route(
+            'orders.cancel',
+            $order
+        ) }}"
+
+        method="POST"
+
+        onsubmit="
+            return confirm(
+                'Báº¡n cÃ³ cháº¯c muá»‘n há»§y Ä‘Æ¡n hÃ ng nÃ y?'
+            );
+        "
+
+    >
+
+        @csrf
+
+        @method('PATCH')
+
+
+        <button type="submit">
+            Há»§y Ä‘Æ¡n hÃ ng
+        </button>
+
+    </form>
+
+@endif
+
+
+<hr>
+
+
+{{-- =========================================================
+     THANH TOÃN
+========================================================= --}}
+
+<p>
+
+    Thanh toÃ¡n:
+
+    <strong>
+
+        @switch($order->payment_method)
+
+            @case('cod')
+                COD
+                @break
+
+            @case('qr')
+                QR
+                @break
+
+            @case('vnpay')
+                VNPay
+                @break
+
+            @default
+                {{ strtoupper($order->payment_method) }}
+
+        @endswitch
+
+    </strong>
+
+    -
+
+    @switch($order->payment_status)
+
+        @case('unpaid')
+
+            ChÆ°a thanh toÃ¡n
+
+            @break
+
+
+        @case('pending')
+
+            Äang chá» thanh toÃ¡n
+
+            @break
+
+
+        @case('paid')
+
+            ÄÃ£ thanh toÃ¡n
+
+            @break
+
+
+        @case('failed')
+
+            Thanh toÃ¡n tháº¥t báº¡i
+
+            @break
+
+
+        @case('refunded')
+
+            ÄÃ£ hoÃ n tiá»n
+
+            @break
+
+
+        @default
+
+            {{ $order->payment_status }}
+
+    @endswitch
+
+</p>
+
+
+<hr>
+
+
+{{-- =========================================================
+     HÃ€NH TRÃŒNH ÄÆ N HÃ€NG
+========================================================= --}}
+
+<h2>
+    HÃ nh trÃ¬nh Ä‘Æ¡n hÃ ng
+</h2>
+
+
+@if($order->statusHistories->isEmpty())
+
+    <p>
+        ChÆ°a cÃ³ dá»¯ liá»‡u hÃ nh trÃ¬nh cho Ä‘Æ¡n hÃ ng nÃ y.
+    </p>
+
+@else
+
+    @foreach($order->statusHistories as $history)
+
+        <div
+            style="
+                border-left:3px solid #333;
+                padding-left:15px;
+                margin-bottom:20px;
+            "
+        >
+
+            <p>
+
+                <strong>
+
+                    {{-- QUAN TRá»ŒNG:
+                         Timeline pháº£i kiá»ƒm tra
+                         $history->status
+                         chá»© khÃ´ng pháº£i
+                         $order->order_status
+                    --}}
+
+                    @switch($history->status)
+
+                        @case('pending')
+
+                            Chá» xÃ¡c nháº­n
+
+                            @break
+
+
+                        @case('confirmed')
+
+                            ÄÃ£ xÃ¡c nháº­n
+
+                            @break
+
+
+                        @case('preparing')
+
+                            Äang chuáº©n bá»‹ hÃ ng
+
+                            @break
+
+
+                        @case('packed')
+
+                            ÄÃ£ Ä‘Ã³ng gÃ³i
+
+                            @break
+
+
+                        @case('shipping')
+
+                            Äang giao hÃ ng
+
+                            @break
+
+
+                        @case('completed')
+
+                            HoÃ n thÃ nh
+
+                            @break
+
+
+                        @case('cancelled')
+
+                            ÄÃ£ há»§y
+
+                            @break
+
+
+                        @default
+
+                            {{ $history->status }}
+
+                    @endswitch
+
+                </strong>
+
+            </p>
+
+
+            @if($history->description)
+
+                <p>
+                    {{ $history->description }}
+                </p>
+
+            @endif
+
+
+            <small>
+
+                Thá»i gian:
+
+                {{ $history->created_at
+                    ->format('d/m/Y H:i') }}
+
+            </small>
+
+
+            @if($history->updater)
+
+                <br>
+
+                <small>
+
+                    Cáº­p nháº­t bá»Ÿi:
+
+                    {{ $history->updater->name }}
+
+                </small>
+
+            @endif
+
+        </div>
+
+    @endforeach
+
+@endif
+
+
+<hr>
+
+
+{{-- =========================================================
+     NGÆ¯á»œI NHáº¬N
+========================================================= --}}
+
+<h2>
+    NgÆ°á»i nháº­n
+</h2>
+
+
+<p>
+
+    Há» tÃªn:
+
+    <strong>
+        {{ $order->customer_name }}
+    </strong>
+
+</p>
+
+
+<p>
+
+    Sá»‘ Ä‘iá»‡n thoáº¡i:
+
+    {{ $order->phone }}
+
+</p>
+
+
+<p>
+
+    Email:
+
+    {{ $order->email }}
+
+</p>
+
+
+<p>
+
+    Äá»‹a chá»‰:
+
+    {{ $order->address }}
+
+</p>
+
+
+@if($order->note)
+
+    <p>
+
+        Ghi chÃº:
+
+        {{ $order->note }}
+
+    </p>
+
+@endif
+
+
+<hr>
+
+
+{{-- =========================================================
+     Sáº¢N PHáº¨M
+========================================================= --}}
+
+<h2>
+    Sáº£n pháº©m
+</h2>
+
+
+<table
+
+    border="1"
+
+    cellpadding="10"
+
+    cellspacing="0"
+
+    width="100%"
+
+>
+
+
+<thead>
+
+
+<tr>
+
+    <th>
+        Sáº£n pháº©m
+    </th>
+
+
+    <th>
+        SKU
+    </th>
+
+
+    <th>
+        MÃ u
+    </th>
+
+
+    <th>
+        Size
+    </th>
+
+
+    <th>
+        ÄÆ¡n giÃ¡
+    </th>
+
+
+    <th>
+        Sá»‘ lÆ°á»£ng
+    </th>
+
+
+    <th>
+        ThÃ nh tiá»n
+    </th>
+
+</tr>
+
+
+</thead>
+
+
+<tbody>
+
+
+@foreach($order->details as $detail)
+
+
+    <tr>
+
+
+        <td>
+
+            {{ $detail->product_name }}
+
+        </td>
+
+
+        <td>
+
+            {{ $detail->sku }}
+
+        </td>
+
+
+        <td>
+
+            {{ $detail->color ?? '-' }}
+
+        </td>
+
+
+        <td>
+
+            {{ $detail->size ?? '-' }}
+
+        </td>
+
+
+        <td>
+
+            {{ number_format(
+                (float) $detail->unit_price,
+                0,
+                ',',
+                '.'
+            ) }}Ä‘
+
+        </td>
+
+
+        <td>
+
+            {{ $detail->quantity }}
+
+        </td>
+
+
+        <td>
+
+            <strong>
+
+                {{ number_format(
+                    (float) $detail->subtotal,
+                    0,
+                    ',',
+                    '.'
+                ) }}Ä‘
+
+            </strong>
+
+        </td>
+
+
+    </tr>
+
+
+@endforeach
+
+
+</tbody>
+
+
+</table>
+
+
+<hr>
+
+
+{{-- =========================================================
+     Tá»”NG Káº¾T
+========================================================= --}}
+
+<h2>
+    Tá»•ng káº¿t
+</h2>
+
+
+<p>
+
+    Táº¡m tÃ­nh:
+
+    {{ number_format(
+        (float) $order->subtotal,
+        0,
+        ',',
+        '.'
+    ) }}Ä‘
+
+</p>
+
+
+@if((float) $order->discount_amount > 0)
+
+    <p>
+
+        Giáº£m giÃ¡:
+
+        <strong style="color:green;">
+
+            -
+
+            {{ number_format(
+                (float) $order->discount_amount,
+                0,
+                ',',
+                '.'
+            ) }}Ä‘
+
+        </strong>
+
+    </p>
+
+@endif
+
+
+<p>
+
+    PhÃ­ váº­n chuyá»ƒn:
+
+    {{ number_format(
+        (float) $order->shipping_fee,
+        0,
+        ',',
+        '.'
+    ) }}Ä‘
+
+</p>
+
+
+<h2>
+
+    Tá»•ng thanh toÃ¡n:
+
+    <strong>
+
+        {{ number_format(
+            (float) $order->total,
+            0,
+            ',',
+            '.'
+        ) }}Ä‘
+
+    </strong>
+
+</h2>
+
+
+{{-- =========================================================
+     PAYMENT
+========================================================= --}}
+
+@if($order->payment)
+
+    <hr>
+
+
+    <h2>
+        ThÃ´ng tin Payment
+    </h2>
+
+
+    <p>
+
+        PhÆ°Æ¡ng thá»©c:
+
+        @switch($order->payment->payment_method)
+
+            @case('cod')
+                COD
+                @break
+
+            @case('qr')
+                QR
+                @break
+
+            @case('vnpay')
+                VNPay
+                @break
+
+            @default
+                {{ strtoupper(
+                    $order->payment->payment_method
+                ) }}
+
+        @endswitch
+
+    </p>
+
+
+    <p>
+
+        Sá»‘ tiá»n:
+
+        {{ number_format(
+            (float) $order->payment->amount,
+            0,
+            ',',
+            '.'
+        ) }}Ä‘
+
+    </p>
+
+
+    <p>
+
+        Tráº¡ng thÃ¡i:
+
+        @switch($order->payment->status)
+
+            @case('unpaid')
+                ChÆ°a thanh toÃ¡n
+                @break
+
+            @case('pending')
+                Chá» thanh toÃ¡n
+                @break
+
+            @case('paid')
+                ÄÃ£ thanh toÃ¡n
+                @break
+
+            @case('failed')
+                Thanh toÃ¡n tháº¥t báº¡i
+                @break
+
+            @case('refunded')
+                ÄÃ£ hoÃ n tiá»n
+                @break
+
+            @default
+                {{ $order->payment->status }}
+
+        @endswitch
+
+    </p>
+
+
+    @if($order->payment->transaction_code)
+
+        <p>
+
+            MÃ£ giao dá»‹ch:
+
+            {{ $order->payment->transaction_code }}
+
+        </p>
+
+    @endif
+
+
+    @if($order->payment->paid_at)
+
+        <p>
+
+            Thá»i gian thanh toÃ¡n:
+
+            {{ $order->payment->paid_at
+                ->format('d/m/Y H:i') }}
+
+        </p>
+
+    @endif
+
+@endif
+
+
+</body>
+
+
+</html>
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Order;
+use App\Services\OrderCancellationService;
+
+class OrderController extends Controller
+{
+    /**
+     * Danh sÃ¡ch Ä‘Æ¡n hÃ ng cá»§a Customer.
+     */
+    public function index()
+    {
+        $orders = Order::query()
+            ->where(
+                'user_id',
+                auth()->id()
+            )
+            ->with([
+                'payment',
+            ])
+            ->latest()
+            ->paginate(10);
+
+
+        return view(
+            'orders.index',
+            compact('orders')
+        );
+    }
+
+
+    /**
+     * Chi tiáº¿t Ä‘Æ¡n hÃ ng.
+     */
+    public function show(
+        Order $order
+    ) {
+        $this->ensureOwnership(
+            $order
+        );
+
+
+        $order->load([
+    'details',
+    'payment',
+
+    'statusHistories' => function ($query) {
+        $query->oldest();
+    },
+
+    'statusHistories.updater',
+                    ]);
+
+
+        return view(
+            'orders.show',
+            compact('order')
+        );
+    }
+
+
+    /**
+     * Customer há»§y Order.
+     */
+    public function cancel(
+        Order $order,
+        OrderCancellationService $cancellationService
+    ) {
+        $this->ensureOwnership(
+            $order
+        );
+
+
+        $cancellationService->cancel(
+            auth()->user(),
+            $order
+        );
+
+
+        return redirect()
+            ->route(
+                'orders.show',
+                $order
+            )
+            ->with(
+                'success',
+                'Há»§y Ä‘Æ¡n hÃ ng thÃ nh cÃ´ng. Tá»“n kho Ä‘Ã£ Ä‘Æ°á»£c hoÃ n láº¡i.'
+            );
+    }
+
+
+    /**
+     * Kiá»ƒm tra quyá»n sá»Ÿ há»¯u Order.
+     */
+    private function ensureOwnership(
+        Order $order
+    ): void {
+        abort_if(
+            $order->user_id
+                !== auth()->id(),
+            403
+        );
+    }
+}
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use App\Models\Payment;
+use App\Models\OrderDetail;
+
+class Order extends Model
+{
+    use HasFactory;
+
+    /**
+     * CÃ¡c tráº¡ng thÃ¡i chuáº©n cá»§a Order.
+     */
+    public const STATUS_PENDING = 'pending';
+    public const STATUS_CONFIRMED = 'confirmed';
+    public const STATUS_PREPARING = 'preparing';
+    public const STATUS_PACKED = 'packed';
+    public const STATUS_SHIPPING = 'shipping';
+    public const STATUS_COMPLETED = 'completed';
+    public const STATUS_CANCELLED = 'cancelled';
+
+    /**
+     * Payment status.
+     */
+    public const PAYMENT_UNPAID = 'unpaid';
+    public const PAYMENT_PENDING = 'pending';
+    public const PAYMENT_PAID = 'paid';
+    public const PAYMENT_FAILED = 'failed';
+    public const PAYMENT_REFUNDED = 'refunded';
+
+    protected $fillable = [
+        'order_code',
+        'user_id',
+        'voucher_id',
+
+        'customer_name',
+        'phone',
+        'email',
+        'address',
+
+        'subtotal',
+        'discount_amount',
+        'shipping_fee',
+        'total',
+
+        'payment_method',
+        'payment_status',
+        'order_status',
+
+        'note',
+        'stock_restored_at',
+    ];
+
+    protected function casts(): array
+    {
+        return [
+            'subtotal' => 'decimal:2',
+            'discount_amount' => 'decimal:2',
+            'shipping_fee' => 'decimal:2',
+            'total' => 'decimal:2',
+
+            'stock_restored_at' => 'datetime',
+        ];
+    }
+
+    /**
+     * Order thuá»™c Customer nÃ o.
+     */
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    /**
+     * Voucher Ä‘Æ°á»£c dÃ¹ng cho Order.
+     */
+    public function voucher(): BelongsTo
+    {
+        return $this->belongsTo(Voucher::class);
+    }
+
+    /**
+     * Má»™t Order cÃ³ nhiá»u dÃ²ng sáº£n pháº©m.
+     */
+    public function details(): HasMany
+    {
+        return $this->hasMany(OrderDetail::class);
+    }
+
+    /**
+     * Timeline tráº¡ng thÃ¡i Ä‘Æ¡n hÃ ng.
+     */
+    public function statusHistories(): HasMany
+    {
+        return $this->hasMany(OrderStatusHistory::class)
+            ->orderBy('created_at');
+    }
+
+    /**
+     * Má»™t Order cÃ³ thá»ƒ cÃ³ nhiá»u láº§n thanh toÃ¡n.
+     */
+    public function payments(): HasMany
+    {
+        return $this->hasMany(Payment::class);
+    }
+
+    /**
+     * Lá»‹ch sá»­ Voucher cá»§a Order.
+     *
+     * Migration Ä‘Ã£ unique order_id,
+     * nÃªn má»—i Order tá»‘i Ä‘a má»™t VoucherUsage.
+     */
+    public function voucherUsage(): HasOne
+    {
+        return $this->hasOne(VoucherUsage::class);
+    }
+
+    /**
+     * Customer chá»‰ Ä‘Æ°á»£c tá»± há»§y khi Pending.
+     */
+    public function isCancellableByCustomer(): bool
+    {
+        return $this->order_status === self::STATUS_PENDING;
+    }
+
+    /**
+     * Order Ä‘Ã£ hoÃ n thÃ nh?
+     */
+    public function isCompleted(): bool
+    {
+        return $this->order_status === self::STATUS_COMPLETED;
+    }
+
+    /**
+     * Order Ä‘Ã£ bá»‹ há»§y?
+     */
+    public function isCancelled(): bool
+    {
+        return $this->order_status === self::STATUS_CANCELLED;
+    }
+
+    /**
+     * Order Ä‘Ã£ thanh toÃ¡n?
+     */
+    public function isPaid(): bool
+    {
+        return $this->payment_status === self::PAYMENT_PAID;
+    }
+
+    /**
+     * Stock Ä‘Ã£ Ä‘Æ°á»£c hoÃ n láº¡i chÆ°a?
+     */
+    public function hasStockBeenRestored(): bool
+    {
+        return $this->stock_restored_at !== null;
+    }
+
+    /**
+     * Kiá»ƒm tra chuyá»ƒn tráº¡ng thÃ¡i theo luá»“ng chuáº©n.
+     *
+     * KhÃ´ng xá»­ lÃ½ Cancel á»Ÿ Ä‘Ã¢y vÃ¬ quyá»n Cancel cá»§a
+     * Customer vÃ  Staff/Admin lÃ  khÃ¡c nhau.
+     */
+    public function canTransitionTo(string $newStatus): bool
+    {
+        $transitions = [
+            self::STATUS_PENDING => [
+                self::STATUS_CONFIRMED,
+            ],
+
+            self::STATUS_CONFIRMED => [
+                self::STATUS_PREPARING,
+            ],
+
+            self::STATUS_PREPARING => [
+                self::STATUS_PACKED,
+            ],
+
+            self::STATUS_PACKED => [
+                self::STATUS_SHIPPING,
+            ],
+
+            self::STATUS_SHIPPING => [
+                self::STATUS_COMPLETED,
+            ],
+
+            self::STATUS_COMPLETED => [],
+
+            self::STATUS_CANCELLED => [],
+        ];
+
+        return in_array(
+            $newStatus,
+            $transitions[$this->order_status] ?? [],
+            true
+        );
+    }
+
+    /**
+     * Scope láº¥y Order cá»§a Customer.
+     */
+    public function scopeForUser($query, int $userId)
+    {
+        return $query->where('user_id', $userId);
+    }
+
+    public function payment()
+        {
+    return $this->hasOne(
+        Payment::class,
+        'order_id'
+    );
+        }
+
+        
+
+}

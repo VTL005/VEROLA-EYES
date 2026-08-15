@@ -1,0 +1,1057 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Äá»‹a chá»‰ cá»§a tÃ´i - VELORA Eyes
+    </title>
+</head>
+
+<body>
+
+    <h1>
+        Äá»‹a chá»‰ cá»§a tÃ´i
+    </h1>
+
+
+    <p>
+
+        <a href="{{ route('home') }}">
+            â† Trang chá»§
+        </a>
+
+        |
+
+        <a href="{{ route('cart.index') }}">
+            ðŸ›’ Giá» hÃ ng
+        </a>
+
+    </p>
+
+
+    @if(session('success'))
+
+        <p style="color: green;">
+            {{ session('success') }}
+        </p>
+
+    @endif
+
+
+    <p>
+
+        <a href="{{ route('addresses.create') }}">
+            + ThÃªm Ä‘á»‹a chá»‰ má»›i
+        </a>
+
+    </p>
+
+
+    <hr>
+
+
+    @if($addresses->isEmpty())
+
+        <p>
+            Báº¡n chÆ°a cÃ³ Ä‘á»‹a chá»‰ nháº­n hÃ ng.
+        </p>
+
+
+        <p>
+
+            <a href="{{ route('addresses.create') }}">
+                ThÃªm Ä‘á»‹a chá»‰ Ä‘áº§u tiÃªn
+            </a>
+
+        </p>
+
+    @else
+
+        @foreach($addresses as $address)
+
+            <div
+                style="
+                    border: 1px solid #ccc;
+                    padding: 15px;
+                    margin-bottom: 15px;
+                "
+            >
+
+                <h3>
+
+                    {{ $address->recipient_name }}
+
+                    @if($address->is_default)
+
+                        <span style="color: green;">
+                            [Máº·c Ä‘á»‹nh]
+                        </span>
+
+                    @endif
+
+                </h3>
+
+
+                @if($address->label)
+
+                    <p>
+                        NhÃ£n:
+                        <strong>
+                            {{ $address->label }}
+                        </strong>
+                    </p>
+
+                @endif
+
+
+                <p>
+                    Äiá»‡n thoáº¡i:
+                    {{ $address->phone }}
+                </p>
+
+
+                <p>
+                    Äá»‹a chá»‰:
+                    {{ $address->detail_address }},
+                    {{ $address->ward }},
+                    {{ $address->district }},
+                    {{ $address->province }}
+                </p>
+
+
+                <p>
+
+                    <a
+                        href="{{ route(
+                            'addresses.edit',
+                            $address
+                        ) }}"
+                    >
+                        Sá»­a
+                    </a>
+
+                </p>
+
+
+                <form
+                    action="{{ route(
+                        'addresses.destroy',
+                        $address
+                    ) }}"
+                    method="POST"
+                    onsubmit="
+                        return confirm(
+                            'Báº¡n cÃ³ cháº¯c muá»‘n xÃ³a Ä‘á»‹a chá»‰ nÃ y?'
+                        );
+                    "
+                >
+
+                    @csrf
+                    @method('DELETE')
+
+
+                    <button type="submit">
+                        XÃ³a
+                    </button>
+
+                </form>
+
+            </div>
+
+        @endforeach
+
+    @endif
+
+</body>
+
+</html>
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        ThÃªm Ä‘á»‹a chá»‰ - VELORA Eyes
+    </title>
+</head>
+
+<body>
+
+    <h1>
+        ThÃªm Ä‘á»‹a chá»‰ nháº­n hÃ ng
+    </h1>
+
+
+    <p>
+
+        <a href="{{ route('addresses.index') }}">
+            â† Quay láº¡i danh sÃ¡ch Ä‘á»‹a chá»‰
+        </a>
+
+    </p>
+
+
+    @if($errors->any())
+
+        <div style="color: red;">
+
+            <ul>
+
+                @foreach($errors->all() as $error)
+
+                    <li>
+                        {{ $error }}
+                    </li>
+
+                @endforeach
+
+            </ul>
+
+        </div>
+
+    @endif
+
+
+    <form
+        action="{{ route('addresses.store') }}"
+        method="POST"
+    >
+
+        @csrf
+
+
+        <p>
+
+            <label>
+                TÃªn ngÆ°á»i nháº­n:
+            </label>
+
+            <br>
+
+            <input
+                type="text"
+                name="recipient_name"
+                value="{{ old('recipient_name') }}"
+                required
+            >
+
+        </p>
+
+
+        <p>
+
+            <label>
+                Sá»‘ Ä‘iá»‡n thoáº¡i:
+            </label>
+
+            <br>
+
+            <input
+                type="text"
+                name="phone"
+                value="{{ old('phone') }}"
+                placeholder="VÃ­ dá»¥: 0912345678"
+                required
+            >
+
+        </p>
+
+
+        <p>
+
+            <label>
+                Tá»‰nh / ThÃ nh phá»‘:
+            </label>
+
+            <br>
+
+            <input
+                type="text"
+                name="province"
+                value="{{ old('province') }}"
+                required
+            >
+
+        </p>
+
+
+        <p>
+
+            <label>
+                Quáº­n / Huyá»‡n:
+            </label>
+
+            <br>
+
+            <input
+                type="text"
+                name="district"
+                value="{{ old('district') }}"
+                required
+            >
+
+        </p>
+
+
+        <p>
+
+            <label>
+                PhÆ°á»ng / XÃ£:
+            </label>
+
+            <br>
+
+            <input
+                type="text"
+                name="ward"
+                value="{{ old('ward') }}"
+                required
+            >
+
+        </p>
+
+
+        <p>
+
+            <label>
+                Äá»‹a chá»‰ chi tiáº¿t:
+            </label>
+
+            <br>
+
+            <input
+                type="text"
+                name="detail_address"
+                value="{{ old('detail_address') }}"
+                placeholder="Sá»‘ nhÃ , tÃªn Ä‘Æ°á»ng..."
+                required
+            >
+
+        </p>
+
+
+        <p>
+
+            <label>
+                TÃªn gá»£i nhá»›:
+            </label>
+
+            <br>
+
+            <input
+                type="text"
+                name="label"
+                value="{{ old('label') }}"
+                placeholder="NhÃ  riÃªng, CÃ´ng ty..."
+            >
+
+        </p>
+
+
+        <p>
+
+            <label>
+
+                <input
+                    type="checkbox"
+                    name="is_default"
+                    value="1"
+                    {{ old('is_default')
+                        ? 'checked'
+                        : '' }}
+                >
+
+                Äáº·t lÃ m Ä‘á»‹a chá»‰ máº·c Ä‘á»‹nh
+
+            </label>
+
+        </p>
+
+
+        <button type="submit">
+            LÆ°u Ä‘á»‹a chá»‰
+        </button>
+
+    </form>
+
+</body>
+
+</html>
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Sá»­a Ä‘á»‹a chá»‰ - VELORA Eyes
+    </title>
+</head>
+
+<body>
+
+    <h1>
+        Sá»­a Ä‘á»‹a chá»‰ nháº­n hÃ ng
+    </h1>
+
+
+    <p>
+
+        <a href="{{ route('addresses.index') }}">
+            â† Quay láº¡i danh sÃ¡ch Ä‘á»‹a chá»‰
+        </a>
+
+    </p>
+
+
+    @if($errors->any())
+
+        <div style="color: red;">
+
+            <ul>
+
+                @foreach($errors->all() as $error)
+
+                    <li>
+                        {{ $error }}
+                    </li>
+
+                @endforeach
+
+            </ul>
+
+        </div>
+
+    @endif
+
+
+    <form
+        action="{{ route(
+            'addresses.update',
+            $address
+        ) }}"
+        method="POST"
+    >
+
+        @csrf
+        @method('PUT')
+
+
+        <p>
+
+            <label>
+                TÃªn ngÆ°á»i nháº­n:
+            </label>
+
+            <br>
+
+            <input
+                type="text"
+                name="recipient_name"
+                value="{{ old(
+                    'recipient_name',
+                    $address->recipient_name
+                ) }}"
+                required
+            >
+
+        </p>
+
+
+        <p>
+
+            <label>
+                Sá»‘ Ä‘iá»‡n thoáº¡i:
+            </label>
+
+            <br>
+
+            <input
+                type="text"
+                name="phone"
+                value="{{ old(
+                    'phone',
+                    $address->phone
+                ) }}"
+                required
+            >
+
+        </p>
+
+
+        <p>
+
+            <label>
+                Tá»‰nh / ThÃ nh phá»‘:
+            </label>
+
+            <br>
+
+            <input
+                type="text"
+                name="province"
+                value="{{ old(
+                    'province',
+                    $address->province
+                ) }}"
+                required
+            >
+
+        </p>
+
+
+        <p>
+
+            <label>
+                Quáº­n / Huyá»‡n:
+            </label>
+
+            <br>
+
+            <input
+                type="text"
+                name="district"
+                value="{{ old(
+                    'district',
+                    $address->district
+                ) }}"
+                required
+            >
+
+        </p>
+
+
+        <p>
+
+            <label>
+                PhÆ°á»ng / XÃ£:
+            </label>
+
+            <br>
+
+            <input
+                type="text"
+                name="ward"
+                value="{{ old(
+                    'ward',
+                    $address->ward
+                ) }}"
+                required
+            >
+
+        </p>
+
+
+        <p>
+
+            <label>
+                Äá»‹a chá»‰ chi tiáº¿t:
+            </label>
+
+            <br>
+
+            <input
+                type="text"
+                name="detail_address"
+                value="{{ old(
+                    'detail_address',
+                    $address->detail_address
+                ) }}"
+                required
+            >
+
+        </p>
+
+
+        <p>
+
+            <label>
+                TÃªn gá»£i nhá»›:
+            </label>
+
+            <br>
+
+            <input
+                type="text"
+                name="label"
+                value="{{ old(
+                    'label',
+                    $address->label
+                ) }}"
+            >
+
+        </p>
+
+
+        <p>
+
+            <label>
+
+                <input
+                    type="checkbox"
+                    name="is_default"
+                    value="1"
+                    {{
+                        old(
+                            'is_default',
+                            $address->is_default
+                        )
+                            ? 'checked'
+                            : ''
+                    }}
+                >
+
+                Äáº·t lÃ m Ä‘á»‹a chá»‰ máº·c Ä‘á»‹nh
+
+            </label>
+
+        </p>
+
+
+        <button type="submit">
+            Cáº­p nháº­t Ä‘á»‹a chá»‰
+        </button>
+
+    </form>
+
+</body>
+
+</html>
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Http\Requests\AddressRequest;
+use App\Models\Address;
+use Illuminate\Support\Facades\DB;
+
+class AddressController extends Controller
+{
+    /**
+     * Danh sÃ¡ch Ä‘á»‹a chá»‰ cá»§a Customer.
+     */
+    public function index()
+    {
+        $addresses = Address::query()
+            ->where(
+                'user_id',
+                auth()->id()
+            )
+            ->orderByDesc('is_default')
+            ->latest()
+            ->get();
+
+        return view(
+            'addresses.index',
+            compact('addresses')
+        );
+    }
+
+
+    /**
+     * Form thÃªm Ä‘á»‹a chá»‰.
+     */
+    public function create()
+    {
+        return view(
+            'addresses.create'
+        );
+    }
+
+
+    /**
+     * LÆ°u Ä‘á»‹a chá»‰ má»›i.
+     */
+    public function store(
+        AddressRequest $request
+    ) {
+        DB::transaction(function () use ($request) {
+
+            $userId = auth()->id();
+
+            /*
+             * Náº¿u Customer chÆ°a cÃ³ Ä‘á»‹a chá»‰ nÃ o,
+             * Ä‘á»‹a chá»‰ Ä‘áº§u tiÃªn tá»± Ä‘á»™ng lÃ  máº·c Ä‘á»‹nh.
+             */
+            $hasAddress = Address::query()
+                ->where(
+                    'user_id',
+                    $userId
+                )
+                ->exists();
+
+
+            $isDefault =
+                !$hasAddress
+                || $request->boolean(
+                    'is_default'
+                );
+
+
+            /*
+             * Náº¿u Ä‘á»‹a chá»‰ má»›i Ä‘Æ°á»£c Ä‘áº·t máº·c Ä‘á»‹nh,
+             * bá» máº·c Ä‘á»‹nh á»Ÿ cÃ¡c Ä‘á»‹a chá»‰ cÅ©.
+             */
+            if ($isDefault) {
+                Address::query()
+                    ->where(
+                        'user_id',
+                        $userId
+                    )
+                    ->update([
+                        'is_default' => false,
+                    ]);
+            }
+
+
+            Address::create([
+                'user_id' =>
+                    $userId,
+
+                'recipient_name' =>
+                    $request->recipient_name,
+
+                'phone' =>
+                    $request->phone,
+
+                'province' =>
+                    $request->province,
+
+                'district' =>
+                    $request->district,
+
+                'ward' =>
+                    $request->ward,
+
+                'detail_address' =>
+                    $request->detail_address,
+
+                'label' =>
+                    $request->label,
+
+                'is_default' =>
+                    $isDefault,
+            ]);
+        });
+
+
+        return redirect()
+            ->route('addresses.index')
+            ->with(
+                'success',
+                'ThÃªm Ä‘á»‹a chá»‰ thÃ nh cÃ´ng.'
+            );
+    }
+
+
+    /**
+     * Form sá»­a Ä‘á»‹a chá»‰.
+     */
+    public function edit(
+        Address $address
+    ) {
+        $this->ensureOwnership(
+            $address
+        );
+
+        return view(
+            'addresses.edit',
+            compact('address')
+        );
+    }
+
+
+    /**
+     * Cáº­p nháº­t Ä‘á»‹a chá»‰.
+     */
+    public function update(
+        AddressRequest $request,
+        Address $address
+    ) {
+        $this->ensureOwnership(
+            $address
+        );
+
+
+        DB::transaction(
+            function () use (
+                $request,
+                $address
+            ) {
+
+                $isDefault =
+                    $request->boolean(
+                        'is_default'
+                    );
+
+
+                /*
+                 * Náº¿u chá»n Ä‘á»‹a chá»‰ nÃ y lÃ m máº·c Ä‘á»‹nh,
+                 * bá» máº·c Ä‘á»‹nh á»Ÿ cÃ¡c Ä‘á»‹a chá»‰ cÃ²n láº¡i.
+                 */
+                if ($isDefault) {
+
+                    Address::query()
+                        ->where(
+                            'user_id',
+                            auth()->id()
+                        )
+                        ->where(
+                            'id',
+                            '!=',
+                            $address->id
+                        )
+                        ->update([
+                            'is_default' =>
+                                false,
+                        ]);
+                }
+
+
+                /*
+                 * Náº¿u Ä‘á»‹a chá»‰ hiá»‡n Ä‘ang máº·c Ä‘á»‹nh
+                 * mÃ  user bá» checkbox,
+                 * ta váº«n giá»¯ nÃ³ lÃ  máº·c Ä‘á»‹nh
+                 * Ä‘á»ƒ luÃ´n cÃ³ 1 Ä‘á»‹a chá»‰ máº·c Ä‘á»‹nh.
+                 */
+                if (
+                    $address->is_default
+                    && !$isDefault
+                ) {
+                    $isDefault = true;
+                }
+
+
+                $address->update([
+                    'recipient_name' =>
+                        $request->recipient_name,
+
+                    'phone' =>
+                        $request->phone,
+
+                    'province' =>
+                        $request->province,
+
+                    'district' =>
+                        $request->district,
+
+                    'ward' =>
+                        $request->ward,
+
+                    'detail_address' =>
+                        $request->detail_address,
+
+                    'label' =>
+                        $request->label,
+
+                    'is_default' =>
+                        $isDefault,
+                ]);
+            }
+        );
+
+
+        return redirect()
+            ->route('addresses.index')
+            ->with(
+                'success',
+                'Cáº­p nháº­t Ä‘á»‹a chá»‰ thÃ nh cÃ´ng.'
+            );
+    }
+
+
+    /**
+     * XÃ³a Ä‘á»‹a chá»‰.
+     */
+    public function destroy(
+        Address $address
+    ) {
+        $this->ensureOwnership(
+            $address
+        );
+
+
+        DB::transaction(
+            function () use ($address) {
+
+                $wasDefault =
+                    $address->is_default;
+
+                $address->delete();
+
+
+                /*
+                 * Náº¿u vá»«a xÃ³a Ä‘á»‹a chá»‰ máº·c Ä‘á»‹nh,
+                 * láº¥y má»™t Ä‘á»‹a chá»‰ cÃ²n láº¡i
+                 * lÃ m máº·c Ä‘á»‹nh.
+                 */
+                if ($wasDefault) {
+
+                    $nextAddress =
+                        Address::query()
+                            ->where(
+                                'user_id',
+                                auth()->id()
+                            )
+                            ->latest()
+                            ->first();
+
+
+                    if ($nextAddress) {
+
+                        $nextAddress->update([
+                            'is_default' =>
+                                true,
+                        ]);
+                    }
+                }
+            }
+        );
+
+
+        return redirect()
+            ->route('addresses.index')
+            ->with(
+                'success',
+                'ÄÃ£ xÃ³a Ä‘á»‹a chá»‰.'
+            );
+    }
+
+
+    /**
+     * KhÃ´ng cho Customer sá»­a/xÃ³a
+     * Ä‘á»‹a chá»‰ cá»§a Customer khÃ¡c.
+     */
+    private function ensureOwnership(
+        Address $address
+    ): void {
+        abort_if(
+            $address->user_id
+                !== auth()->id(),
+            403
+        );
+    }
+}
+<?php
+
+namespace App\Http\Requests;
+
+use Illuminate\Foundation\Http\FormRequest;
+
+class AddressRequest extends FormRequest
+{
+    public function authorize(): bool
+    {
+        return true;
+    }
+
+
+    public function rules(): array
+    {
+        return [
+            'recipient_name' => [
+                'required',
+                'string',
+                'min:2',
+                'max:100',
+            ],
+
+            'phone' => [
+                'required',
+                'regex:/^0[0-9]{9}$/',
+            ],
+
+            'province' => [
+                'required',
+                'string',
+                'max:100',
+            ],
+
+            'district' => [
+                'required',
+                'string',
+                'max:100',
+            ],
+
+            'ward' => [
+                'required',
+                'string',
+                'max:100',
+            ],
+
+            'detail_address' => [
+                'required',
+                'string',
+                'max:255',
+            ],
+
+            'label' => [
+                'nullable',
+                'string',
+                'max:50',
+            ],
+
+            'is_default' => [
+                'nullable',
+                'boolean',
+            ],
+        ];
+    }
+
+
+    public function messages(): array
+    {
+        return [
+            'recipient_name.required' =>
+                'Vui lÃ²ng nháº­p tÃªn ngÆ°á»i nháº­n.',
+
+            'recipient_name.min' =>
+                'TÃªn ngÆ°á»i nháº­n pháº£i cÃ³ Ã­t nháº¥t 2 kÃ½ tá»±.',
+
+            'recipient_name.max' =>
+                'TÃªn ngÆ°á»i nháº­n khÃ´ng Ä‘Æ°á»£c vÆ°á»£t quÃ¡ 100 kÃ½ tá»±.',
+
+
+            'phone.required' =>
+                'Vui lÃ²ng nháº­p sá»‘ Ä‘iá»‡n thoáº¡i.',
+
+            'phone.regex' =>
+                'Sá»‘ Ä‘iá»‡n thoáº¡i pháº£i gá»“m 10 chá»¯ sá»‘ vÃ  báº¯t Ä‘áº§u báº±ng sá»‘ 0.',
+
+
+            'province.required' =>
+                'Vui lÃ²ng nháº­p Tá»‰nh/ThÃ nh phá»‘.',
+
+            'district.required' =>
+                'Vui lÃ²ng nháº­p Quáº­n/Huyá»‡n.',
+
+            'ward.required' =>
+                'Vui lÃ²ng nháº­p PhÆ°á»ng/XÃ£.',
+
+            'detail_address.required' =>
+                'Vui lÃ²ng nháº­p Ä‘á»‹a chá»‰ chi tiáº¿t.',
+
+
+            'label.max' =>
+                'TÃªn gá»£i nhá»› Ä‘á»‹a chá»‰ khÃ´ng Ä‘Æ°á»£c vÆ°á»£t quÃ¡ 50 kÃ½ tá»±.',
+        ];
+    }
+}

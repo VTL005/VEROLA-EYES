@@ -1,0 +1,234 @@
+﻿@extends('layouts.app')
+
+@section('title', 'ÄÄƒng nháº­p - VELORA Eyes')
+
+@section('content')
+
+    <h1>
+        ÄÄƒng nháº­p
+    </h1>
+
+
+    @if($errors->any())
+
+        <div>
+
+            @foreach($errors->all() as $error)
+
+                <p>
+                    {{ $error }}
+                </p>
+
+            @endforeach
+
+        </div>
+
+    @endif
+
+
+    <form
+        action="{{ route('login.store') }}"
+        method="POST"
+    >
+
+        @csrf
+
+
+        <div>
+
+            <label>
+                Email
+            </label>
+
+            <input
+                type="email"
+                name="email"
+                value="{{ old('email') }}"
+                required
+            >
+
+        </div>
+
+
+        <div>
+
+            <label>
+                Máº­t kháº©u
+            </label>
+
+            <input
+                type="password"
+                name="password"
+                required
+            >
+
+        </div>
+
+
+        <div>
+
+            <label>
+
+                <input
+                    type="checkbox"
+                    name="remember"
+                    value="1"
+                >
+
+                Ghi nhá»› Ä‘Äƒng nháº­p
+
+            </label>
+
+        </div>
+
+
+        <button type="submit">
+            ÄÄƒng nháº­p
+        </button>
+
+    </form>
+
+
+    <p>
+
+        ChÆ°a cÃ³ tÃ i khoáº£n?
+
+        <a href="{{ route('register') }}">
+            ÄÄƒng kÃ½
+        </a>
+
+    </p>
+
+@endsection
+@extends('layouts.app')
+
+@section('title', 'ÄÄƒng kÃ½ - VELORA Eyes')
+
+@section('content')
+
+    <h1>
+        ÄÄƒng kÃ½ tÃ i khoáº£n
+    </h1>
+
+
+    @if($errors->any())
+
+        <div>
+
+            @foreach($errors->all() as $error)
+
+                <p>
+                    {{ $error }}
+                </p>
+
+            @endforeach
+
+        </div>
+
+    @endif
+
+
+    <form
+        action="{{ route('register.store') }}"
+        method="POST"
+    >
+
+        @csrf
+
+
+        <div>
+
+            <label>
+                Há» vÃ  tÃªn
+            </label>
+
+            <input
+                type="text"
+                name="name"
+                value="{{ old('name') }}"
+                required
+            >
+
+        </div>
+
+
+        <div>
+
+            <label>
+                Email
+            </label>
+
+            <input
+                type="email"
+                name="email"
+                value="{{ old('email') }}"
+                required
+            >
+
+        </div>
+
+
+        <div>
+
+            <label>
+                Sá»‘ Ä‘iá»‡n thoáº¡i
+            </label>
+
+            <input
+                type="text"
+                name="phone"
+                value="{{ old('phone') }}"
+                required
+            >
+
+        </div>
+
+
+        <div>
+
+            <label>
+                Máº­t kháº©u
+            </label>
+
+            <input
+                type="password"
+                name="password"
+                required
+            >
+
+        </div>
+
+
+        <div>
+
+            <label>
+                XÃ¡c nháº­n máº­t kháº©u
+            </label>
+
+            <input
+                type="password"
+                name="password_confirmation"
+                required
+            >
+
+        </div>
+
+
+        <button type="submit">
+            ÄÄƒng kÃ½
+        </button>
+
+    </form>
+
+
+    <p>
+
+        ÄÃ£ cÃ³ tÃ i khoáº£n?
+
+        <a href="{{ route('login') }}">
+            ÄÄƒng nháº­p
+        </a>
+
+    </p>
+
+@endsection

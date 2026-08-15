@@ -1,0 +1,59 @@
+﻿> C:\xampp\htdocs\VELORA_Eyes\app\Http\Controllers\ProductController.php:452:        | REVIEW STATISTICS
+  C:\xampp\htdocs\VELORA_Eyes\app\Http\Controllers\ProductController.php:453:        |--------------------------------------------------------------------------
+  C:\xampp\htdocs\VELORA_Eyes\app\Http\Controllers\ProductController.php:454:        */
+  C:\xampp\htdocs\VELORA_Eyes\app\Http\Controllers\ProductController.php:455:
+  C:\xampp\htdocs\VELORA_Eyes\app\Http\Controllers\ProductController.php:456:        /*
+  C:\xampp\htdocs\VELORA_Eyes\app\Http\Controllers\ProductController.php:457:         * Điểm đánh giá trung bình.
+  C:\xampp\htdocs\VELORA_Eyes\app\Http\Controllers\ProductController.php:458:         */
+  C:\xampp\htdocs\VELORA_Eyes\app\Http\Controllers\ProductController.php:459:        $averageRating =
+  C:\xampp\htdocs\VELORA_Eyes\app\Http\Controllers\ProductController.php:460:            $product->reviews->isNotEmpty()
+  C:\xampp\htdocs\VELORA_Eyes\app\Http\Controllers\ProductController.php:461:                ? round(
+  C:\xampp\htdocs\VELORA_Eyes\app\Http\Controllers\ProductController.php:462:                    $product->reviews
+  C:\xampp\htdocs\VELORA_Eyes\app\Http\Controllers\ProductController.php:463:                        ->avg('rating'),
+  C:\xampp\htdocs\VELORA_Eyes\app\Http\Controllers\ProductController.php:464:                    1
+  C:\xampp\htdocs\VELORA_Eyes\app\Http\Controllers\ProductController.php:465:                )
+  C:\xampp\htdocs\VELORA_Eyes\app\Http\Controllers\ProductController.php:466:                : null;
+  C:\xampp\htdocs\VELORA_Eyes\app\Http\Controllers\ProductController.php:467:
+  C:\xampp\htdocs\VELORA_Eyes\app\Http\Controllers\ProductController.php:468:
+  C:\xampp\htdocs\VELORA_Eyes\app\Http\Controllers\ProductController.php:469:        /*
+  C:\xampp\htdocs\VELORA_Eyes\app\Http\Controllers\ProductController.php:470:         * Tổng số Review.
+  C:\xampp\htdocs\VELORA_Eyes\app\Http\Controllers\ProductController.php:471:         */
+  C:\xampp\htdocs\VELORA_Eyes\app\Http\Controllers\ProductController.php:472:        $reviewCount =
+  C:\xampp\htdocs\VELORA_Eyes\app\Http\Controllers\ProductController.php:473:            $product->reviews->count();
+  C:\xampp\htdocs\VELORA_Eyes\app\Http\Controllers\ProductController.php:474:
+  C:\xampp\htdocs\VELORA_Eyes\app\Http\Controllers\ProductController.php:475:
+  C:\xampp\htdocs\VELORA_Eyes\app\Http\Controllers\ProductController.php:476:        /*
+  C:\xampp\htdocs\VELORA_Eyes\app\Http\Controllers\ProductController.php:477:        |--------------------------------------------------------------------------
+  C:\xampp\htdocs\VELORA_Eyes\app\Http\Controllers\ProductController.php:478:        | PRODUCT RECOMMENDATION
+  C:\xampp\htdocs\VELORA_Eyes\app\Http\Controllers\ProductController.php:479:        |--------------------------------------------------------------------------
+  C:\xampp\htdocs\VELORA_Eyes\app\Http\Controllers\ProductController.php:480:        |
+  C:\xampp\htdocs\VELORA_Eyes\app\Http\Controllers\ProductController.php:481:        | Lấy tối đa 4 sản phẩm phù hợp.
+  C:\xampp\htdocs\VELORA_Eyes\app\Http\Controllers\ProductController.php:482:        |
+  C:\xampp\htdocs\VELORA_Eyes\app\Http\Controllers\ProductController.php:483:        */
+  C:\xampp\htdocs\VELORA_Eyes\app\Http\Controllers\ProductController.php:484:
+  C:\xampp\htdocs\VELORA_Eyes\app\Http\Controllers\ProductController.php:485:        $recommendedProducts =
+  C:\xampp\htdocs\VELORA_Eyes\app\Http\Controllers\ProductController.php:486:            $recommendationService
+  C:\xampp\htdocs\VELORA_Eyes\app\Http\Controllers\ProductController.php:487:                ->recommend(
+  C:\xampp\htdocs\VELORA_Eyes\app\Http\Controllers\ProductController.php:488:                    $product,
+  C:\xampp\htdocs\VELORA_Eyes\app\Http\Controllers\ProductController.php:489:                    4
+  C:\xampp\htdocs\VELORA_Eyes\app\Http\Controllers\ProductController.php:490:                );
+  C:\xampp\htdocs\VELORA_Eyes\app\Http\Controllers\ProductController.php:491:
+  C:\xampp\htdocs\VELORA_Eyes\app\Http\Controllers\ProductController.php:492:
+  C:\xampp\htdocs\VELORA_Eyes\app\Http\Controllers\ProductController.php:493:        /*
+  C:\xampp\htdocs\VELORA_Eyes\app\Http\Controllers\ProductController.php:494:        |--------------------------------------------------------------------------
+  C:\xampp\htdocs\VELORA_Eyes\app\Http\Controllers\ProductController.php:495:        | RETURN VIEW
+  C:\xampp\htdocs\VELORA_Eyes\app\Http\Controllers\ProductController.php:496:        |--------------------------------------------------------------------------
+  C:\xampp\htdocs\VELORA_Eyes\app\Http\Controllers\ProductController.php:497:        */
+  C:\xampp\htdocs\VELORA_Eyes\app\Http\Controllers\ProductController.php:498:
+  C:\xampp\htdocs\VELORA_Eyes\app\Http\Controllers\ProductController.php:499:        return view(
+  C:\xampp\htdocs\VELORA_Eyes\app\Http\Controllers\ProductController.php:500:            'products.show',
+  C:\xampp\htdocs\VELORA_Eyes\app\Http\Controllers\ProductController.php:501:            compact(
+  C:\xampp\htdocs\VELORA_Eyes\app\Http\Controllers\ProductController.php:502:                'product',
+  C:\xampp\htdocs\VELORA_Eyes\app\Http\Controllers\ProductController.php:503:                'inventoryService',
+  C:\xampp\htdocs\VELORA_Eyes\app\Http\Controllers\ProductController.php:504:                'averageRating',
+  C:\xampp\htdocs\VELORA_Eyes\app\Http\Controllers\ProductController.php:505:                'reviewCount',
+  C:\xampp\htdocs\VELORA_Eyes\app\Http\Controllers\ProductController.php:506:                'recommendedProducts'
+  C:\xampp\htdocs\VELORA_Eyes\app\Http\Controllers\ProductController.php:507:            )
+  C:\xampp\htdocs\VELORA_Eyes\app\Http\Controllers\ProductController.php:508:        );
+  C:\xampp\htdocs\VELORA_Eyes\app\Http\Controllers\ProductController.php:509:    }
+  C:\xampp\htdocs\VELORA_Eyes\app\Http\Controllers\ProductController.php:510:}
