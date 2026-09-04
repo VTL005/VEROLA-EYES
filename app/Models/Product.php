@@ -128,13 +128,16 @@ class Product extends Model
      * Nếu có sale_price thì ưu tiên sale_price,
      * ngược lại dùng price.
      */
-    public function getCurrentPriceAttribute()
-    {
-        return $this->sale_price !== null
-            ? $this->sale_price
-            : $this->price;
-    }
-
+   public function getCurrentPriceAttribute()
+{
+    return (
+        $this->sale_price !== null
+        &&
+        (float) $this->sale_price > 0
+    )
+        ? $this->sale_price
+        : $this->price;
+}
     /**
      * Product có ảnh thật hay chưa.
      */

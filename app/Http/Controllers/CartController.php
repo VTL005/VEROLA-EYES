@@ -28,8 +28,11 @@ class CartController extends Controller
             'items.variant.product.primaryImage',
         ]);
 
+
         /*
-         * Tạm tính trước Voucher.
+         * =====================================================
+         * 1. TẠM TÍNH GIỎ HÀNG
+         * =====================================================
          */
         $subtotal = (float) $cart->total_amount;
 
@@ -43,12 +46,14 @@ class CartController extends Controller
 
 
         /*
-         * Nếu Customer đã áp Voucher,
-         * tính lại Voucher dựa trên Cart hiện tại.
+         * =====================================================
+         * 2. KIỂM TRA VOUCHER ĐANG ĐƯỢC ÁP
+         * =====================================================
          */
         $voucherCode = session(
             'cart_voucher_code'
         );
+
 
         if (
             $voucherCode
@@ -61,11 +66,14 @@ class CartController extends Controller
                     $subtotal
                 );
 
+
                 $appliedVoucher =
                     $result['voucher'];
 
+
                 $discountAmount =
                     $result['discount_amount'];
+
 
                 $finalAmount =
                     $result['final_amount'];
@@ -75,20 +83,18 @@ class CartController extends Controller
             ) {
 
                 /*
-                 * Ví dụ:
-                 *
-                 * Customer áp Voucher khi Cart 600k,
-                 * sau đó xóa Product khiến Cart còn 300k.
-                 *
-                 * Voucher yêu cầu tối thiểu 500k
-                 * → Voucher phải tự bị loại.
+                 * Voucher không còn hợp lệ
+                 * với Cart hiện tại
+                 * thì tự động loại khỏi Session.
                  */
                 session()->forget(
                     'cart_voucher_code'
                 );
 
+
                 $errors = $exception
                     ->errors();
+
 
                 $voucherError = collect(
                     $errors
@@ -99,6 +105,39 @@ class CartController extends Controller
         }
 
 
+        /*
+         * =====================================================
+         * 3. DANH SÁCH VOUCHER CÔNG KHAI
+         * =====================================================
+         */
+        $availableVouchers = [];
+
+        $lockedVouchers = [];
+
+
+        if (!$cart->items->isEmpty()) {
+
+            $voucherOptions =
+                $voucherService
+                    ->getPublicVoucherOptions(
+                        $subtotal
+                    );
+
+
+            $availableVouchers =
+                $voucherOptions['available'];
+
+
+            $lockedVouchers =
+                $voucherOptions['locked'];
+        }
+
+
+        /*
+         * =====================================================
+         * 4. HIỂN THỊ CART
+         * =====================================================
+         */
         return view(
             'cart.index',
             compact(
@@ -107,7 +146,9 @@ class CartController extends Controller
                 'discountAmount',
                 'finalAmount',
                 'appliedVoucher',
-                'voucherError'
+                'voucherError',
+                'availableVouchers',
+                'lockedVouchers'
             )
         );
     }
@@ -124,11 +165,13 @@ class CartController extends Controller
             $request->variant_id
         );
 
+
         $cartService->add(
             auth()->user(),
             $variant,
             (int) $request->quantity
         );
+
 
         return redirect()
             ->route('cart.index')
@@ -153,6 +196,7 @@ class CartController extends Controller
             (int) $request->quantity
         );
 
+
         return redirect()
             ->route('cart.index')
             ->with(
@@ -174,6 +218,7 @@ class CartController extends Controller
             $variant
         );
 
+
         return redirect()
             ->route('cart.index')
             ->with(
@@ -193,6 +238,7 @@ class CartController extends Controller
             auth()->user()
         );
 
+
         /*
          * Cart trống thì Voucher
          * cũng phải được xóa.
@@ -200,6 +246,7 @@ class CartController extends Controller
         session()->forget(
             'cart_voucher_code'
         );
+
 
         return redirect()
             ->route('cart.index')
@@ -223,6 +270,7 @@ class CartController extends Controller
                 auth()->user()
             );
 
+
         $cart->load([
             'items.variant.product',
         ]);
@@ -233,6 +281,7 @@ class CartController extends Controller
          * nếu Cart đang trống.
          */
         if ($cart->items->isEmpty()) {
+
             return redirect()
                 ->route('cart.index')
                 ->with(
@@ -247,14 +296,16 @@ class CartController extends Controller
 
 
         /*
-         * VoucherService sẽ kiểm tra:
-         *
-         * - tồn tại
-         * - active
-         * - thời gian
-         * - usage_limit
-         * - minimum_order_amount
-         * - discount_type
+         * Lưu lại Voucher cũ
+         * để biết đây là áp mới
+         * hay đổi Voucher.
+         */
+        $previousVoucherCode =
+            session('cart_voucher_code');
+
+
+        /*
+         * Kiểm tra và áp Voucher.
          */
         $result = $voucherService->apply(
             $request->voucher_code,
@@ -262,23 +313,69 @@ class CartController extends Controller
         );
 
 
+        $newVoucherCode =
+            $result['voucher']->code;
+
+
         /*
          * Chỉ lưu Code vào Session.
-         *
-         * Không lưu discount_amount cố định,
-         * vì Cart có thể thay đổi sau đó.
          */
         session([
             'cart_voucher_code' =>
-                $result['voucher']->code,
+                $newVoucherCode,
         ]);
 
 
+        /*
+         * Nội dung thông báo riêng
+         * dành cho thao tác Voucher.
+         */
+        if (
+            $previousVoucherCode
+            && $previousVoucherCode
+                !== $newVoucherCode
+        ) {
+
+            $message =
+                'Đã đổi voucher sang mã '
+                . $newVoucherCode
+                . '.';
+
+        } elseif (
+            $previousVoucherCode
+            === $newVoucherCode
+        ) {
+
+            $message =
+                'Voucher '
+                . $newVoucherCode
+                . ' đang được áp dụng.';
+
+        } else {
+
+            $message =
+                'Áp dụng voucher '
+                . $newVoucherCode
+                . ' thành công.';
+        }
+
+
+        /*
+         * Không dùng session "success"
+         * để tránh thông báo xuất hiện đầu trang.
+         *
+         * Đồng thời thêm #cart-voucher
+         * để trình duyệt tự quay lại
+         * khu vực Voucher sau khi reload.
+         */
         return redirect()
-            ->route('cart.index')
+            ->to(
+                route('cart.index')
+                . '#cart-voucher'
+            )
             ->with(
-                'success',
-                'Áp dụng mã giảm giá thành công.'
+                'voucher_success',
+                $message
             );
     }
 
@@ -288,15 +385,34 @@ class CartController extends Controller
      */
     public function removeVoucher()
     {
+        $voucherCode =
+            session('cart_voucher_code');
+
+
         session()->forget(
             'cart_voucher_code'
         );
 
+
+        $message = $voucherCode
+            ? 'Đã bỏ voucher '
+                . $voucherCode
+                . '.'
+            : 'Đã bỏ voucher.';
+
+
+        /*
+         * Sau khi bỏ Voucher,
+         * quay lại đúng khu vực Voucher.
+         */
         return redirect()
-            ->route('cart.index')
+            ->to(
+                route('cart.index')
+                . '#cart-voucher'
+            )
             ->with(
-                'success',
-                'Đã bỏ mã giảm giá.'
+                'voucher_success',
+                $message
             );
     }
 }

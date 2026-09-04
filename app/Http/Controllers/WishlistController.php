@@ -81,10 +81,10 @@ class WishlistController extends Controller
         ]);
 
 
-        return back()->with(
-            'success',
-            'Đã thêm sản phẩm vào danh sách yêu thích.'
-        );
+       return back()->with(
+    'wishlist_success',
+    'Đã thêm vào danh sách yêu thích.'
+);
     }
 
 
@@ -116,8 +116,8 @@ class WishlistController extends Controller
 
 
         return back()->with(
-            'success',
-            'Đã xóa sản phẩm khỏi danh sách yêu thích.'
-        );
+    'wishlist_success',
+    'Đã bỏ khỏi danh sách yêu thích.'
+);
     }
 }

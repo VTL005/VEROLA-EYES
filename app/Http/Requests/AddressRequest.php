@@ -27,23 +27,61 @@ class AddressRequest extends FormRequest
                 'regex:/^0[0-9]{9}$/',
             ],
 
+
+            /*
+            |--------------------------------------------------------------------------
+            | Tỉnh / Thành phố
+            |--------------------------------------------------------------------------
+            */
+
             'province' => [
                 'required',
                 'string',
                 'max:100',
             ],
 
+            'province_code' => [
+                'nullable',
+                'string',
+                'max:20',
+            ],
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Quận / Huyện
+            |--------------------------------------------------------------------------
+            |
+            | Chỉ giữ để tương thích với địa chỉ cũ.
+            | Địa chỉ theo cấu trúc mới không bắt buộc trường này.
+            |
+            */
+
             'district' => [
-                'required',
+                'nullable',
                 'string',
                 'max:100',
             ],
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Phường / Xã / Đặc khu
+            |--------------------------------------------------------------------------
+            */
 
             'ward' => [
                 'required',
                 'string',
                 'max:100',
             ],
+
+            'ward_code' => [
+                'nullable',
+                'string',
+                'max:20',
+            ],
+
 
             'detail_address' => [
                 'required',
@@ -86,24 +124,32 @@ class AddressRequest extends FormRequest
 
 
             'province.required' =>
-                'Vui lòng nhập Tỉnh/Thành phố.',
+                'Vui lòng chọn Tỉnh/Thành phố.',
 
             'province.max' =>
                 'Tỉnh/Thành phố không được vượt quá 100 ký tự.',
 
+            'province_code.max' =>
+                'Mã Tỉnh/Thành phố không hợp lệ.',
 
-            'district.required' =>
-                'Vui lòng nhập Quận/Huyện.',
+
+            /*
+             * Không còn district.required
+             * vì Quận/Huyện không bắt buộc với địa chỉ mới.
+             */
 
             'district.max' =>
                 'Quận/Huyện không được vượt quá 100 ký tự.',
 
 
             'ward.required' =>
-                'Vui lòng nhập Phường/Xã.',
+                'Vui lòng chọn Phường/Xã/Đặc khu.',
 
             'ward.max' =>
-                'Phường/Xã không được vượt quá 100 ký tự.',
+                'Phường/Xã/Đặc khu không được vượt quá 100 ký tự.',
+
+            'ward_code.max' =>
+                'Mã Phường/Xã/Đặc khu không hợp lệ.',
 
 
             'detail_address.required' =>

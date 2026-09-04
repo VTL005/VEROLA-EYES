@@ -1263,3 +1263,4 @@ Route::patch(
 
 
     });
+    require __DIR__.'/admin.php';

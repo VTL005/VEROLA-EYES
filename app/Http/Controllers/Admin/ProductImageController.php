@@ -28,10 +28,11 @@ class ProductImageController extends Controller
 
 
         /*
-         * Chỉ tính ảnh thật.
-         *
-         * no-image.png chỉ là Placeholder.
-         */
+        |--------------------------------------------------------------------------
+        | SỐ ẢNH THẬT HIỆN TẠI
+        |--------------------------------------------------------------------------
+        */
+
         $realImageCount =
             $product->images()
                 ->where(
@@ -43,13 +44,42 @@ class ProductImageController extends Controller
 
 
         /*
-         * Tối đa 5 ảnh thật / Product.
-         */
+        |--------------------------------------------------------------------------
+        | TỐI ĐA 5 ẢNH
+        |--------------------------------------------------------------------------
+        */
+
         if (
             $realImageCount
             + count($uploadedImages)
             > 5
         ) {
+            /*
+             * Single-page / AJAX.
+             */
+            if ($request->expectsJson()) {
+
+                return response()->json(
+                    [
+                        'success' => false,
+
+                        'message' =>
+                            'Một sản phẩm chỉ được có tối đa 5 hình ảnh.',
+
+                        'errors' => [
+                            'images' => [
+                                'Một sản phẩm chỉ được có tối đa 5 hình ảnh.',
+                            ],
+                        ],
+                    ],
+                    422
+                );
+            }
+
+
+            /*
+             * Fallback cũ.
+             */
             return back()
                 ->withErrors([
                     'images' =>
@@ -59,8 +89,11 @@ class ProductImageController extends Controller
 
 
         /*
-         * Đảm bảo thư mục tồn tại.
-         */
+        |--------------------------------------------------------------------------
+        | ĐẢM BẢO THƯ MỤC ẢNH TỒN TẠI
+        |--------------------------------------------------------------------------
+        */
+
         File::ensureDirectoryExists(
             public_path(
                 'images/products'
@@ -71,8 +104,8 @@ class ProductImageController extends Controller
         /*
          * Danh sách file đã lưu vật lý.
          *
-         * Nếu DB Transaction lỗi,
-         * sẽ xóa các file này.
+         * Nếu DB lỗi thì xóa lại
+         * những file này.
          */
         $storedFiles = [];
 
@@ -88,10 +121,10 @@ class ProductImageController extends Controller
                 ) {
 
                     /*
-                     * Xóa record Placeholder.
+                     * Xóa record placeholder.
                      *
-                     * KHÔNG xóa file no-image.png
-                     * vì đây là ảnh dùng chung.
+                     * Không xóa file no-image.png
+                     * vì file đó được dùng chung.
                      */
                     $product->images()
                         ->where(
@@ -103,7 +136,9 @@ class ProductImageController extends Controller
 
                     $nextSortOrder =
                         (int) $product->images()
-                            ->max('sort_order')
+                            ->max(
+                                'sort_order'
+                            )
                         + 1;
 
 
@@ -132,6 +167,9 @@ class ProductImageController extends Controller
                             );
 
 
+                        /*
+                         * Lưu file vật lý.
+                         */
                         $image->move(
                             public_path(
                                 'images/products'
@@ -145,28 +183,34 @@ class ProductImageController extends Controller
 
 
                         /*
-                         * Nếu chưa có ảnh thật,
-                         * ảnh đầu tiên tự động
-                         * trở thành ảnh chính.
+                         * Nếu Product chưa có ảnh thật,
+                         * ảnh đầu tiên được upload
+                         * tự động làm ảnh chính.
                          */
                         $isPrimary =
                             $realImageCount === 0
-                            && $index === 0;
+                            &&
+                            $index === 0;
 
 
                         ProductImage::create([
+
                             'product_id' =>
                                 $product->id,
+
 
                             'image_path' =>
                                 'images/products/'
                                 . $fileName,
 
+
                             'alt_text' =>
                                 $product->name,
 
+
                             'is_primary' =>
                                 $isPrimary,
+
 
                             'sort_order' =>
                                 $nextSortOrder
@@ -180,7 +224,7 @@ class ProductImageController extends Controller
 
             /*
              * DB rollback không thể tự rollback
-             * file vật lý nên phải xóa thủ công.
+             * file vật lý.
              */
             foreach (
                 $storedFiles
@@ -201,6 +245,152 @@ class ProductImageController extends Controller
             throw $exception;
         }
 
+
+        /*
+        |--------------------------------------------------------------------------
+        | SINGLE-PAGE / AJAX RESPONSE
+        |--------------------------------------------------------------------------
+        */
+
+        if ($request->expectsJson()) {
+
+            /*
+             * Load lại danh sách ảnh thật
+             * sau khi upload.
+             */
+            $images =
+                $product->images()
+                    ->where(
+                        'image_path',
+                        '!=',
+                        'images/no-image.png'
+                    )
+                    ->orderByDesc(
+                        'is_primary'
+                    )
+                    ->orderBy(
+                        'sort_order'
+                    )
+                    ->get();
+
+
+            $newRealImageCount =
+                $images->count();
+
+
+            /*
+             * Kiểm tra Product hiện có
+             * Variant active chưa.
+             */
+            $hasActiveVariant =
+                $product->variants()
+                    ->where(
+                        'is_active',
+                        true
+                    )
+                    ->exists();
+
+
+            /*
+             * Product chỉ sẵn sàng khi:
+             * - có ảnh thật
+             * - có Variant active
+             */
+            $isReadyForSale =
+                $newRealImageCount > 0
+                &&
+                $hasActiveVariant;
+
+
+            return response()->json([
+                'success' => true,
+
+                'message' =>
+                    'Tải hình ảnh sản phẩm thành công.',
+
+
+                'real_image_count' =>
+                    $newRealImageCount,
+
+
+                'has_real_image' =>
+                    $newRealImageCount > 0,
+
+
+                'has_active_variant' =>
+                    $hasActiveVariant,
+
+
+                'is_ready_for_sale' =>
+                    $isReadyForSale,
+
+
+                /*
+                 * Trả danh sách ảnh về JavaScript
+                 * để hiển thị ngay trên trang.
+                 */
+                'images' =>
+                    $images->map(
+                        function ($image) {
+
+                            return [
+
+                                'id' =>
+                                    $image->id,
+
+
+                                'image_path' =>
+                                    $image->image_path,
+
+
+                                'image_url' =>
+                                    asset(
+                                        $image->image_path
+                                    ),
+
+
+                                'alt_text' =>
+                                    $image->alt_text,
+
+
+                                'is_primary' =>
+                                    (bool) $image->is_primary,
+
+
+                                'sort_order' =>
+                                    (int) $image->sort_order,
+                            ];
+                        }
+                    )
+                    ->values(),
+
+
+                'urls' => [
+
+                    'activate' =>
+                        route(
+                            'admin.products.activate',
+                            $product
+                        ),
+
+                    'show' =>
+                        route(
+                            'admin.products.show',
+                            $product
+                        ),
+                ],
+            ]);
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | FALLBACK CŨ
+        |--------------------------------------------------------------------------
+        |
+        | Các trang cũ vẫn hoạt động như trước.
+        |
+        */
 
         return redirect()
             ->route(
@@ -228,7 +418,8 @@ class ProductImageController extends Controller
 
 
         /*
-         * Placeholder không được làm ảnh chính.
+         * Placeholder không được
+         * làm ảnh chính.
          */
         if (
             $image->image_path
@@ -248,7 +439,7 @@ class ProductImageController extends Controller
             ) {
 
                 /*
-                 * Bỏ Primary cũ.
+                 * Bỏ ảnh chính cũ.
                  */
                 $product->images()
                     ->update([
@@ -258,7 +449,7 @@ class ProductImageController extends Controller
 
 
                 /*
-                 * Đặt Primary mới.
+                 * Đặt ảnh mới làm ảnh chính.
                  */
                 $image->update([
                     'is_primary' =>
@@ -289,7 +480,7 @@ class ProductImageController extends Controller
 
 
         /*
-         * Không thao tác Placeholder.
+         * Không thao tác placeholder.
          */
         if (
             $image->image_path
@@ -318,7 +509,8 @@ class ProductImageController extends Controller
          */
         if (
             $product->is_active
-            && $realImageCount <= 1
+            &&
+            $realImageCount <= 1
         ) {
             return back()->with(
                 'error',
@@ -347,7 +539,7 @@ class ProductImageController extends Controller
 
                 /*
                  * Nếu vừa xóa ảnh chính,
-                 * chọn ảnh thật tiếp theo
+                 * chọn ảnh tiếp theo
                  * làm ảnh chính.
                  */
                 if ($wasPrimary) {
@@ -378,8 +570,7 @@ class ProductImageController extends Controller
 
 
         /*
-         * Xóa file vật lý sau khi
-         * DB Transaction thành công.
+         * Xóa file vật lý.
          */
         $fullPath =
             public_path(

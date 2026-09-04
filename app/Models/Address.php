@@ -12,15 +12,42 @@ class Address extends Model
 
     protected $fillable = [
         'user_id',
+
         'recipient_name',
         'phone',
+
+        /*
+        |--------------------------------------------------------------------------
+        | Địa chỉ hành chính
+        |--------------------------------------------------------------------------
+        |
+        | province / ward:
+        |     lưu tên để hiển thị trực tiếp.
+        |
+        | province_code / ward_code:
+        |     lưu mã hành chính để dữ liệu được chuẩn hóa.
+        |
+        | district:
+        |     giữ lại để tương thích với các địa chỉ cũ.
+        |     Địa chỉ mới có thể để NULL.
+        |
+        */
+
         'province',
+        'province_code',
+
         'district',
+
         'ward',
+        'ward_code',
+
         'detail_address',
+
         'label',
+
         'is_default',
     ];
+
 
     protected function casts(): array
     {
@@ -28,6 +55,7 @@ class Address extends Model
             'is_default' => 'boolean',
         ];
     }
+
 
     /**
      * Address thuộc một User.

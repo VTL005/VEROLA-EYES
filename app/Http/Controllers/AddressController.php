@@ -46,74 +46,155 @@ class AddressController extends Controller
     public function store(
         AddressRequest $request
     ) {
-        DB::transaction(function () use ($request) {
+        DB::transaction(
+            function () use ($request) {
 
-            $userId = auth()->id();
-
-            /*
-             * Nếu Customer chưa có địa chỉ nào,
-             * địa chỉ đầu tiên tự động là mặc định.
-             */
-            $hasAddress = Address::query()
-                ->where(
-                    'user_id',
-                    $userId
-                )
-                ->exists();
+                $userId = auth()->id();
 
 
-            $isDefault =
-                !$hasAddress
-                || $request->boolean(
-                    'is_default'
-                );
+                /*
+                |--------------------------------------------------------------------------
+                | ĐỊA CHỈ MẶC ĐỊNH
+                |--------------------------------------------------------------------------
+                |
+                | Nếu Customer chưa có địa chỉ nào,
+                | địa chỉ đầu tiên tự động là mặc định.
+                |
+                */
 
-
-            /*
-             * Nếu địa chỉ mới được đặt mặc định,
-             * bỏ mặc định ở các địa chỉ cũ.
-             */
-            if ($isDefault) {
-                Address::query()
+                $hasAddress = Address::query()
                     ->where(
                         'user_id',
                         $userId
                     )
-                    ->update([
-                        'is_default' => false,
-                    ]);
+                    ->exists();
+
+
+                $isDefault =
+                    !$hasAddress
+                    || $request->boolean(
+                        'is_default'
+                    );
+
+
+                /*
+                 * Nếu địa chỉ mới được đặt làm mặc định,
+                 * bỏ trạng thái mặc định ở các địa chỉ cũ.
+                 */
+                if ($isDefault) {
+
+                    Address::query()
+                        ->where(
+                            'user_id',
+                            $userId
+                        )
+                        ->update([
+                            'is_default' => false,
+                        ]);
+                }
+
+
+                /*
+                |--------------------------------------------------------------------------
+                | LƯU ĐỊA CHỈ
+                |--------------------------------------------------------------------------
+                |
+                | Địa chỉ mới sử dụng:
+                |
+                | province_code + province
+                | ward_code + ward
+                |
+                | district chỉ giữ để tương thích
+                | với dữ liệu địa chỉ cũ.
+                |
+                */
+
+                Address::create([
+                    'user_id' =>
+                        $userId,
+
+                    'recipient_name' =>
+                        trim(
+                            $request->recipient_name
+                        ),
+
+                    'phone' =>
+                        trim(
+                            $request->phone
+                        ),
+
+
+                    /*
+                     * Tỉnh / Thành phố.
+                     */
+                    'province' =>
+                        trim(
+                            $request->province
+                        ),
+
+                    'province_code' =>
+                        $request->filled(
+                            'province_code'
+                        )
+                            ? trim(
+                                $request->province_code
+                            )
+                            : null,
+
+
+                    /*
+                     * Quận / Huyện.
+                     *
+                     * Chỉ sử dụng cho địa chỉ cũ.
+                     * Địa chỉ mới có thể để NULL.
+                     */
+                    'district' =>
+                        $request->filled(
+                            'district'
+                        )
+                            ? trim(
+                                $request->district
+                            )
+                            : null,
+
+
+                    /*
+                     * Phường / Xã / Đặc khu.
+                     */
+                    'ward' =>
+                        trim(
+                            $request->ward
+                        ),
+
+                    'ward_code' =>
+                        $request->filled(
+                            'ward_code'
+                        )
+                            ? trim(
+                                $request->ward_code
+                            )
+                            : null,
+
+
+                    'detail_address' =>
+                        trim(
+                            $request->detail_address
+                        ),
+
+                    'label' =>
+                        $request->filled(
+                            'label'
+                        )
+                            ? trim(
+                                $request->label
+                            )
+                            : null,
+
+                    'is_default' =>
+                        $isDefault,
+                ]);
             }
-
-
-            Address::create([
-                'user_id' =>
-                    $userId,
-
-                'recipient_name' =>
-                    $request->recipient_name,
-
-                'phone' =>
-                    $request->phone,
-
-                'province' =>
-                    $request->province,
-
-                'district' =>
-                    $request->district,
-
-                'ward' =>
-                    $request->ward,
-
-                'detail_address' =>
-                    $request->detail_address,
-
-                'label' =>
-                    $request->label,
-
-                'is_default' =>
-                    $isDefault,
-            ]);
-        });
+        );
 
 
         return redirect()
@@ -168,7 +249,8 @@ class AddressController extends Controller
 
                 /*
                  * Nếu chọn địa chỉ này làm mặc định,
-                 * bỏ mặc định ở các địa chỉ còn lại.
+                 * bỏ trạng thái mặc định
+                 * ở các địa chỉ còn lại.
                  */
                 if ($isDefault) {
 
@@ -183,17 +265,19 @@ class AddressController extends Controller
                             $address->id
                         )
                         ->update([
-                            'is_default' =>
-                                false,
+                            'is_default' => false,
                         ]);
                 }
 
 
                 /*
-                 * Nếu địa chỉ hiện đang mặc định
-                 * mà user bỏ checkbox,
-                 * ta vẫn giữ nó là mặc định
-                 * để luôn có 1 địa chỉ mặc định.
+                 * Nếu địa chỉ hiện tại đang là mặc định
+                 * mà Customer bỏ checkbox,
+                 * vẫn giữ nó là mặc định.
+                 *
+                 * Nhờ vậy Customer luôn có
+                 * một địa chỉ mặc định
+                 * nếu còn ít nhất một địa chỉ.
                  */
                 if (
                     $address->is_default
@@ -203,27 +287,89 @@ class AddressController extends Controller
                 }
 
 
+                /*
+                |--------------------------------------------------------------------------
+                | CẬP NHẬT ĐỊA CHỈ
+                |--------------------------------------------------------------------------
+                */
+
                 $address->update([
                     'recipient_name' =>
-                        $request->recipient_name,
+                        trim(
+                            $request->recipient_name
+                        ),
 
                     'phone' =>
-                        $request->phone,
+                        trim(
+                            $request->phone
+                        ),
 
+
+                    /*
+                     * Tỉnh / Thành phố.
+                     */
                     'province' =>
-                        $request->province,
+                        trim(
+                            $request->province
+                        ),
 
+                    'province_code' =>
+                        $request->filled(
+                            'province_code'
+                        )
+                            ? trim(
+                                $request->province_code
+                            )
+                            : null,
+
+
+                    /*
+                     * Quận / Huyện.
+                     *
+                     * Không còn bắt buộc
+                     * đối với địa chỉ mới.
+                     */
                     'district' =>
-                        $request->district,
+                        $request->filled(
+                            'district'
+                        )
+                            ? trim(
+                                $request->district
+                            )
+                            : null,
 
+
+                    /*
+                     * Phường / Xã / Đặc khu.
+                     */
                     'ward' =>
-                        $request->ward,
+                        trim(
+                            $request->ward
+                        ),
+
+                    'ward_code' =>
+                        $request->filled(
+                            'ward_code'
+                        )
+                            ? trim(
+                                $request->ward_code
+                            )
+                            : null,
+
 
                     'detail_address' =>
-                        $request->detail_address,
+                        trim(
+                            $request->detail_address
+                        ),
 
                     'label' =>
-                        $request->label,
+                        $request->filled(
+                            'label'
+                        )
+                            ? trim(
+                                $request->label
+                            )
+                            : null,
 
                     'is_default' =>
                         $isDefault,
@@ -258,13 +404,14 @@ class AddressController extends Controller
                 $wasDefault =
                     $address->is_default;
 
+
                 $address->delete();
 
 
                 /*
                  * Nếu vừa xóa địa chỉ mặc định,
                  * lấy một địa chỉ còn lại
-                 * làm mặc định.
+                 * làm địa chỉ mặc định mới.
                  */
                 if ($wasDefault) {
 
@@ -281,8 +428,7 @@ class AddressController extends Controller
                     if ($nextAddress) {
 
                         $nextAddress->update([
-                            'is_default' =>
-                                true,
+                            'is_default' => true,
                         ]);
                     }
                 }

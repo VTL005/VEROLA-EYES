@@ -16,11 +16,23 @@ Route::prefix('admin')
     ])
     ->group(function () {
 
+        /*
+        |--------------------------------------------------------------------------
+        | DASHBOARD
+        |--------------------------------------------------------------------------
+        */
+
         Route::get(
             '/dashboard',
             [DashboardController::class, 'index']
         )->name('dashboard');
 
+
+        /*
+        |--------------------------------------------------------------------------
+        | CATEGORIES
+        |--------------------------------------------------------------------------
+        */
 
         Route::resource(
             'categories',
@@ -30,10 +42,32 @@ Route::prefix('admin')
         ]);
 
 
+        /*
+        |--------------------------------------------------------------------------
+        | PRODUCTS
+        |--------------------------------------------------------------------------
+        */
+
         Route::resource(
             'products',
             ProductController::class
         );
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | PRODUCT ACTIVATION
+        |--------------------------------------------------------------------------
+        |
+        | Sản phẩm sau khi được tạo vẫn ở trạng thái chưa kinh doanh.
+        | Chỉ khi đủ điều kiện thì Admin mới kích hoạt để đưa ra website.
+        |
+        */
+
+        Route::patch(
+            'products/{product}/activate',
+            [ProductController::class, 'activate']
+        )->name('products.activate');
 
 
         /*

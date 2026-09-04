@@ -3,119 +3,120 @@
 
 <head>
 
-    <meta charset="UTF-8">
+  <meta charset="UTF-8">
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <meta
-        name="description"
-        content="@yield(
+  <meta name="description" content="@yield(
             'meta_description',
             'VELORA Eyes - Kính mắt thời trang và chăm sóc thị lực.'
-        )"
-    >
+        )">
 
-    <title>
-        @yield('title', 'VELORA Eyes')
-    </title>
+  <title>
+    @yield('title', 'VELORA Eyes')
+  </title>
 
-    <link
-        rel="stylesheet"
-        href="{{ asset('css/style.css') }}"
-    >
+  <link rel="stylesheet" href="{{ asset('css/style.css') }}">
 
-    @stack('styles')
+  @stack('styles')
 
 </head>
 
 
 <body>
 
-    @include('components.header')
+  @include('components.header')
+
+  {{-- =========================================================
+    WISHLIST TOAST
+========================================================= --}}
+
+  @if(session('wishlist_success'))
+
+  <div class="wishlist-toast" role="status" aria-live="polite">
+
+    <span class="wishlist-toast-icon">
+      ✓
+    </span>
 
 
-    <main>
+    <span class="wishlist-toast-message">
+      {{ session('wishlist_success') }}
+    </span>
 
-        @if(session('success'))
+  </div>
 
-            <div
-                class="velora-container"
-                style="padding-top:20px;"
-            >
+  @endif
+  <main>
 
-                <div class="alert alert-success">
+    @if(session('success'))
 
-                    {{ session('success') }}
+    <div class="velora-container" style="padding-top:20px;">
 
-                </div>
+      <div class="alert alert-success">
 
-            </div>
+        {{ session('success') }}
 
-        @endif
+      </div>
 
+    </div>
 
-        @if(session('error'))
-
-            <div
-                class="velora-container"
-                style="padding-top:20px;"
-            >
-
-                <div class="alert alert-danger">
-
-                    {{ session('error') }}
-
-                </div>
-
-            </div>
-
-        @endif
+    @endif
 
 
-        @if($errors->any())
+    @if(session('error'))
 
-            <div
-                class="velora-container"
-                style="padding-top:20px;"
-            >
+    <div class="velora-container" style="padding-top:20px;">
 
-                <div class="alert alert-danger">
+      <div class="alert alert-danger">
 
-                    <strong>
-                        Vui lòng kiểm tra lại thông tin:
-                    </strong>
+        {{ session('error') }}
 
-                    <ul>
+      </div>
 
-                        @foreach($errors->all() as $error)
+    </div>
 
-                            <li>
-                                {{ $error }}
-                            </li>
-
-                        @endforeach
-
-                    </ul>
-
-                </div>
-
-            </div>
-
-        @endif
+    @endif
 
 
-        @yield('content')
+    @if($errors->any())
 
-    </main>
+    <div class="velora-container" style="padding-top:20px;">
+
+      <div class="alert alert-danger">
+
+        <strong>
+          Vui lòng kiểm tra lại thông tin:
+        </strong>
+
+        <ul>
+
+          @foreach($errors->all() as $error)
+
+          <li>
+            {{ $error }}
+          </li>
+
+          @endforeach
+
+        </ul>
+
+      </div>
+
+    </div>
+
+    @endif
 
 
-    @include('components.footer')
+    @yield('content')
+
+  </main>
 
 
-    @stack('scripts')
+  @include('components.footer')
+
+
+  @stack('scripts')
 
 </body>
 

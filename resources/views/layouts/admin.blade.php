@@ -3,31 +3,23 @@
 
 <head>
 
-    <meta charset="UTF-8">
+  <meta charset="UTF-8">
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>
-        @yield(
-            'title',
-            'Admin - VELORA Eyes'
-        )
-    </title>
+  <title>
+    @yield(
+    'title',
+    'Admin - VELORA Eyes'
+    )
+  </title>
 
 
-    <link
-        rel="stylesheet"
-        href="{{ asset(
+  <link rel="stylesheet" href="{{ asset(
             'css/style.css'
-        ) }}"
-    >
-    <link
-    rel="stylesheet"
-    href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
-    >
+        ) }}">
+  @stack('styles')
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
 </head>
 
@@ -35,42 +27,36 @@
 <body class="admin-body">
 
 
-<div
-    class="admin-sidebar-overlay"
-    id="adminSidebarOverlay"
-></div>
+  <div class="admin-sidebar-overlay" id="adminSidebarOverlay"></div>
 
 
 
-{{-- =========================================================
+  {{-- =========================================================
     SIDEBAR
 ========================================================= --}}
 
-<aside
-    class="admin-sidebar"
-    id="adminSidebar"
->
+  <aside class="admin-sidebar" id="adminSidebar">
 
     {{-- BRAND --}}
 
     <div class="admin-sidebar-brand">
 
-        <a href="{{ route('admin.dashboard') }}">
+      <a href="{{ route('admin.dashboard') }}">
 
-            <strong>
-                VELORA
-            </strong>
+        <strong>
+          VELORA
+        </strong>
 
-            <span>
-                EYES
-            </span>
+        <span>
+          EYES
+        </span>
 
-        </a>
+      </a>
 
 
-        <small>
-            ADMIN PANEL
-        </small>
+      <small>
+        ADMIN PANEL
+      </small>
 
     </div>
 
@@ -80,9 +66,9 @@
 
     <div class="admin-user-card">
 
-        <div class="admin-user-avatar">
+      <div class="admin-user-avatar">
 
-            {{ strtoupper(
+        {{ strtoupper(
                 mb_substr(
                     auth()->user()->name,
                     0,
@@ -90,20 +76,20 @@
                 )
             ) }}
 
-        </div>
+      </div>
 
 
-        <div>
+      <div>
 
-            <strong>
-                {{ auth()->user()->name }}
-            </strong>
+        <strong>
+          {{ auth()->user()->name }}
+        </strong>
 
-            <span>
-                Administrator
-            </span>
+        <span>
+          Administrator
+        </span>
 
-        </div>
+      </div>
 
     </div>
 
@@ -114,319 +100,277 @@
     <nav class="admin-nav">
 
 
-        <span class="admin-nav-label">
-            TỔNG QUAN
-        </span>
+      <span class="admin-nav-label">
+        TỔNG QUAN
+      </span>
 
 
-        <a
-            href="{{ route(
+      <a href="{{ route(
                 'admin.dashboard'
-            ) }}"
-            class="{{
+            ) }}" class="{{
                 request()->routeIs(
                     'admin.dashboard'
                 )
                     ? 'active'
                     : ''
-            }}"
-        >
-            <span class="admin-nav-icon">
-            <i class="bi bi-grid-1x2-fill"></i>
-            </span>
-
-            Dashboard
-        </a>
-
-
-
-        <span class="admin-nav-label">
-            NGƯỜI DÙNG
+            }}">
+        <span class="admin-nav-icon">
+          <i class="bi bi-grid-1x2-fill"></i>
         </span>
 
+        Dashboard
+      </a>
 
-        <a
-            href="{{ route(
+
+
+      <span class="admin-nav-label">
+        NGƯỜI DÙNG
+      </span>
+
+
+      <a href="{{ route(
                 'admin.customers.index'
-            ) }}"
-            class="{{
+            ) }}" class="{{
                 request()->routeIs(
                     'admin.customers.*'
                 )
                     ? 'active'
                     : ''
-            }}"
-        >
-            <span class="admin-nav-icon">
-                <i class="bi bi-people"></i>
-            </span>
+            }}">
+        <span class="admin-nav-icon">
+          <i class="bi bi-people"></i>
+        </span>
 
-            Khách hàng
-        </a>
+        Khách hàng
+      </a>
 
 
-        <a
-            href="{{ route(
+      <a href="{{ route(
                 'admin.staff.index'
-            ) }}"
-            class="{{
+            ) }}" class="{{
                 request()->routeIs(
                     'admin.staff.*'
                 )
                     ? 'active'
                     : ''
-            }}"
-        >
-            <span class="admin-nav-icon">
-                <i class="bi bi-person-badge"></i>
-            </span>
-
-            Nhân viên
-        </a>
-
-
-
-        <span class="admin-nav-label">
-            SẢN PHẨM
+            }}">
+        <span class="admin-nav-icon">
+          <i class="bi bi-person-badge"></i>
         </span>
 
+        Nhân viên
+      </a>
 
-        <a
-            href="{{ route(
+
+
+      <span class="admin-nav-label">
+        SẢN PHẨM
+      </span>
+
+
+      <a href="{{ route(
                 'admin.categories.index'
-            ) }}"
-            class="{{
+            ) }}" class="{{
                 request()->routeIs(
                     'admin.categories.*'
                 )
                     ? 'active'
                     : ''
-            }}"
-        >
-            <span class="admin-nav-icon">
-                <i class="bi bi-tags"></i>
-            </span>
+            }}">
+        <span class="admin-nav-icon">
+          <i class="bi bi-tags"></i>
+        </span>
 
-            Danh mục
-        </a>
+        Danh mục
+      </a>
 
 
-        <a
-            href="{{ route(
+      <a href="{{ route(
                 'admin.products.index'
-            ) }}"
-            class="{{
+            ) }}" class="{{
                 request()->routeIs(
                     'admin.products.*'
                 )
                     ? 'active'
                     : ''
-            }}"
-        >
-            <span class="admin-nav-icon">
-                <i class="bi bi-eyeglasses"></i>
-            </span>
+            }}">
+        <span class="admin-nav-icon">
+          <i class="bi bi-eyeglasses"></i>
+        </span>
 
-            Sản phẩm
-        </a>
+        Sản phẩm
+      </a>
 
 
-        <a
-            href="{{ route(
+      <a href="{{ route(
                 'admin.inventory.index'
-            ) }}"
-            class="{{
+            ) }}" class="{{
                 request()->routeIs(
                     'admin.inventory.*'
                 )
                     ? 'active'
                     : ''
-            }}"
-        >
-            <span class="admin-nav-icon">
-                <i class="bi bi-box-seam"></i>
-            </span>
+            }}">
+        <span class="admin-nav-icon">
+          <i class="bi bi-box-seam"></i>
+        </span>
 
-            Tồn kho
-        </a>
+        Tồn kho
+      </a>
 
 
-        <a
-            href="{{ route(
+      <a href="{{ route(
                 'admin.vouchers.index'
-            ) }}"
-            class="{{
+            ) }}" class="{{
                 request()->routeIs(
                     'admin.vouchers.*'
                 )
                     ? 'active'
                     : ''
-            }}"
-        >
-            <span class="admin-nav-icon">
-                <i class="bi bi-ticket-perforated"></i>
-            </span>
-
-            Voucher
-        </a>
-
-
-
-        <span class="admin-nav-label">
-            KINH DOANH
+            }}">
+        <span class="admin-nav-icon">
+          <i class="bi bi-ticket-perforated"></i>
         </span>
 
+        Voucher
+      </a>
 
-        <a
-            href="{{ route(
+
+
+      <span class="admin-nav-label">
+        KINH DOANH
+      </span>
+
+
+      <a href="{{ route(
                 'admin.orders.index'
-            ) }}"
-            class="{{
+            ) }}" class="{{
                 request()->routeIs(
                     'admin.orders.*'
                 )
                     ? 'active'
                     : ''
-            }}"
-        >
-            <span class="admin-nav-icon">
-                <i class="bi bi-receipt"></i>
-            </span>
+            }}">
+        <span class="admin-nav-icon">
+          <i class="bi bi-receipt"></i>
+        </span>
 
-            Đơn hàng
-        </a>
+        Đơn hàng
+      </a>
 
 
-        <a
-            href="{{ route(
+      <a href="{{ route(
                 'admin.payments.index'
-            ) }}"
-            class="{{
+            ) }}" class="{{
                 request()->routeIs(
                     'admin.payments.*'
                 )
                     ? 'active'
                     : ''
-            }}"
-        >
-            <span class="admin-nav-icon">
-                <i class="bi bi-credit-card"></i>
-            </span>
-
-            Thanh toán
-        </a>
-
-
-
-        <span class="admin-nav-label">
-            CHĂM SÓC MẮT
+            }}">
+        <span class="admin-nav-icon">
+          <i class="bi bi-credit-card"></i>
         </span>
 
+        Thanh toán
+      </a>
 
-        <a
-            href="{{ route(
+
+
+      <span class="admin-nav-label">
+        CHĂM SÓC MẮT
+      </span>
+
+
+      <a href="{{ route(
                 'admin.appointments.index'
-            ) }}"
-            class="{{
+            ) }}" class="{{
                 request()->routeIs(
                     'admin.appointments.*'
                 )
                     ? 'active'
                     : ''
-            }}"
-        >
-            <span class="admin-nav-icon">
-                <i class="bi bi-calendar2-check"></i>
-            </span>
+            }}">
+        <span class="admin-nav-icon">
+          <i class="bi bi-calendar2-check"></i>
+        </span>
 
-            Lịch đo mắt
-        </a>
+        Lịch đo mắt
+      </a>
 
 
-        <a
-            href="{{ route(
+      <a href="{{ route(
                 'admin.eye-prescriptions.index'
-            ) }}"
-            class="{{
+            ) }}" class="{{
                 request()->routeIs(
                     'admin.eye-prescriptions.*'
                 )
                     ? 'active'
                     : ''
-            }}"
-        >
-            <span class="admin-nav-icon">
-                <i class="bi bi-eye"></i>
-            </span>
+            }}">
+        <span class="admin-nav-icon">
+          <i class="bi bi-eye"></i>
+        </span>
 
-            Hồ sơ thị lực
-        </a>
+        Hồ sơ thị lực
+      </a>
 
 
-        <a
-            href="{{ route(
+      <a href="{{ route(
                 'admin.warranties.index'
-            ) }}"
-            class="{{
+            ) }}" class="{{
                 request()->routeIs(
                     'admin.warranties.*'
                 )
                     ? 'active'
                     : ''
-            }}"
-        >
-            <span class="admin-nav-icon">
-                <i class="bi bi-shield-check"></i>
-            </span>
-
-            Bảo hành
-        </a>
-
-
-
-        <span class="admin-nav-label">
-            HỆ THỐNG
+            }}">
+        <span class="admin-nav-icon">
+          <i class="bi bi-shield-check"></i>
         </span>
 
+        Bảo hành
+      </a>
 
-        <a
-            href="{{ route(
+
+
+      <span class="admin-nav-label">
+        HỆ THỐNG
+      </span>
+
+
+      <a href="{{ route(
                 'admin.reviews.index'
-            ) }}"
-            class="{{
+            ) }}" class="{{
                 request()->routeIs(
                     'admin.reviews.*'
                 )
                     ? 'active'
                     : ''
-            }}"
-        >
-            <span class="admin-nav-icon">
-                 <i class="bi bi-star"></i>
-            </span>
+            }}">
+        <span class="admin-nav-icon">
+          <i class="bi bi-star"></i>
+        </span>
 
-            Đánh giá
-        </a>
+        Đánh giá
+      </a>
 
 
-        <a
-            href="{{ route(
+      <a href="{{ route(
                 'admin.reports.index'
-            ) }}"
-            class="{{
+            ) }}" class="{{
                 request()->routeIs(
                     'admin.reports.*'
                 )
                     ? 'active'
                     : ''
-            }}"
-        >
-            <span class="admin-nav-icon">
-                <i class="bi bi-bar-chart-line"></i>
-            </span>
+            }}">
+        <span class="admin-nav-icon">
+          <i class="bi bi-bar-chart-line"></i>
+        </span>
 
-            Báo cáo
-        </a>
+        Báo cáo
+      </a>
 
     </nav>
 
@@ -436,85 +380,74 @@
 
     <div class="admin-sidebar-footer">
 
-        <a
-            href="{{ route('home') }}"
-            target="_blank"
-        >
-            ← Xem website
-        </a>
+      <a href="{{ route('home') }}" target="_blank">
+        ← Xem website
+      </a>
 
 
-        <form
-            action="{{ route('logout') }}"
-            method="POST"
-        >
+      <form action="{{ route('logout') }}" method="POST">
 
-            @csrf
+        @csrf
 
 
-            <button type="submit">
-                Đăng xuất
-            </button>
+        <button type="submit">
+          Đăng xuất
+        </button>
 
-        </form>
+      </form>
 
     </div>
 
-</aside>
+  </aside>
 
 
 
-{{-- =========================================================
+  {{-- =========================================================
     MAIN
 ========================================================= --}}
 
-<div class="admin-main">
+  <div class="admin-main">
 
 
     {{-- TOPBAR --}}
 
     <header class="admin-topbar">
 
-        <div>
+      <div>
 
-            <button
-                type="button"
-                class="admin-mobile-menu"
-                id="adminMobileMenu"
-                aria-label="Mở menu"
-            >
-                ☰
-            </button>
+        <button type="button" class="admin-mobile-menu" id="adminMobileMenu" aria-label="Mở menu">
+          ☰
+        </button>
 
 
-            <div class="admin-topbar-title">
+        <div class="admin-topbar-title">
 
-                <small>
-                    VELORA EYES
-                </small>
+          <small>
+            VELORA EYES
+          </small>
 
-                <strong>
-                    @yield(
-                        'page-title',
-                        'Admin'
-                    )
-                </strong>
-
-            </div>
+          <strong>
+            @yield(
+            'page-title',
+            'Admin'
+            )
+          </strong>
 
         </div>
 
-
-        <div class="admin-topbar-user">
-
-            <span>
-                {{ auth()->user()->name }}
-            </span>
+      </div>
 
 
-            <div>
+      <div class="admin-topbar-user">
 
-                {{ strtoupper(
+        <span>
+          {{ auth()->user()->name }}
+        </span>
+
+
+        <div>
+
+          {{ strtoupper(
                     mb_substr(
                         auth()->user()->name,
                         0,
@@ -522,9 +455,9 @@
                     )
                 ) }}
 
-            </div>
-
         </div>
+
+      </div>
 
     </header>
 
@@ -535,135 +468,133 @@
     <main class="admin-content">
 
 
-        {{-- FLASH SUCCESS --}}
+      {{-- FLASH SUCCESS --}}
 
-        @if(session('success'))
+      @if(session('success'))
 
-            <div class="admin-alert admin-alert-success">
+      <div class="admin-alert admin-alert-success">
 
-                <strong>
-                    Thành công
-                </strong>
+        <strong>
+          Thành công
+        </strong>
 
-                <span>
-                    {{ session('success') }}
-                </span>
+        <span>
+          {{ session('success') }}
+        </span>
 
-            </div>
+      </div>
 
-        @endif
-
-
-
-        {{-- FLASH ERROR --}}
-
-        @if(session('error'))
-
-            <div class="admin-alert admin-alert-danger">
-
-                <strong>
-                    Có lỗi xảy ra
-                </strong>
-
-                <span>
-                    {{ session('error') }}
-                </span>
-
-            </div>
-
-        @endif
+      @endif
 
 
 
-        {{-- VALIDATION --}}
+      {{-- FLASH ERROR --}}
 
-        @if($errors->any())
+      @if(session('error'))
 
-            <div class="admin-alert admin-alert-danger">
+      <div class="admin-alert admin-alert-danger">
 
-                <strong>
-                    Vui lòng kiểm tra lại dữ liệu
-                </strong>
+        <strong>
+          Có lỗi xảy ra
+        </strong>
 
-                <span>
-                    {{ $errors->first() }}
-                </span>
+        <span>
+          {{ session('error') }}
+        </span>
 
-            </div>
+      </div>
 
-        @endif
+      @endif
 
 
 
-        @yield('content')
+      {{-- VALIDATION --}}
+
+      @if($errors->any())
+
+      <div class="admin-alert admin-alert-danger">
+
+        <strong>
+          Vui lòng kiểm tra lại dữ liệu
+        </strong>
+
+        <span>
+          {{ $errors->first() }}
+        </span>
+
+      </div>
+
+      @endif
+
+
+
+      @yield('content')
 
     </main>
 
-</div>
+  </div>
 
 
 
-<script>
+  <script>
+  const adminSidebar =
+    document.getElementById(
+      'adminSidebar'
+    );
 
-    const adminSidebar =
-        document.getElementById(
-            'adminSidebar'
-        );
+  const adminOverlay =
+    document.getElementById(
+      'adminSidebarOverlay'
+    );
 
-    const adminOverlay =
-        document.getElementById(
-            'adminSidebarOverlay'
-        );
-
-    const adminMobileMenu =
-        document.getElementById(
-            'adminMobileMenu'
-        );
-
-
-    function openAdminSidebar() {
-
-        adminSidebar
-            ?.classList
-            .add('open');
-
-        adminOverlay
-            ?.classList
-            .add('show');
-
-    }
+  const adminMobileMenu =
+    document.getElementById(
+      'adminMobileMenu'
+    );
 
 
-    function closeAdminSidebar() {
+  function openAdminSidebar() {
 
-        adminSidebar
-            ?.classList
-            .remove('open');
-
-        adminOverlay
-            ?.classList
-            .remove('show');
-
-    }
-
-
-    adminMobileMenu
-        ?.addEventListener(
-            'click',
-            openAdminSidebar
-        );
-
+    adminSidebar
+      ?.classList
+      .add('open');
 
     adminOverlay
-        ?.addEventListener(
-            'click',
-            closeAdminSidebar
-        );
+      ?.classList
+      .add('show');
 
-</script>
+  }
 
 
-@stack('scripts')
+  function closeAdminSidebar() {
+
+    adminSidebar
+      ?.classList
+      .remove('open');
+
+    adminOverlay
+      ?.classList
+      .remove('show');
+
+  }
+
+
+  adminMobileMenu
+    ?.addEventListener(
+      'click',
+      openAdminSidebar
+    );
+
+
+  adminOverlay
+    ?.addEventListener(
+      'click',
+      closeAdminSidebar
+    );
+  </script>
+
+
+  @stack('scripts')
 
 </body>
 

@@ -1,15 +1,20 @@
 @extends('layouts.admin')
 
 
+@push('styles')
+<link rel="stylesheet" href="{{ asset('css/admin-product-completion.css') }}">
+@endpush
+
+
 @section(
-    'title',
-    $product->name . ' - VELORA Eyes'
+'title',
+$product->name . ' - VELORA Eyes'
 )
 
 
 @section(
-    'page-title',
-    'Chi tiết sản phẩm'
+'page-title',
+'Chi tiết sản phẩm'
 )
 
 
@@ -17,1299 +22,1519 @@
 
 @php
 
-    $materials = [
-        'acetate' => 'Acetate',
-        'tr90' => 'TR90',
-        'metal' => 'Kim loại',
-        'titanium' => 'Titanium',
-    ];
+/*
+|--------------------------------------------------------------------------
+| LABELS
+|--------------------------------------------------------------------------
+*/
+
+$materials = [
+'acetate' => 'Acetate',
+'tr90' => 'TR90',
+'metal' => 'Kim loại',
+'titanium' => 'Titanium',
+];
 
 
-    $shapes = [
-        'round' => 'Tròn',
-        'square' => 'Vuông',
-        'rectangle' => 'Chữ nhật',
-        'oval' => 'Oval',
-        'cat_eye' => 'Mắt mèo',
-        'aviator' => 'Aviator',
-        'browline' => 'Browline',
-    ];
+$shapes = [
+'round' => 'Tròn',
+'square' => 'Vuông',
+'rectangle' => 'Chữ nhật',
+'oval' => 'Oval',
+'cat_eye' => 'Mắt mèo',
+'aviator' => 'Aviator',
+'browline' => 'Browline',
+];
 
 
-    $genders = [
-        'male' => 'Nam',
-        'female' => 'Nữ',
-        'unisex' => 'Unisex',
-        'kids' => 'Trẻ em',
-    ];
+$genders = [
+'male' => 'Nam',
+'female' => 'Nữ',
+'unisex' => 'Unisex',
+'kids' => 'Trẻ em',
+];
 
 
-    $faceShapes = [
-        'round' => 'Mặt tròn',
-        'square' => 'Mặt vuông',
-        'oval' => 'Mặt oval',
-        'heart' => 'Mặt trái tim',
-    ];
+$faceShapes = [
+'round' => 'Mặt tròn',
+'square' => 'Mặt vuông',
+'oval' => 'Mặt oval',
+'heart' => 'Mặt trái tim',
+];
 
 
-    $styles = [
-        'minimal' => 'Tối giản',
-        'elegant' => 'Thanh lịch',
-        'bold' => 'Cá tính',
-        'vintage' => 'Vintage',
-    ];
+$styles = [
+'minimal' => 'Tối giản',
+'elegant' => 'Thanh lịch',
+'bold' => 'Cá tính',
+'vintage' => 'Vintage',
+];
 
 
-    $realImages =
-        $product->images->filter(
-            fn ($image) =>
-                $image->image_path
-                !== 'images/no-image.png'
-        );
+/*
+|--------------------------------------------------------------------------
+| FALLBACK DATA
+|--------------------------------------------------------------------------
+*/
+
+$realImages =
+$realImages
+?? $product->images->filter(
+fn ($image) =>
+$image->image_path
+!== 'images/no-image.png'
+);
 
 
-    $realImageCount =
-        $realImages->count();
+$realImageCount =
+$realImageCount
+?? $realImages->count();
 
 
-    $activeVariantCount =
-        $product->variants
-            ->where(
-                'is_active',
-                true
-            )
-            ->count();
+$hasRealImage =
+$hasRealImage
+?? ($realImageCount > 0);
 
 
-    $totalStock =
-        $inventoryService
-            ->totalStock(
-                $product
-            );
+$activeVariants =
+$activeVariants
+?? $product->variants->where(
+'is_active',
+true
+);
 
 
-    $readyForSale =
-        $product->isReadyForSale();
+$activeVariantCount =
+$activeVariantCount
+?? $activeVariants->count();
+
+
+$hasActiveVariant =
+$hasActiveVariant
+?? ($activeVariantCount > 0);
+
+
+$totalStock =
+$totalStock
+?? $activeVariants->sum(
+'stock_quantity'
+);
+
+
+$isReadyForSale =
+$isReadyForSale
+?? (
+$hasRealImage
+&& $hasActiveVariant
+);
+
+
+$completedSteps =
+$completedSteps
+?? (
+1
++ ($hasRealImage ? 1 : 0)
++ ($hasActiveVariant ? 1 : 0)
++ ($product->is_active ? 1 : 0)
+);
+
+
+$completionPercent =
+$completionPercent
+?? (int) round(
+($completedSteps / 4) * 100
+);
+
+
+/*
+|--------------------------------------------------------------------------
+| PRIMARY IMAGE
+|--------------------------------------------------------------------------
+*/
+
+$primaryImage =
+$realImages->firstWhere(
+'is_primary',
+true
+)
+?? $realImages->first();
+
+
+$editUrl = route(
+'admin.products.edit',
+$product
+);
 
 @endphp
 
 
 
-{{-- =========================================================
-    HEADER
-========================================================= --}}
+<div class="product-completion">
 
-<div class="admin-page-header">
+
+  {{-- =====================================================
+        HEADER
+    ====================================================== --}}
+
+  <div class="product-completion-hero">
 
     <div>
 
-        <span class="admin-page-kicker">
-            PRODUCT DETAIL
-        </span>
+      <span class="product-completion-hero-kicker">
+        PRODUCT DETAIL
+      </span>
 
-        <h1>
-            {{ $product->name }}
-        </h1>
 
-        <p>
-            {{ $product->sku }}
-            ·
-            {{ $product->category?->name
-                ?? 'Chưa có danh mục' }}
-        </p>
+      <h1>
+        Chi tiết sản phẩm
+      </h1>
+
+
+      <p>
+        {{ $product->name }}
+        ·
+        {{ $product->sku }}
+      </p>
+
+    </div>
+
+
+    <div class="product-completion-percent">
+
+      <strong>
+        {{ $completionPercent }}%
+      </strong>
+
+
+      <span>
+        {{ $completedSteps }}/4 bước hoàn thành
+      </span>
+
+    </div>
+
+  </div>
+
+
+
+  {{-- =====================================================
+        PROGRESS
+    ====================================================== --}}
+
+  <div class="product-completion-progress">
+
+
+    {{-- STEP 1 --}}
+
+    <div class="product-completion-progress-item done">
+
+      <span class="product-completion-progress-number">
+        <i class="bi bi-check-lg"></i>
+      </span>
+
+
+      <div class="product-completion-progress-content">
+
+        <strong>
+          Thông tin
+        </strong>
+
+
+        <small>
+          Đã lưu
+        </small>
+
+      </div>
 
     </div>
 
 
-    <div class="admin-product-show-header-actions">
 
-        <a
-            href="{{ route(
-                'admin.products.index'
-            ) }}"
-            class="admin-btn admin-btn-secondary"
-        >
-            <i class="bi bi-arrow-left"></i>
+    {{-- STEP 2 --}}
 
-            Danh sách
-        </a>
+    <div class="
+                product-completion-progress-item
+                {{ $hasRealImage ? 'done' : 'current' }}
+            ">
 
+      <span class="product-completion-progress-number">
 
-        <a
-            href="{{ route(
-                'admin.products.edit',
-                $product
-            ) }}"
-            class="admin-btn admin-btn-primary"
-        >
-            <i class="bi bi-pencil"></i>
+        @if($hasRealImage)
 
-            Chỉnh sửa
-        </a>
-
-    </div>
-
-</div>
-
-
-
-{{-- =========================================================
-    READINESS
-========================================================= --}}
-
-@if($readyForSale)
-
-    <div class="admin-product-notice success">
-
-        <i class="bi bi-check-circle"></i>
-
-        <div>
-
-            <strong>
-                Sản phẩm đã sẵn sàng kinh doanh
-            </strong>
-
-            <span>
-                Đã có ảnh thật và biến thể hoạt động.
-            </span>
-
-        </div>
-
-    </div>
-
-@else
-
-    <div class="admin-product-notice warning">
-
-        <i class="bi bi-exclamation-triangle"></i>
-
-        <div>
-
-            <strong>
-                Sản phẩm chưa đủ điều kiện kinh doanh
-            </strong>
-
-            <span>
-
-                @if($realImageCount === 0)
-
-                    Cần thêm ít nhất 1 ảnh thật.
-
-                @endif
-
-
-                @if(
-                    $realImageCount === 0
-                    && $activeVariantCount === 0
-                )
-                    ·
-                @endif
-
-
-                @if($activeVariantCount === 0)
-
-                    Cần thêm ít nhất 1 biến thể hoạt động.
-
-                @endif
-
-            </span>
-
-        </div>
-
-    </div>
-
-@endif
-
-
-
-{{-- =========================================================
-    SUMMARY
-========================================================= --}}
-
-<div class="admin-product-show-summary">
-
-
-    <div class="admin-product-show-cover">
-
-        @php
-
-            $primaryImage =
-                $realImages
-                    ->firstWhere(
-                        'is_primary',
-                        true
-                    )
-                ?? $realImages->first();
-
-        @endphp
-
-
-        @if($primaryImage)
-
-            <img
-                src="{{ asset(
-                    $primaryImage->image_path
-                ) }}"
-                alt="{{ $product->name }}"
-            >
+        <i class="bi bi-check-lg"></i>
 
         @else
 
-            <div class="admin-product-show-no-image">
-
-                <i class="bi bi-eyeglasses"></i>
-
-                <span>
-                    Chưa có hình ảnh
-                </span>
-
-            </div>
+        2
 
         @endif
 
+      </span>
+
+
+      <div class="product-completion-progress-content">
+
+        <strong>
+          Hình ảnh
+        </strong>
+
+
+        <small>
+
+          {{ $hasRealImage
+                        ? $realImageCount . ' ảnh thật'
+                        : 'Có thể bổ sung sau' }}
+
+        </small>
+
+      </div>
+
     </div>
 
 
 
-    <div class="admin-product-show-main-info">
+    {{-- STEP 3 --}}
 
-        <div class="admin-product-show-title-row">
+    <div class="
+                product-completion-progress-item
+                {{ $hasActiveVariant ? 'done' : 'current' }}
+            ">
 
-            <div>
+      <span class="product-completion-progress-number">
 
-                <span>
-                    {{ $product->category?->name
-                        ?? 'Chưa phân loại' }}
-                </span>
+        @if($hasActiveVariant)
 
-                <h2>
-                    {{ $product->name }}
-                </h2>
+        <i class="bi bi-check-lg"></i>
 
-                <code>
+        @else
+
+        3
+
+        @endif
+
+      </span>
+
+
+      <div class="product-completion-progress-content">
+
+        <strong>
+          Biến thể & kho
+        </strong>
+
+
+        <small>
+
+          @if($hasActiveVariant)
+
+          {{ $activeVariantCount }}
+          biến thể · Kho {{ $totalStock }}
+
+          @else
+
+          Chưa có biến thể hoạt động
+
+          @endif
+
+        </small>
+
+      </div>
+
+    </div>
+
+
+
+    {{-- STEP 4 --}}
+
+    <div class="
+                product-completion-progress-item
+                {{ $product->is_active ? 'done' : 'current' }}
+            ">
+
+      <span class="product-completion-progress-number">
+
+        @if($product->is_active)
+
+        <i class="bi bi-check-lg"></i>
+
+        @else
+
+        4
+
+        @endif
+
+      </span>
+
+
+      <div class="product-completion-progress-content">
+
+        <strong>
+          Kinh doanh
+        </strong>
+
+
+        <small>
+
+          {{ $product->is_active
+                        ? 'Đang hiển thị cho khách'
+                        : 'Chưa kích hoạt' }}
+
+        </small>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+
+  {{-- =====================================================
+        STEP 1 - PRODUCT INFORMATION
+    ====================================================== --}}
+
+  <section class="product-completion-step" id="product-info">
+
+    <div class="product-completion-step-head">
+
+      <div class="product-completion-step-title">
+
+        <span class="product-completion-step-number">
+          01
+        </span>
+
+
+        <div>
+
+          <h2>
+            Thông tin sản phẩm
+          </h2>
+
+
+          <p>
+            Thông tin cơ bản đã được lưu.
+          </p>
+
+        </div>
+
+      </div>
+
+
+      <a href="{{ $editUrl }}#edit-product-information" class="admin-btn admin-btn-secondary">
+
+        <i class="bi bi-pencil"></i>
+
+        Sửa thông tin
+
+      </a>
+
+    </div>
+
+
+
+    <div class="product-completion-summary">
+
+
+      {{-- COVER --}}
+
+      <div class="product-completion-cover">
+
+        @if($primaryImage)
+
+        <img src="{{ asset(
+                            $primaryImage->image_path
+                        ) }}" alt="{{ $product->name }}">
+
+        @else
+
+        <div class="product-completion-no-image">
+
+          <i class="bi bi-eyeglasses"></i>
+
+
+          <span>
+            Chưa có ảnh
+          </span>
+
+        </div>
+
+        @endif
+
+      </div>
+
+
+
+      {{-- MAIN INFORMATION --}}
+
+      <div class="product-completion-main">
+
+        <h3>
+          {{ $product->name }}
+        </h3>
+
+
+        <code>
                     {{ $product->sku }}
                 </code>
 
-            </div>
 
 
-            @if($product->is_active)
+        {{-- PRICE --}}
 
-                <span class="admin-status success">
-                    <i class="bi bi-check-circle"></i>
-                    Đang kinh doanh
-                </span>
+        <div class="product-completion-price">
 
-            @else
+          @if($product->sale_price !== null)
 
-                <span class="admin-status muted">
-                    <i class="bi bi-pause-circle"></i>
-                    Chưa bán
-                </span>
+          <strong>
 
-            @endif
+            {{ number_format(
+                                (float) $product->sale_price,
+                                0,
+                                ',',
+                                '.'
+                            ) }}đ
 
-        </div>
-
+          </strong>
 
 
-        <div class="admin-product-show-price">
+          <del>
 
-            @if($product->sale_price !== null)
+            {{ number_format(
+                                (float) $product->price,
+                                0,
+                                ',',
+                                '.'
+                            ) }}đ
 
-                <strong>
+          </del>
 
-                    {{ number_format(
-                        (float) $product->sale_price,
-                        0,
-                        ',',
-                        '.'
-                    ) }}đ
+          @else
 
-                </strong>
+          <strong>
 
-                <del>
+            {{ number_format(
+                                (float) $product->price,
+                                0,
+                                ',',
+                                '.'
+                            ) }}đ
 
-                    {{ number_format(
-                        (float) $product->price,
-                        0,
-                        ',',
-                        '.'
-                    ) }}đ
+          </strong>
 
-                </del>
-
-            @else
-
-                <strong>
-
-                    {{ number_format(
-                        (float) $product->price,
-                        0,
-                        ',',
-                        '.'
-                    ) }}đ
-
-                </strong>
-
-            @endif
+          @endif
 
         </div>
 
 
 
-        <div class="admin-product-show-stats">
+        {{-- PRODUCT DATA --}}
 
-            <div>
-
-                <i class="bi bi-images"></i>
-
-                <span>
-
-                    <strong>
-                        {{ $realImageCount }}
-                    </strong>
-
-                    <small>
-                        Hình ảnh
-                    </small>
-
-                </span>
-
-            </div>
+        <div class="product-completion-info-grid">
 
 
-            <div>
+          <div>
 
-                <i class="bi bi-boxes"></i>
-
-                <span>
-
-                    <strong>
-                        {{ $product->variants->count() }}
-                    </strong>
-
-                    <small>
-                        Biến thể
-                    </small>
-
-                </span>
-
-            </div>
+            <span>
+              Danh mục
+            </span>
 
 
-            <div>
+            <strong>
 
-                <i class="bi bi-box-seam"></i>
+              {{ $product->category?->name
+                                ?? 'Chưa phân loại' }}
 
-                <span>
+            </strong>
 
-                    <strong>
-                        {{ $totalStock }}
-                    </strong>
+          </div>
 
-                    <small>
-                        Tổng tồn kho
-                    </small>
 
-                </span>
 
-            </div>
+          <div>
+
+            <span>
+              Chất liệu
+            </span>
+
+
+            <strong>
+
+              {{ $materials[$product->material]
+                                ?? 'Chưa cập nhật' }}
+
+            </strong>
+
+          </div>
+
+
+
+          <div>
+
+            <span>
+              Kiểu dáng
+            </span>
+
+
+            <strong>
+
+              {{ $shapes[$product->shape]
+                                ?? 'Chưa cập nhật' }}
+
+            </strong>
+
+          </div>
+
+
+
+          <div>
+
+            <span>
+              Đối tượng
+            </span>
+
+
+            <strong>
+
+              {{ $genders[$product->gender]
+                                ?? 'Chưa cập nhật' }}
+
+            </strong>
+
+          </div>
+
+
+
+          <div>
+
+            <span>
+              Kích thước
+            </span>
+
+
+            <strong>
+              {{ $product->dimensions ?? '—' }}
+            </strong>
+
+          </div>
+
+
+
+          <div>
+
+            <span>
+              Trạng thái
+            </span>
+
+
+            <strong>
+
+              {{ $product->is_active
+                                ? 'Đang kinh doanh'
+                                : 'Chưa kinh doanh' }}
+
+            </strong>
+
+          </div>
 
         </div>
+
+      </div>
 
     </div>
 
-</div>
+  </section>
 
 
 
-{{-- =========================================================
-    PRODUCT INFO
-========================================================= --}}
+  {{-- =====================================================
+        STEP 2 - IMAGES
+    ====================================================== --}}
 
-<div class="admin-product-show-grid">
+  <section class="product-completion-step" id="product-images">
 
-    <section class="admin-panel">
+    <div class="product-completion-step-head">
 
-        <div class="admin-panel-header">
+      <div class="product-completion-step-title">
 
-            <div>
-
-                <h2>
-                    Thông tin sản phẩm
-                </h2>
-
-            </div>
-
-        </div>
-
-
-        <div class="admin-product-show-info-grid">
-
-            <div>
-                <span>Danh mục</span>
-                <strong>
-                    {{ $product->category?->name ?? '—' }}
-                </strong>
-            </div>
-
-            <div>
-                <span>Chất liệu</span>
-                <strong>
-                    {{ $materials[$product->material]
-                        ?? 'Chưa cập nhật' }}
-                </strong>
-            </div>
-
-            <div>
-                <span>Kiểu dáng</span>
-                <strong>
-                    {{ $shapes[$product->shape]
-                        ?? 'Chưa cập nhật' }}
-                </strong>
-            </div>
-
-            <div>
-                <span>Đối tượng</span>
-                <strong>
-                    {{ $genders[$product->gender]
-                        ?? 'Chưa cập nhật' }}
-                </strong>
-            </div>
-
-            <div>
-                <span>Kích thước</span>
-                <strong>
-                    {{ $product->dimensions ?? '—' }}
-                </strong>
-            </div>
-
-            <div>
-                <span>Slug</span>
-                <strong>
-                    {{ $product->slug }}
-                </strong>
-            </div>
-
-        </div>
-
-    </section>
-
-
-
-    <section class="admin-panel">
-
-        <div class="admin-panel-header">
-
-            <div>
-                <h2>Điều kiện kinh doanh</h2>
-            </div>
-
-        </div>
-
-
-        <div class="admin-product-readiness">
-
-            <div class="{{
-                $realImageCount > 0
-                    ? 'complete'
-                    : 'missing'
-            }}">
-
-                <i class="bi {{
-                    $realImageCount > 0
-                        ? 'bi-check-circle'
-                        : 'bi-x-circle'
-                }}"></i>
-
-                <span>
-                    <strong>Hình ảnh</strong>
-                    <small>
-                        {{ $realImageCount }}/5 ảnh thật
-                    </small>
-                </span>
-
-            </div>
-
-
-            <div class="{{
-                $activeVariantCount > 0
-                    ? 'complete'
-                    : 'missing'
-            }}">
-
-                <i class="bi {{
-                    $activeVariantCount > 0
-                        ? 'bi-check-circle'
-                        : 'bi-x-circle'
-                }}"></i>
-
-                <span>
-                    <strong>Biến thể</strong>
-                    <small>
-                        {{ $activeVariantCount }}
-                        biến thể hoạt động
-                    </small>
-                </span>
-
-            </div>
-
-
-            <div class="{{
-                $product->is_active
-                    ? 'complete'
-                    : 'pending'
-            }}">
-
-                <i class="bi {{
-                    $product->is_active
-                        ? 'bi-check-circle'
-                        : 'bi-clock'
-                }}"></i>
-
-                <span>
-                    <strong>Kinh doanh</strong>
-                    <small>
-                        {{ $product->is_active
-                            ? 'Đang hiển thị cho khách'
-                            : 'Chưa kích hoạt' }}
-                    </small>
-                </span>
-
-            </div>
-
-        </div>
-
-    </section>
-
-</div>
-
-
-
-{{-- =========================================================
-    DESCRIPTION
-========================================================= --}}
-
-@if(
-    $product->description
-    || $product->highlights
-)
-
-    <div class="admin-product-content-grid">
-
-        <section class="admin-panel">
-
-            <div class="admin-panel-header">
-                <div>
-                    <h2>Mô tả sản phẩm</h2>
-                </div>
-            </div>
-
-            <div class="admin-product-text-content">
-
-                {{ $product->description
-                    ?: 'Chưa có mô tả.' }}
-
-            </div>
-
-        </section>
-
-
-        <section class="admin-panel">
-
-            <div class="admin-panel-header">
-                <div>
-                    <h2>Thông tin nổi bật</h2>
-                </div>
-            </div>
-
-            <div class="admin-product-text-content">
-
-                {{ $product->highlights
-                    ?: 'Chưa có thông tin.' }}
-
-            </div>
-
-        </section>
-
-    </div>
-
-@endif
-
-
-
-{{-- =========================================================
-    FACE SHAPE / STYLE
-========================================================= --}}
-
-<div class="admin-product-content-grid">
-
-    <section class="admin-panel">
-
-        <div class="admin-panel-header">
-            <div>
-                <h2>Khuôn mặt phù hợp</h2>
-            </div>
-        </div>
-
-
-        <div class="admin-product-tag-list">
-
-            @forelse(
-                $product->recommended_face_shapes ?? []
-                as $faceShape
-            )
-
-                <span>
-
-                    {{ $faceShapes[$faceShape]
-                        ?? $faceShape }}
-
-                </span>
-
-            @empty
-
-                <small>
-                    Chưa cấu hình.
-                </small>
-
-            @endforelse
-
-        </div>
-
-    </section>
-
-
-    <section class="admin-panel">
-
-        <div class="admin-panel-header">
-            <div>
-                <h2>Phong cách</h2>
-            </div>
-        </div>
-
-
-        <div class="admin-product-tag-list">
-
-            @forelse(
-                $product->style_tags ?? []
-                as $style
-            )
-
-                <span>
-
-                    {{ $styles[$style]
-                        ?? $style }}
-
-                </span>
-
-            @empty
-
-                <small>
-                    Chưa cấu hình.
-                </small>
-
-            @endforelse
-
-        </div>
-
-    </section>
-
-</div>
-
-
-
-{{-- =========================================================
-    IMAGE MANAGEMENT
-========================================================= --}}
-
-<section class="admin-panel admin-product-images-panel">
-
-    <div class="admin-panel-header">
+        <span class="product-completion-step-number">
+          02
+        </span>
 
         <div>
 
-            <h2>
-                Hình ảnh sản phẩm
-            </h2>
+          <h2>
+            Hình ảnh sản phẩm
+          </h2>
 
-            <p>
-                {{ $realImageCount }}/5 ảnh
-            </p>
-
-        </div>
-
-    </div>
-
-
-
-    <div class="admin-product-image-manager">
-
-
-        {{-- UPLOAD --}}
-
-        <div class="admin-product-image-upload">
-
-            <div class="admin-product-image-upload-icon">
-
-                <i class="bi bi-cloud-arrow-up"></i>
-
-            </div>
-
-
-            <h3>
-                Tải hình ảnh
-            </h3>
-
-
-            <p>
-                JPG, JPEG, PNG hoặc WEBP.
-                Mỗi ảnh tối đa 2MB.
-            </p>
-
-
-            @if($realImageCount < 5)
-
-                <form
-                    action="{{ route(
-                        'admin.products.images.store',
-                        $product
-                    ) }}"
-                    method="POST"
-                    enctype="multipart/form-data"
-                >
-
-                    @csrf
-
-
-                    <input
-                        type="file"
-                        name="images[]"
-                        accept=".jpg,.jpeg,.png,.webp"
-                        multiple
-                        required
-                    >
-
-
-                    @error('images')
-
-                        <div class="admin-field-error">
-                            {{ $message }}
-                        </div>
-
-                    @enderror
-
-
-                    @error('images.*')
-
-                        <div class="admin-field-error">
-                            {{ $message }}
-                        </div>
-
-                    @enderror
-
-
-                    <button
-                        type="submit"
-                        class="admin-btn admin-btn-primary admin-btn-full"
-                    >
-                        <i class="bi bi-upload"></i>
-
-                        Tải ảnh lên
-                    </button>
-
-                </form>
-
-            @else
-
-                <div class="admin-product-image-limit">
-
-                    <i class="bi bi-info-circle"></i>
-
-                    Đã đạt giới hạn 5 hình ảnh.
-
-                </div>
-
-            @endif
+          <p>
+            Xem các hình ảnh hiện có của sản phẩm.
+          </p>
 
         </div>
 
+      </div>
 
 
-        {{-- GALLERY --}}
+      <div style="display:flex; align-items:center; gap:10px;">
 
-        <div class="admin-product-image-gallery">
+        @if($hasRealImage)
 
-            @forelse(
-                $realImages
-                    ->sortBy('sort_order')
-                as $image
-            )
+        <span class="product-completion-status success">
 
-                <div class="admin-product-image-card">
+          <i class="bi bi-check-circle"></i>
 
+          {{ $realImageCount }}/5 ảnh
 
-                    <div class="admin-product-image-card-photo">
+        </span>
 
-                        <img
-                            src="{{ asset(
-                                $image->image_path
-                            ) }}"
-                            alt="{{ $image->alt_text
-                                ?: $product->name }}"
-                        >
+        @else
 
+        <span class="product-completion-status warning">
 
-                        @if($image->is_primary)
+          <i class="bi bi-clock"></i>
 
-                            <span>
-                                <i class="bi bi-star-fill"></i>
-                                Ảnh chính
-                            </span>
+          Chưa có ảnh
 
-                        @endif
+        </span>
 
-                    </div>
+        @endif
 
 
+        <a href="{{ $editUrl }}#edit-product-images" class="admin-btn admin-btn-secondary">
 
-                    <div class="admin-product-image-card-footer">
+          <i class="bi bi-images"></i>
 
-                        <small>
-                            Ảnh #{{ $loop->iteration }}
-                        </small>
+          Quản lý hình ảnh
 
-
-                        <div>
-
-                            @unless($image->is_primary)
-
-                                <form
-                                    action="{{ route(
-                                        'admin.products.images.set-primary',
-                                        [
-                                            $product,
-                                            $image,
-                                        ]
-                                    ) }}"
-                                    method="POST"
-                                >
-
-                                    @csrf
-                                    @method('PATCH')
-
-
-                                    <button
-                                        type="submit"
-                                        title="Đặt làm ảnh chính"
-                                    >
-                                        <i class="bi bi-star"></i>
-                                    </button>
-
-                                </form>
-
-                            @endunless
-
-
-
-                            @if(
-                                !$product->is_active
-                                || $realImageCount > 1
-                            )
-
-                                <form
-                                    action="{{ route(
-                                        'admin.products.images.destroy',
-                                        [
-                                            $product,
-                                            $image,
-                                        ]
-                                    ) }}"
-                                    method="POST"
-                                    onsubmit="
-                                        return confirm(
-                                            'Bạn có chắc muốn xóa hình ảnh này?'
-                                        );
-                                    "
-                                >
-
-                                    @csrf
-                                    @method('DELETE')
-
-
-                                    <button
-                                        type="submit"
-                                        class="danger"
-                                        title="Xóa ảnh"
-                                    >
-                                        <i class="bi bi-trash"></i>
-                                    </button>
-
-                                </form>
-
-                            @else
-
-                                <span
-                                    class="admin-product-image-locked"
-                                    title="Sản phẩm đang bán phải giữ ít nhất 1 ảnh"
-                                >
-                                    <i class="bi bi-lock"></i>
-                                </span>
-
-                            @endif
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-            @empty
-
-                <div class="admin-product-no-gallery">
-
-                    <i class="bi bi-images"></i>
-
-                    <strong>
-                        Chưa có hình ảnh thật
-                    </strong>
-
-                    <span>
-                        Hãy tải ảnh lên để hoàn thiện sản phẩm.
-                    </span>
-
-                </div>
-
-            @endforelse
-
-        </div>
-
-    </div>
-
-</section>
-
-
-
-{{-- =========================================================
-    VARIANT OVERVIEW
-========================================================= --}}
-
-<section class="admin-panel admin-product-variants-panel">
-
-    <div class="admin-panel-header">
-
-        <div>
-
-            <h2>
-                Biến thể sản phẩm
-            </h2>
-
-            <p>
-                Màu sắc, size, giá và tồn kho
-            </p>
-
-        </div>
-
-
-        <a
-            href="{{ route(
-                'admin.products.variants.create',
-                $product
-            ) }}"
-            class="admin-btn admin-btn-primary"
-        >
-            <i class="bi bi-plus-lg"></i>
-
-            Thêm biến thể
         </a>
+
+      </div>
+
+    </div>
+
+
+    <div class="product-completion-gallery">
+
+      @forelse(
+      $realImages->sortBy('sort_order')
+      as $image
+      )
+
+      <div class="product-completion-image-card">
+
+        <div class="product-completion-image-photo">
+
+          <img src="{{ asset(
+                            $image->image_path
+                        ) }}" alt="{{ $image->alt_text
+                            ?: $product->name }}">
+
+          @if($image->is_primary)
+
+          <span>
+
+            <i class="bi bi-star-fill"></i>
+
+            Ảnh chính
+
+          </span>
+
+          @endif
+
+        </div>
+
+      </div>
+
+      @empty
+
+      <div class="product-completion-empty">
+
+        <i class="bi bi-images"></i>
+
+        <strong>
+          Chưa có hình ảnh
+        </strong>
+
+        <span>
+          Hãy vào trang Sửa sản phẩm để thêm hình ảnh.
+        </span>
+
+      </div>
+
+      @endforelse
+
+    </div>
+
+  </section>
+
+
+
+  {{-- =====================================================
+        STEP 3 - VARIANT & STOCK
+    ====================================================== --}}
+
+  <section class="product-completion-step" id="product-variants">
+
+    <div class="product-completion-step-head">
+
+      <div class="product-completion-step-title">
+
+        <span class="product-completion-step-number">
+          03
+        </span>
+
+        <div>
+
+          <h2>
+            Biến thể & tồn kho
+          </h2>
+
+          <p>
+            Xem màu sắc, size, SKU, chênh lệch giá và tồn kho.
+          </p>
+
+        </div>
+
+      </div>
+
+
+      <div style="display:flex; align-items:center; gap:10px;">
+
+        @if($hasActiveVariant)
+
+        <span class="product-completion-status success">
+
+          <i class="bi bi-check-circle"></i>
+
+          {{ $activeVariantCount }}
+          biến thể · Kho {{ $totalStock }}
+
+        </span>
+
+        @else
+
+        <span class="product-completion-status warning">
+
+          <i class="bi bi-exclamation-circle"></i>
+
+          Chưa có biến thể
+
+        </span>
+
+        @endif
+
+
+        <a href="{{ $editUrl }}#edit-product-variants" class="admin-btn admin-btn-secondary">
+
+          <i class="bi bi-box-seam"></i>
+
+          Quản lý biến thể
+
+        </a>
+
+      </div>
 
     </div>
 
 
     @if($product->variants->isEmpty())
 
-        <div class="admin-empty-state">
+    <div class="product-completion-empty">
 
-            Sản phẩm chưa có biến thể.
+      <i class="bi bi-box-seam"></i>
 
-        </div>
+      <strong>
+        Chưa có biến thể
+      </strong>
+
+      <span>
+        Hãy vào trang Sửa sản phẩm để tạo biến thể đầu tiên.
+      </span>
+
+    </div>
 
     @else
 
-        <div class="admin-table-responsive">
+    <div class="product-completion-table-wrap">
 
-            <table class="admin-table">
+      <table class="admin-table">
 
-                <thead>
+        <thead>
 
-                    <tr>
-                        <th>SKU</th>
-                        <th>Màu</th>
-                        <th>Size</th>
-                        <th>Tồn kho</th>
-                        <th>Tình trạng kho</th>
-                        <th>Điều chỉnh giá</th>
-                        <th>Giá cuối</th>
-                        <th>Trạng thái</th>
-                        <th>Thao tác</th>
-                    </tr>
+          <tr>
 
-                </thead>
+            <th>SKU</th>
+            <th>Màu</th>
+            <th>Size</th>
+            <th>Tồn kho</th>
+            <th>Tình trạng kho</th>
+            <th>Chênh lệch giá</th>
+            <th>Giá cuối</th>
+            <th>Trạng thái</th>
 
+          </tr>
 
-                <tbody>
+        </thead>
 
-                    @foreach(
-                        $product->variants
-                            ->sortBy('sku')
-                        as $variant
-                    )
 
-                        <tr>
+        <tbody>
 
-                            <td>
+          @foreach(
+          $product->variants->sortBy('sku')
+          as $variant
+          )
 
-                                <code class="admin-product-sku">
+          <tr>
 
-                                    {{ $variant->sku }}
+            <td>
 
-                                </code>
+              <code class="admin-product-sku">
+                {{ $variant->sku }}
+              </code>
 
-                            </td>
+            </td>
 
 
-                            <td>
-                                {{ ucfirst(
-                                    $variant->color
-                                ) }}
-                            </td>
+            <td>
+              {{ ucfirst($variant->color) }}
+            </td>
 
 
-                            <td>
+            <td>
 
-                                <strong>
-                                    {{ $variant->size }}
-                                </strong>
+              <strong>
+                {{ $variant->size }}
+              </strong>
 
-                            </td>
+            </td>
 
 
-                            <td>
+            <td>
 
-                                <strong>
-                                    {{ $variant->stock_quantity }}
-                                </strong>
+              <strong>
+                {{ $variant->stock_quantity }}
+              </strong>
 
-                            </td>
+            </td>
 
 
-                            <td>
+            <td>
 
-                                @if(
-                                    $inventoryService
-                                        ->isOutOfStock(
-                                            $variant
-                                        )
-                                )
+              @if(
+              $inventoryService
+              ->isOutOfStock(
+              $variant
+              )
+              )
 
-                                    <span class="admin-status danger">
-                                        Hết hàng
-                                    </span>
+              <span class="admin-status danger">
+                Hết hàng
+              </span>
 
-                                @elseif(
-                                    $inventoryService
-                                        ->isLowStock(
-                                            $variant
-                                        )
-                                )
+              @elseif(
+              $inventoryService
+              ->isLowStock(
+              $variant
+              )
+              )
 
-                                    <span class="admin-status warning">
-                                        Sắp hết
-                                    </span>
+              <span class="admin-status warning">
+                Sắp hết
+              </span>
 
-                                @else
+              @else
 
-                                    <span class="admin-status success">
-                                        Còn hàng
-                                    </span>
+              <span class="admin-status success">
+                Còn hàng
+              </span>
 
-                                @endif
+              @endif
 
-                            </td>
+            </td>
 
 
-                            <td>
+            <td>
 
-                                {{ number_format(
-                                    (float) $variant
-                                        ->price_adjustment,
-                                    0,
-                                    ',',
-                                    '.'
-                                ) }}đ
+              {{ number_format(
+                (float) $variant->price_adjustment,
+                0,
+                ',',
+                '.'
+              ) }}đ
 
-                            </td>
+            </td>
 
 
-                            <td>
+            <td>
 
-                                <strong class="admin-money">
+              <strong class="admin-money">
 
-                                    {{ number_format(
-                                        (float) $variant
-                                            ->final_price,
-                                        0,
-                                        ',',
-                                        '.'
-                                    ) }}đ
+                {{ number_format(
+                  (float) $variant->final_price,
+                  0,
+                  ',',
+                  '.'
+                ) }}đ
 
-                                </strong>
+              </strong>
 
-                            </td>
+            </td>
 
 
-                            <td>
+            <td>
 
-                                @if($variant->is_active)
+              @if($variant->is_active)
 
-                                    <span class="admin-status success">
-                                        Đang bán
-                                    </span>
+              <span class="admin-status success">
+                Hoạt động
+              </span>
 
-                                @else
+              @else
 
-                                    <span class="admin-status muted">
-                                        Ngừng bán
-                                    </span>
+              <span class="admin-status muted">
+                Ngừng hoạt động
+              </span>
 
-                                @endif
+              @endif
 
-                            </td>
+            </td>
 
+          </tr>
 
-                            <td>
+          @endforeach
 
-                                <div class="admin-product-actions">
+        </tbody>
 
-                                    <a
-                                        href="{{ route(
-                                            'admin.products.variants.edit',
-                                            [
-                                                $product,
-                                                $variant,
-                                            ]
-                                        ) }}"
-                                        title="Sửa biến thể"
-                                    >
-                                        <i class="bi bi-pencil"></i>
-                                    </a>
+      </table>
 
-
-                                    <form
-                                        action="{{ route(
-                                            'admin.products.variants.destroy',
-                                            [
-                                                $product,
-                                                $variant,
-                                            ]
-                                        ) }}"
-                                        method="POST"
-                                        onsubmit="
-                                            return confirm(
-                                                'Bạn có chắc muốn xóa biến thể này?'
-                                            );
-                                        "
-                                    >
-
-                                        @csrf
-                                        @method('DELETE')
-
-
-                                        <button
-                                            type="submit"
-                                            title="Xóa biến thể"
-                                        >
-                                            <i class="bi bi-trash"></i>
-                                        </button>
-
-                                    </form>
-
-                                </div>
-
-                            </td>
-
-                        </tr>
-
-                    @endforeach
-
-                </tbody>
-
-            </table>
-
-        </div>
+    </div>
 
     @endif
 
-</section>
+  </section>
 
 
 
-{{-- =========================================================
-    DANGER ZONE
-========================================================= --}}
+  {{-- =====================================================
+        STEP 4 - BUSINESS
+    ====================================================== --}}
 
-<section class="admin-product-danger-zone">
+  <section class="product-completion-step" id="product-publish">
 
-    <div>
+    <div class="product-completion-step-head">
 
-        <i class="bi bi-exclamation-triangle"></i>
+      <div class="product-completion-step-title">
 
-        <span>
-
-            <strong>
-                Xóa sản phẩm
-            </strong>
-
-            <small>
-                Nếu sản phẩm đã có Order hoặc Wishlist,
-                hệ thống sẽ chuyển sang trạng thái không hoạt động
-                thay vì xóa dữ liệu.
-            </small>
-
+        <span class="product-completion-step-number">
+          04
         </span>
+
+        <div>
+
+          <h2>
+            Kinh doanh
+          </h2>
+
+          <p>
+            Xem điều kiện sẵn sàng và trạng thái hiển thị sản phẩm.
+          </p>
+
+        </div>
+
+      </div>
+
+
+      <a href="{{ $editUrl }}#edit-product-business" class="admin-btn admin-btn-secondary">
+
+        <i class="bi bi-shop"></i>
+
+        Quản lý kinh doanh
+
+      </a>
 
     </div>
 
 
-    <form
-        action="{{ route(
-            'admin.products.destroy',
-            $product
-        ) }}"
-        method="POST"
-        onsubmit="
-            return confirm(
-                'Bạn có chắc muốn xóa sản phẩm này?'
-            );
-        "
-    >
+    <div class="product-completion-publish-body">
 
-        @csrf
-        @method('DELETE')
+      <div class="product-completion-checklist">
+
+        <div class="product-completion-check complete">
+
+          <i class="bi bi-check-circle-fill"></i>
+
+          <div>
+
+            <strong>
+              Thông tin sản phẩm
+            </strong>
+
+            <small>
+              Đã lưu thông tin cơ bản.
+            </small>
+
+          </div>
+
+        </div>
 
 
-        <button
-            type="submit"
-            class="admin-btn admin-btn-danger"
-        >
-            <i class="bi bi-trash"></i>
+        <div class="
+                        product-completion-check
+                        {{ $hasRealImage
+                            ? 'complete'
+                            : 'missing' }}
+                    ">
 
-            Xóa sản phẩm
-        </button>
+          <i class="bi {{
+                            $hasRealImage
+                                ? 'bi-check-circle-fill'
+                                : 'bi-x-circle-fill'
+                        }}"></i>
+
+          <div>
+
+            <strong>
+              Hình ảnh sản phẩm
+            </strong>
+
+            <small>
+
+              @if($hasRealImage)
+
+              Có {{ $realImageCount }} ảnh thật.
+
+              @else
+
+              Cần ít nhất 1 ảnh thật.
+
+              @endif
+
+            </small>
+
+          </div>
+
+        </div>
+
+
+        <div class="
+                        product-completion-check
+                        {{ $hasActiveVariant
+                            ? 'complete'
+                            : 'missing' }}
+                    ">
+
+          <i class="bi {{
+                            $hasActiveVariant
+                                ? 'bi-check-circle-fill'
+                                : 'bi-x-circle-fill'
+                        }}"></i>
+
+          <div>
+
+            <strong>
+              Biến thể hoạt động
+            </strong>
+
+            <small>
+
+              @if($hasActiveVariant)
+
+              Có {{ $activeVariantCount }}
+              biến thể hoạt động.
+
+              @else
+
+              Cần ít nhất 1 biến thể hoạt động.
+
+              @endif
+
+            </small>
+
+          </div>
+
+        </div>
+
+
+        <div class="
+                        product-completion-check
+                        {{ $totalStock > 0
+                            ? 'complete'
+                            : 'warning' }}
+                    ">
+
+          <i class="bi {{
+                            $totalStock > 0
+                                ? 'bi-check-circle-fill'
+                                : 'bi-exclamation-circle-fill'
+                        }}"></i>
+
+          <div>
+
+            <strong>
+              Tồn kho
+            </strong>
+
+            <small>
+
+              Tổng tồn kho:
+              {{ $totalStock }}.
+
+              @if($totalStock <= 0) Sản phẩm vẫn có thể kinh doanh nhưng sẽ hiển thị hết hàng. @endif </small>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      @if($product->is_active)
+
+      <div class="
+                        product-completion-publish-card
+                        active
+                    ">
+
+        <h3>
+
+          <i class="bi bi-check-circle"></i>
+
+          Sản phẩm đang kinh doanh
+
+        </h3>
+
+        <p>
+          Sản phẩm đang được phép hiển thị cho khách hàng.
+        </p>
+
+        <a href="{{ route(
+                            'products.show',
+                            $product
+                        ) }}" target="_blank" class="product-completion-publish-btn">
+
+          <i class="bi bi-box-arrow-up-right"></i>
+
+          Xem ngoài website
+
+        </a>
+
+      </div>
+
+      @elseif($isReadyForSale)
+
+      <div class="
+                        product-completion-publish-card
+                        ready
+                    ">
+
+        <h3>
+          Sản phẩm đã sẵn sàng
+        </h3>
+
+        <p>
+          Đã có ảnh thật và biến thể hoạt động.
+          Bạn có thể kích hoạt ở trang Sửa sản phẩm.
+        </p>
+
+        <a href="{{ $editUrl }}#edit-product-business" class="product-completion-publish-btn">
+
+          <i class="bi bi-gear"></i>
+
+          Quản lý kinh doanh
+
+        </a>
+
+      </div>
+
+      @else
+
+      <div class="product-completion-publish-card">
+
+        <h3>
+          Chưa đủ điều kiện kinh doanh
+        </h3>
+
+        <p>
+
+          @if(
+          ! $hasRealImage
+          && ! $hasActiveVariant
+          )
+
+          Sản phẩm còn thiếu hình ảnh thật
+          và biến thể hoạt động.
+
+          @elseif(! $hasRealImage)
+
+          Sản phẩm còn thiếu hình ảnh thật.
+
+          @else
+
+          Sản phẩm còn thiếu biến thể hoạt động.
+
+          @endif
+
+        </p>
+
+        <a href="{{ $editUrl }}#edit-product-business" class="product-completion-publish-btn">
+
+          <i class="bi bi-pencil-square"></i>
+
+          Hoàn thiện sản phẩm
+
+        </a>
+
+      </div>
+
+      @endif
+
+    </div>
+
+  </section>
+
+
+
+  {{-- =====================================================
+        ADDITIONAL PRODUCT INFORMATION
+    ====================================================== --}}
+
+  <div class="product-completion-extra-grid">
+
+
+    {{-- DESCRIPTION --}}
+
+    <section class="admin-panel">
+
+      <div class="admin-panel-header">
+
+        <div>
+
+          <h2>
+            Mô tả sản phẩm
+          </h2>
+
+        </div>
+
+      </div>
+
+
+      <div class="admin-product-text-content">
+
+        {{ $product->description
+                    ?: 'Chưa có mô tả.' }}
+
+      </div>
+
+    </section>
+
+
+
+    {{-- HIGHLIGHTS --}}
+
+    <section class="admin-panel">
+
+      <div class="admin-panel-header">
+
+        <div>
+
+          <h2>
+            Thông tin nổi bật
+          </h2>
+
+        </div>
+
+      </div>
+
+
+      <div class="admin-product-text-content">
+
+        {{ $product->highlights
+                    ?: 'Chưa có thông tin.' }}
+
+      </div>
+
+    </section>
+
+
+
+    {{-- FACE SHAPE --}}
+
+    <section class="admin-panel">
+
+      <div class="admin-panel-header">
+
+        <div>
+
+          <h2>
+            Khuôn mặt phù hợp
+          </h2>
+
+        </div>
+
+      </div>
+
+
+      <div class="admin-product-tag-list">
+
+        @forelse(
+        $product->recommended_face_shapes
+        ?? []
+        as $faceShape
+        )
+
+        <span>
+
+          {{ $faceShapes[$faceShape]
+                            ?? $faceShape }}
+
+        </span>
+
+        @empty
+
+        <small>
+          Chưa cấu hình.
+        </small>
+
+        @endforelse
+
+      </div>
+
+    </section>
+
+
+
+    {{-- STYLE --}}
+
+    <section class="admin-panel">
+
+      <div class="admin-panel-header">
+
+        <div>
+
+          <h2>
+            Phong cách
+          </h2>
+
+        </div>
+
+      </div>
+
+
+      <div class="admin-product-tag-list">
+
+        @forelse(
+        $product->style_tags
+        ?? []
+        as $style
+        )
+
+        <span>
+
+          {{ $styles[$style]
+                            ?? $style }}
+
+        </span>
+
+        @empty
+
+        <small>
+          Chưa cấu hình.
+        </small>
+
+        @endforelse
+
+      </div>
+
+    </section>
+
+  </div>
+
+
+
+  {{-- =====================================================
+        BOTTOM ACTIONS
+    ====================================================== --}}
+
+  <div class="product-completion-foot">
+
+    <a href="{{ route(
+                'admin.products.index'
+            ) }}" class="admin-btn admin-btn-secondary">
+
+      <i class="bi bi-arrow-left"></i>
+
+      Về danh sách
+
+    </a>
+
+
+    <a href="{{ $editUrl }}#edit-product-information" class="admin-btn admin-btn-primary">
+
+      <i class="bi bi-pencil"></i>
+
+      Sửa sản phẩm
+
+    </a>
+
+  </div>
+
+
+
+  {{-- =====================================================
+        DANGER ZONE
+    ====================================================== --}}
+
+  <section class="admin-product-danger-zone">
+
+    <div>
+
+      <i class="bi bi-exclamation-triangle"></i>
+
+
+      <span>
+
+        <strong>
+          Xóa sản phẩm
+        </strong>
+
+
+        <small>
+
+          Sản phẩm đã phát sinh dữ liệu quan trọng
+          có thể được chuyển sang trạng thái
+          không hoạt động thay vì xóa hoàn toàn.
+
+        </small>
+
+      </span>
+
+    </div>
+
+
+    <form action="{{ route(
+                'admin.products.destroy',
+                $product
+            ) }}" method="POST" onsubmit="
+                return confirm(
+                    'Bạn có chắc muốn xóa sản phẩm này?'
+                );
+            ">
+
+      @csrf
+      @method('DELETE')
+
+
+      <button type="submit" class="admin-btn admin-btn-danger">
+
+        <i class="bi bi-trash"></i>
+
+        Xóa sản phẩm
+
+      </button>
 
     </form>
 
-</section>
+  </section>
+
+
+</div>
 
 @endsection

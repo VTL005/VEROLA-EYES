@@ -20,6 +20,7 @@ class Voucher extends Model
         'usage_limit',
         'usage_count',
         'is_active',
+        'is_public',
     ];
 
     protected function casts(): array
@@ -35,6 +36,7 @@ class Voucher extends Model
             'usage_count' => 'integer',
 
             'is_active' => 'boolean',
+            'is_public' => 'boolean',
         ];
     }
 
@@ -55,11 +57,20 @@ class Voucher extends Model
     }
 
     /**
-     * Scope chỉ lấy Voucher đang được bật.
+     * Chỉ lấy Voucher đang được bật.
      */
     public function scopeActive($query)
     {
         return $query->where('is_active', true);
+    }
+
+    /**
+     * Chỉ lấy Voucher được phép hiển thị
+     * công khai cho khách hàng.
+     */
+    public function scopePublic($query)
+    {
+        return $query->where('is_public', true);
     }
 
     /**

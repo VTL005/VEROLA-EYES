@@ -7,6 +7,7 @@ use App\Http\Requests\Product\StoreProductVariantRequest;
 use App\Http\Requests\Product\UpdateProductVariantRequest;
 use App\Models\Product;
 use App\Models\ProductVariant;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class ProductVariantController extends Controller
@@ -19,7 +20,9 @@ class ProductVariantController extends Controller
     ) {
         return view(
             'admin.products.variants.create',
-            compact('product')
+            compact(
+                'product'
+            )
         );
     }
 
@@ -32,16 +35,43 @@ class ProductVariantController extends Controller
         Product $product
     ) {
         /*
-         * Giá cuối =
-         * giá hiện tại Product
-         * + mức điều chỉnh Variant.
-         */
+        |--------------------------------------------------------------------------
+        | KIỂM TRA GIÁ CUỐI
+        |--------------------------------------------------------------------------
+        |
+        | Giá cuối =
+        | giá hiện tại Product
+        | + chênh lệch giá Variant.
+        |
+        */
+
         $finalPrice =
             (float) $product->current_price
-            + (float) $request->price_adjustment;
+            +
+            (float) $request->price_adjustment;
 
 
         if ($finalPrice <= 0) {
+
+            if ($request->expectsJson()) {
+
+                return response()->json(
+                    [
+                        'success' => false,
+
+                        'message' =>
+                            'Giá cuối của biến thể phải lớn hơn 0.',
+
+                        'errors' => [
+                            'price_adjustment' => [
+                                'Giá cuối của biến thể phải lớn hơn 0.',
+                            ],
+                        ],
+                    ],
+                    422
+                );
+            }
+
 
             return back()
                 ->withErrors([
@@ -52,7 +82,14 @@ class ProductVariantController extends Controller
         }
 
 
-        ProductVariant::create([
+        /*
+        |--------------------------------------------------------------------------
+        | CREATE VARIANT
+        |--------------------------------------------------------------------------
+        */
+
+        $variant = ProductVariant::create([
+
             'product_id' =>
                 $product->id,
 
@@ -78,10 +115,48 @@ class ProductVariantController extends Controller
         ]);
 
 
+        /*
+        |--------------------------------------------------------------------------
+        | SINGLE-PAGE / AJAX RESPONSE
+        |--------------------------------------------------------------------------
+        */
+
+        if ($request->expectsJson()) {
+
+            return response()->json(
+                array_merge(
+                    [
+                        'success' => true,
+
+                        'message' =>
+                            'Thêm biến thể sản phẩm thành công.',
+                    ],
+                    $this->buildVariantState(
+                        $product,
+                        $variant->id
+                    )
+                )
+            );
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | FALLBACK
+        |--------------------------------------------------------------------------
+        |
+        | Luồng chính của Admin hiện nay là quản lý tất cả
+        | ngay trên trang Sửa sản phẩm.
+        |
+        */
+
         return redirect()
-            ->route(
-                'admin.products.show',
-                $product
+            ->to(
+                route(
+                    'admin.products.edit',
+                    $product
+                )
+                . '#edit-product-variants'
             )
             ->with(
                 'success',
@@ -91,7 +166,9 @@ class ProductVariantController extends Controller
 
 
     /**
-     * Form sửa Variant.
+     * Form sửa Variant riêng.
+     *
+     * Vẫn giữ route này làm fallback.
      */
     public function edit(
         Product $product,
@@ -115,6 +192,10 @@ class ProductVariantController extends Controller
 
     /**
      * Cập nhật Variant.
+     *
+     * Hỗ trợ cả:
+     * - form truyền thống
+     * - AJAX trên trang Sửa sản phẩm một trang
      */
     public function update(
         UpdateProductVariantRequest $request,
@@ -127,12 +208,39 @@ class ProductVariantController extends Controller
         );
 
 
+        /*
+        |--------------------------------------------------------------------------
+        | KIỂM TRA GIÁ CUỐI
+        |--------------------------------------------------------------------------
+        */
+
         $finalPrice =
             (float) $product->current_price
-            + (float) $request->price_adjustment;
+            +
+            (float) $request->price_adjustment;
 
 
         if ($finalPrice <= 0) {
+
+            if ($request->expectsJson()) {
+
+                return response()->json(
+                    [
+                        'success' => false,
+
+                        'message' =>
+                            'Giá cuối của biến thể phải lớn hơn 0.',
+
+                        'errors' => [
+                            'price_adjustment' => [
+                                'Giá cuối của biến thể phải lớn hơn 0.',
+                            ],
+                        ],
+                    ],
+                    422
+                );
+            }
+
 
             return back()
                 ->withErrors([
@@ -142,6 +250,12 @@ class ProductVariantController extends Controller
                 ->withInput();
         }
 
+
+        /*
+        |--------------------------------------------------------------------------
+        | UPDATE VARIANT
+        |--------------------------------------------------------------------------
+        */
 
         $productWasDeactivated = false;
 
@@ -155,6 +269,7 @@ class ProductVariantController extends Controller
             ) {
 
                 $variant->update([
+
                     'color' =>
                         $request->color,
 
@@ -178,14 +293,13 @@ class ProductVariantController extends Controller
 
 
                 /*
-                 * Nếu Product đang bán nhưng
-                 * sau khi sửa không còn Variant
-                 * hoạt động nào thì phải tự
-                 * ngừng kinh doanh Product.
+                 * Nếu Product đang kinh doanh nhưng sau khi sửa
+                 * không còn Variant active nào thì phải tự ngừng bán.
                  */
                 if (
                     $product->is_active
-                    && !$product
+                    &&
+                    ! $product
                         ->variants()
                         ->where(
                             'is_active',
@@ -194,48 +308,86 @@ class ProductVariantController extends Controller
                         ->exists()
                 ) {
                     $product->update([
-                        'is_active' =>
-                            false,
+                        'is_active' => false,
                     ]);
 
 
-                    $productWasDeactivated =
-                        true;
+                    $productWasDeactivated = true;
                 }
             }
         );
 
 
-        if ($productWasDeactivated) {
+        /*
+        |--------------------------------------------------------------------------
+        | MESSAGE
+        |--------------------------------------------------------------------------
+        */
 
-            return redirect()
-                ->route(
-                    'admin.products.show',
-                    $product
+        $message =
+            $productWasDeactivated
+                ? 'Biến thể đã được cập nhật. Vì sản phẩm không còn biến thể hoạt động nên hệ thống đã tự chuyển sản phẩm sang trạng thái chưa bán.'
+                : 'Cập nhật biến thể thành công.';
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | AJAX RESPONSE
+        |--------------------------------------------------------------------------
+        */
+
+        if ($request->expectsJson()) {
+
+            return response()->json(
+                array_merge(
+                    [
+                        'success' => true,
+
+                        'message' =>
+                            $message,
+
+                        'product_was_deactivated' =>
+                            $productWasDeactivated,
+                    ],
+                    $this->buildVariantState(
+                        $product,
+                        $variant->id
+                    )
                 )
-                ->with(
-                    'error',
-                    'Biến thể đã được cập nhật. Vì sản phẩm không còn biến thể hoạt động nên hệ thống đã tự chuyển sản phẩm sang trạng thái chưa bán.'
-                );
+            );
         }
 
 
+        /*
+        |--------------------------------------------------------------------------
+        | FALLBACK
+        |--------------------------------------------------------------------------
+        */
+
         return redirect()
-            ->route(
-                'admin.products.show',
-                $product
+            ->to(
+                route(
+                    'admin.products.edit',
+                    $product
+                )
+                . '#edit-product-variants'
             )
             ->with(
-                'success',
-                'Cập nhật biến thể thành công.'
+                $productWasDeactivated
+                    ? 'error'
+                    : 'success',
+                $message
             );
     }
 
 
     /**
      * Xóa hoặc vô hiệu hóa Variant.
+     *
+     * Hỗ trợ cả form truyền thống và AJAX.
      */
     public function destroy(
+        Request $request,
         Product $product,
         ProductVariant $variant
     ) {
@@ -263,7 +415,7 @@ class ProductVariantController extends Controller
 
                 /*
                  * Variant đã có trong Order:
-                 * không được xóa dữ liệu.
+                 * không xóa, chỉ ngừng bán.
                  */
                 if (
                     $variant
@@ -271,8 +423,7 @@ class ProductVariantController extends Controller
                         ->exists()
                 ) {
                     $variant->update([
-                        'is_active' =>
-                            false,
+                        'is_active' => false,
                     ]);
 
 
@@ -280,12 +431,12 @@ class ProductVariantController extends Controller
                         'Biến thể đã phát sinh đơn hàng nên không thể xóa. Hệ thống đã chuyển biến thể sang trạng thái ngừng bán.';
 
 
-                    $messageType =
-                        'error';
+                    $messageType = 'error';
                 }
 
+
                 /*
-                 * Variant đang nằm trong Cart:
+                 * Variant đang trong Cart:
                  * không xóa, chỉ ngừng bán.
                  */
                 elseif (
@@ -294,8 +445,7 @@ class ProductVariantController extends Controller
                         ->exists()
                 ) {
                     $variant->update([
-                        'is_active' =>
-                            false,
+                        'is_active' => false,
                     ]);
 
 
@@ -303,16 +453,15 @@ class ProductVariantController extends Controller
                         'Biến thể đang tồn tại trong giỏ hàng của khách nên không thể xóa. Hệ thống đã chuyển biến thể sang trạng thái ngừng bán.';
 
 
-                    $messageType =
-                        'error';
+                    $messageType = 'error';
                 }
+
 
                 /*
                  * Không có lịch sử quan trọng:
                  * xóa Variant.
                  */
                 else {
-
                     $variant->delete();
 
 
@@ -322,13 +471,13 @@ class ProductVariantController extends Controller
 
 
                 /*
-                 * Sau mọi trường hợp trên,
-                 * kiểm tra Product còn Variant
-                 * Active hay không.
+                 * Product đang kinh doanh nhưng không còn
+                 * Variant active thì tự chuyển sang chưa bán.
                  */
                 if (
                     $product->is_active
-                    && !$product
+                    &&
+                    ! $product
                         ->variants()
                         ->where(
                             'is_active',
@@ -337,13 +486,11 @@ class ProductVariantController extends Controller
                         ->exists()
                 ) {
                     $product->update([
-                        'is_active' =>
-                            false,
+                        'is_active' => false,
                     ]);
 
 
-                    $productWasDeactivated =
-                        true;
+                    $productWasDeactivated = true;
                 }
             }
         );
@@ -356,16 +503,244 @@ class ProductVariantController extends Controller
         }
 
 
-        return back()->with(
-            $messageType,
-            $message
-        );
+        /*
+        |--------------------------------------------------------------------------
+        | AJAX RESPONSE
+        |--------------------------------------------------------------------------
+        */
+
+        if ($request->expectsJson()) {
+
+            return response()->json(
+                array_merge(
+                    [
+                        'success' => true,
+
+                        'message' =>
+                            $message,
+
+                        'message_type' =>
+                            $messageType,
+
+                        'product_was_deactivated' =>
+                            $productWasDeactivated,
+                    ],
+                    $this->buildVariantState(
+                        $product
+                    )
+                )
+            );
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | FALLBACK
+        |--------------------------------------------------------------------------
+        */
+
+        return redirect()
+            ->to(
+                route(
+                    'admin.products.edit',
+                    $product
+                )
+                . '#edit-product-variants'
+            )
+            ->with(
+                $messageType,
+                $message
+            );
     }
 
 
     /**
-     * Chống thay ID trên URL để
-     * thao tác Variant của Product khác.
+     * Chuẩn hóa dữ liệu Variant + trạng thái Product
+     * cho giao diện one-page/AJAX.
+     */
+    private function buildVariantState(
+        Product $product,
+        ?int $focusVariantId = null
+    ): array {
+        /*
+         * Refresh để lấy trạng thái Product mới nhất,
+         * đặc biệt khi Product vừa bị auto-deactivate.
+         */
+        $product->refresh();
+
+
+        $variants =
+            $product->variants()
+                ->orderBy(
+                    'sku'
+                )
+                ->get();
+
+
+        $activeVariants =
+            $variants->filter(
+                function ($item) {
+
+                    return (bool) $item->is_active;
+                }
+            );
+
+
+        $activeVariantCount =
+            $activeVariants->count();
+
+
+        $hasActiveVariant =
+            $activeVariantCount > 0;
+
+
+        $totalStock =
+            (int) $activeVariants
+                ->sum(
+                    'stock_quantity'
+                );
+
+
+        $hasRealImage =
+            $product->images()
+                ->where(
+                    'image_path',
+                    '!=',
+                    'images/no-image.png'
+                )
+                ->exists();
+
+
+        $isReadyForSale =
+            $hasRealImage
+            &&
+            $hasActiveVariant;
+
+
+        $variant =
+            $focusVariantId !== null
+                ? $variants->firstWhere(
+                    'id',
+                    $focusVariantId
+                )
+                : null;
+
+
+        return [
+
+            'variant' =>
+                $variant
+                    ? $this->variantToArray(
+                        $variant
+                    )
+                    : null,
+
+
+            'variants' =>
+                $variants
+                    ->map(
+                        function ($item) {
+
+                            return $this->variantToArray(
+                                $item
+                            );
+                        }
+                    )
+                    ->values(),
+
+
+            'active_variant_count' =>
+                $activeVariantCount,
+
+
+            'has_active_variant' =>
+                $hasActiveVariant,
+
+
+            'total_stock' =>
+                $totalStock,
+
+
+            'has_real_image' =>
+                $hasRealImage,
+
+
+            'is_ready_for_sale' =>
+                $isReadyForSale,
+
+
+            'product' => [
+
+                'id' =>
+                    $product->id,
+
+                'is_active' =>
+                    (bool) $product->is_active,
+            ],
+
+
+            'urls' => [
+
+                'activate' =>
+                    route(
+                        'admin.products.activate',
+                        $product
+                    ),
+
+                'show' =>
+                    route(
+                        'admin.products.show',
+                        $product
+                    ),
+
+                'edit' =>
+                    route(
+                        'admin.products.edit',
+                        $product
+                    ),
+            ],
+        ];
+    }
+
+
+    /**
+     * Chuẩn hóa một Variant thành JSON-friendly array.
+     */
+    private function variantToArray(
+        ProductVariant $variant
+    ): array {
+        return [
+
+            'id' =>
+                $variant->id,
+
+            'sku' =>
+                $variant->sku,
+
+            'color' =>
+                $variant->color,
+
+            'size' =>
+                $variant->size,
+
+            'stock_quantity' =>
+                (int) $variant->stock_quantity,
+
+            'price_adjustment' =>
+                (float) $variant->price_adjustment,
+
+            'final_price' =>
+                (float) $variant->final_price,
+
+            'is_active' =>
+                (bool) $variant->is_active,
+        ];
+    }
+
+
+    /**
+     * Chống sửa ID trên URL
+     * để thao tác Variant của Product khác.
      */
     private function ensureVariantBelongsToProduct(
         Product $product,

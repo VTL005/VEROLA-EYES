@@ -37,10 +37,10 @@ class VoucherController extends Controller
 
 
         /*
-        |--------------------------------------------------------------------------
-        | NORMALIZE FILTER
-        |--------------------------------------------------------------------------
-        */
+         * =====================================================
+         * NORMALIZE FILTER
+         * =====================================================
+         */
 
         if (
             $discountType
@@ -76,10 +76,10 @@ class VoucherController extends Controller
 
 
         /*
-        |--------------------------------------------------------------------------
-        | LIST
-        |--------------------------------------------------------------------------
-        */
+         * =====================================================
+         * LIST
+         * =====================================================
+         */
 
         $vouchers =
             Voucher::query()
@@ -221,10 +221,10 @@ class VoucherController extends Controller
 
 
         /*
-        |--------------------------------------------------------------------------
-        | STATS
-        |--------------------------------------------------------------------------
-        */
+         * =====================================================
+         * STATS
+         * =====================================================
+         */
 
         $totalVouchers =
             Voucher::query()
@@ -233,20 +233,24 @@ class VoucherController extends Controller
 
         $activeVouchers =
             Voucher::query()
+
                 ->where(
                     'is_active',
                     true
                 )
+
                 ->where(
                     'starts_at',
                     '<=',
                     now()
                 )
+
                 ->where(
                     'ends_at',
                     '>=',
                     now()
                 )
+
                 ->where(
                     function ($query) {
 
@@ -254,6 +258,7 @@ class VoucherController extends Controller
                             ->whereNull(
                                 'usage_limit'
                             )
+
                             ->orWhereColumn(
                                 'usage_count',
                                 '<',
@@ -261,29 +266,35 @@ class VoucherController extends Controller
                             );
                     }
                 )
+
                 ->count();
 
 
         $expiredVouchers =
             Voucher::query()
+
                 ->where(
                     'ends_at',
                     '<',
                     now()
                 )
+
                 ->count();
 
 
         $exhaustedVouchers =
             Voucher::query()
+
                 ->whereNotNull(
                     'usage_limit'
                 )
+
                 ->whereColumn(
                     'usage_count',
                     '>=',
                     'usage_limit'
                 )
+
                 ->count();
 
 
@@ -304,7 +315,7 @@ class VoucherController extends Controller
 
 
     /**
-     * Form tạo.
+     * Form tạo Voucher.
      */
     public function create()
     {
@@ -326,6 +337,7 @@ class VoucherController extends Controller
 
 
         Voucher::create([
+
             'code' =>
                 strtoupper(
                     trim(
@@ -359,14 +371,32 @@ class VoucherController extends Controller
                     'usage_limit'
                 ] ?? null,
 
+
             /*
              * Voucher mới chưa được dùng.
              */
             'usage_count' => 0,
 
+
+            /*
+             * Cho phép sử dụng Voucher.
+             */
             'is_active' =>
                 $request->boolean(
                     'is_active'
+                ),
+
+
+            /*
+             * Có hiển thị Voucher
+             * công khai cho Customer hay không.
+             *
+             * false:
+             * khách vẫn có thể dùng nếu biết Code.
+             */
+            'is_public' =>
+                $request->boolean(
+                    'is_public'
                 ),
         ]);
 
@@ -383,7 +413,7 @@ class VoucherController extends Controller
 
 
     /**
-     * Form sửa.
+     * Form sửa Voucher.
      */
     public function edit(
         Voucher $voucher
@@ -416,6 +446,7 @@ class VoucherController extends Controller
          * và VoucherUsage quản lý.
          */
         $voucher->update([
+
             'code' =>
                 strtoupper(
                     trim(
@@ -449,9 +480,22 @@ class VoucherController extends Controller
                     'usage_limit'
                 ] ?? null,
 
+
+            /*
+             * Trạng thái bật / khóa Voucher.
+             */
             'is_active' =>
                 $request->boolean(
                     'is_active'
+                ),
+
+
+            /*
+             * Trạng thái công khai Voucher.
+             */
+            'is_public' =>
+                $request->boolean(
+                    'is_public'
                 ),
         ]);
 
@@ -478,15 +522,19 @@ class VoucherController extends Controller
 
                 $lockedVoucher =
                     Voucher::query()
+
                         ->where(
                             'id',
                             $voucher->id
                         )
+
                         ->lockForUpdate()
+
                         ->firstOrFail();
 
 
                 $lockedVoucher->update([
+
                     'is_active' =>
                         !$lockedVoucher->is_active,
                 ]);
@@ -514,7 +562,11 @@ class VoucherController extends Controller
         Request $request,
         ?Voucher $voucher = null
     ): array {
+        /*
+         * Chuẩn hóa Code trước Validation.
+         */
         $request->merge([
+
             'code' =>
                 strtoupper(
                     trim(
@@ -529,6 +581,7 @@ class VoucherController extends Controller
         $validated =
             $request->validate(
                 [
+
                     'code' => [
                         'required',
                         'string',
@@ -544,13 +597,16 @@ class VoucherController extends Controller
                         ),
                     ],
 
+
                     'discount_type' => [
                         'required',
+
                         Rule::in([
                             'percentage',
                             'fixed',
                         ]),
                     ],
+
 
                     'discount_value' => [
                         'required',
@@ -558,16 +614,19 @@ class VoucherController extends Controller
                         'gt:0',
                     ],
 
+
                     'minimum_order_amount' => [
                         'required',
                         'numeric',
                         'gte:0',
                     ],
 
+
                     'starts_at' => [
                         'required',
                         'date',
                     ],
+
 
                     'ends_at' => [
                         'required',
@@ -575,13 +634,16 @@ class VoucherController extends Controller
                         'after:starts_at',
                     ],
 
+
                     'usage_limit' => [
                         'nullable',
                         'integer',
                         'min:1',
                     ],
                 ],
+
                 [
+
                     'code.required' =>
                         'Vui lòng nhập mã Voucher.',
 
@@ -652,21 +714,23 @@ class VoucherController extends Controller
 
 
         /*
-         * Percentage không vượt 100%.
+         * Voucher Percentage
+         * không được vượt 100%.
          */
         if (
-    $validated['discount_type']
-        === 'percentage'
+            $validated['discount_type']
+                === 'percentage'
 
-    && (float) $validated[
-        'discount_value'
-    ] > 100
-) {
-    throw \Illuminate\Validation\ValidationException::withMessages([
-        'discount_value' =>
-            'Voucher giảm theo phần trăm không được vượt quá 100%.',
-    ]);
-}
+            && (float) $validated[
+                'discount_value'
+            ] > 100
+        ) {
+            throw ValidationException::withMessages([
+
+                'discount_value' =>
+                    'Voucher giảm theo phần trăm không được vượt quá 100%.',
+            ]);
+        }
 
 
         return $validated;

@@ -2,16 +2,16 @@
 
 
 @section(
-    'title',
-    $product->name . ' - VELORA Eyes'
+'title',
+$product->name . ' - VELORA Eyes'
 )
 
 
 @section(
-    'meta_description',
-    $product->description
-        ? \Illuminate\Support\Str::limit($product->description, 155)
-        : 'Chi tiết sản phẩm kính mắt tại VELORA Eyes.'
+'meta_description',
+$product->description
+? \Illuminate\Support\Str::limit($product->description, 155)
+: 'Chi tiết sản phẩm kính mắt tại VELORA Eyes.'
 )
 
 
@@ -19,12 +19,12 @@
 
 @php
 
-    $primaryProductImage =
-        $product->images->firstWhere(
-            'is_primary',
-            true
-        )
-        ?? $product->images->first();
+$primaryProductImage =
+$product->images->firstWhere(
+'is_primary',
+true
+)
+?? $product->images->first();
 
 @endphp
 
@@ -33,52 +33,48 @@
     BREADCRUMB
 ========================================================= --}}
 
-<section
-    style="
+<section style="
         padding:22px 0;
         background:white;
         border-bottom:1px solid var(--velora-border);
-    "
->
+    ">
 
-    <div class="velora-container">
+  <div class="velora-container">
 
-        <div class="product-breadcrumb">
+    <div class="product-breadcrumb">
 
-            <a href="{{ route('home') }}">
-                Trang chủ
-            </a>
+      <a href="{{ route('home') }}">
+        Trang chủ
+      </a>
 
-            <span>/</span>
+      <span>/</span>
 
-            <a href="{{ route('products.index') }}">
-                Sản phẩm
-            </a>
+      <a href="{{ route('products.index') }}">
+        Sản phẩm
+      </a>
 
-            @if($product->category)
+      @if($product->category)
 
-                <span>/</span>
+      <span>/</span>
 
-                <a
-                    href="{{ route(
+      <a href="{{ route(
                         'categories.show',
                         $product->category
-                    ) }}"
-                >
-                    {{ $product->category->name }}
-                </a>
+                    ) }}">
+        {{ $product->category->name }}
+      </a>
 
-            @endif
+      @endif
 
-            <span>/</span>
+      <span>/</span>
 
-            <strong>
-                {{ $product->name }}
-            </strong>
-
-        </div>
+      <strong>
+        {{ $product->name }}
+      </strong>
 
     </div>
+
+  </div>
 
 </section>
 
@@ -90,51 +86,45 @@
 
 <section class="section">
 
-    <div class="velora-container">
+  <div class="velora-container">
 
-        <div class="product-detail-grid">
+    <div class="product-detail-grid">
 
 
-            {{-- =================================================
+      {{-- =================================================
                 GALLERY
             ================================================== --}}
 
-            <div class="product-gallery">
+      <div class="product-gallery">
 
-                <div class="product-main-image">
+        <div class="product-main-image">
 
-                    @if($primaryProductImage)
+          @if($primaryProductImage)
 
-                        <img
-                            id="mainProductImage"
-                            src="{{ asset(
+          <img id="mainProductImage" src="{{ asset(
                                 $primaryProductImage->image_path
-                            ) }}"
-                            alt="{{ $primaryProductImage->alt_text
-                                ?? $product->name }}"
-                        >
+                            ) }}" alt="{{ $primaryProductImage->alt_text
+                                ?? $product->name }}">
 
-                    @else
+          @else
 
-                        <div class="empty-state">
-                            Chưa có hình ảnh sản phẩm.
-                        </div>
+          <div class="empty-state">
+            Chưa có hình ảnh sản phẩm.
+          </div>
 
-                    @endif
+          @endif
 
-                </div>
+        </div>
 
 
-                @if($product->images->count() > 1)
+        @if($product->images->count() > 1)
 
-                    <div class="product-thumbnails">
+        <div class="product-thumbnails">
 
-                        @foreach($product->images as $image)
+          @foreach($product->images as $image)
 
-                            <button
-                                type="button"
-                                class="product-thumbnail {{ $image->id === $primaryProductImage?->id ? 'active' : '' }}"
-                                onclick="
+          <button type="button" class="product-thumbnail {{ $image->id === $primaryProductImage?->id ? 'active' : '' }}"
+            onclick="
                                     document.getElementById(
                                         'mainProductImage'
                                     ).src='{{ asset($image->image_path) }}';
@@ -153,484 +143,453 @@
                                     this.classList.add(
                                         'active'
                                     );
-                                "
-                            >
+                                ">
 
-                                <img
-                                    src="{{ asset(
+            <img src="{{ asset(
                                         $image->image_path
-                                    ) }}"
-                                    alt="{{ $image->alt_text
-                                        ?? $product->name }}"
-                                >
+                                    ) }}" alt="{{ $image->alt_text
+                                        ?? $product->name }}">
 
-                            </button>
+          </button>
 
-                        @endforeach
+          @endforeach
 
-                    </div>
+        </div>
 
-                @endif
+        @endif
 
-            </div>
+      </div>
 
 
 
-            {{-- =================================================
+      {{-- =================================================
                 PRODUCT INFO
             ================================================== --}}
 
-            <div class="product-detail-info">
+      <div class="product-detail-info">
 
 
-                @if($product->category)
+        @if($product->category)
 
-                    <a
-                        href="{{ route(
+        <a href="{{ route(
                             'categories.show',
                             $product->category
-                        ) }}"
-                        class="product-detail-category"
-                    >
-                        {{ $product->category->name }}
-                    </a>
+                        ) }}" class="product-detail-category">
+          {{ $product->category->name }}
+        </a>
 
-                @endif
+        @endif
 
 
-                <h1 class="product-detail-name">
-                    {{ $product->name }}
-                </h1>
+        <h1 class="product-detail-name">
+          {{ $product->name }}
+        </h1>
 
 
-                <div class="product-detail-meta">
+        <div class="product-detail-meta">
 
-                    <span>
-                        SKU:
-                        <strong>
-                            {{ $product->sku }}
-                        </strong>
-                    </span>
+          <span>
+            SKU:
+            <strong>
+              {{ $product->sku }}
+            </strong>
+          </span>
 
 
-                    @if($reviewCount > 0)
+          @if($reviewCount > 0)
 
-                        <span>
-                            ★
-                            <strong>
-                                {{ number_format(
+          <span>
+            ★
+            <strong>
+              {{ number_format(
                                     (float) $averageRating,
                                     1
                                 ) }}
-                            </strong>
+            </strong>
 
-                            ({{ $reviewCount }} đánh giá)
-                        </span>
+            ({{ $reviewCount }} đánh giá)
+          </span>
 
-                    @else
+          @else
 
-                        <span>
-                            Chưa có đánh giá
-                        </span>
+          <span>
+            Chưa có đánh giá
+          </span>
 
-                    @endif
+          @endif
 
-                </div>
+        </div>
 
 
 
-                {{-- PRICE --}}
+        {{-- PRICE --}}
 
-                <div class="product-detail-price">
+        <div class="product-detail-price">
 
-                    @if(
-                        $product->sale_price
-                        &&
-                        $product->sale_price < $product->price
-                    )
+          @if(
+          $product->sale_price
+          &&
+          $product->sale_price < $product->price
+            )
 
-                        <span class="detail-old-price">
+            <span class="detail-old-price">
 
-                            {{ number_format(
+              {{ number_format(
                                 (float) $product->price,
                                 0,
                                 ',',
                                 '.'
                             ) }}đ
 
-                        </span>
+            </span>
 
 
-                        <span class="detail-current-price">
+            <span class="detail-current-price">
 
-                            {{ number_format(
+              {{ number_format(
                                 (float) $product->sale_price,
                                 0,
                                 ',',
                                 '.'
                             ) }}đ
 
-                        </span>
+            </span>
 
 
-                        @php
+            @php
 
-                            $detailDiscount = round(
-                                (
-                                    (
-                                        $product->price
-                                        - $product->sale_price
-                                    )
-                                    / $product->price
-                                )
-                                * 100
-                            );
+            $detailDiscount = round(
+            (
+            (
+            $product->price
+            - $product->sale_price
+            )
+            / $product->price
+            )
+            * 100
+            );
 
-                        @endphp
+            @endphp
 
 
-                        <span class="badge badge-danger">
+            <span class="badge badge-danger">
 
-                            -{{ $detailDiscount }}%
+              -{{ $detailDiscount }}%
 
-                        </span>
+            </span>
 
-                    @else
+            @else
 
-                        <span class="detail-current-price">
+            <span class="detail-current-price">
 
-                            {{ number_format(
+              {{ number_format(
                                 (float) $product->price,
                                 0,
                                 ',',
                                 '.'
                             ) }}đ
 
-                        </span>
+            </span>
 
-                    @endif
+            @endif
 
-                </div>
+        </div>
 
 
 
-                {{-- SHORT DESCRIPTION --}}
+        {{-- SHORT DESCRIPTION --}}
 
-                @if($product->description)
+        @if($product->description)
 
-                    <p class="product-detail-description">
+        <p class="product-detail-description">
 
-                        {{ \Illuminate\Support\Str::limit(
+          {{ \Illuminate\Support\Str::limit(
                             $product->description,
                             240
                         ) }}
 
-                    </p>
+        </p>
 
-                @endif
-
-
-
-                {{-- BASIC INFORMATION --}}
-
-                <div class="product-spec-grid">
-
-                    @if($product->shape)
-
-                        <div class="product-spec-item">
-
-                            <span>
-                                Kiểu dáng
-                            </span>
-
-                            <strong>
-                                {{ $product->shape }}
-                            </strong>
-
-                        </div>
-
-                    @endif
-
-
-                    @if($product->material)
-
-                        <div class="product-spec-item">
-
-                            <span>
-                                Chất liệu
-                            </span>
-
-                            <strong>
-                                {{ $product->material }}
-                            </strong>
-
-                        </div>
-
-                    @endif
-
-
-                    @if($product->gender)
-
-                        <div class="product-spec-item">
-
-                            <span>
-                                Đối tượng
-                            </span>
-
-                            <strong>
-
-                                @switch($product->gender)
-
-                                    @case('male')
-                                        Nam
-                                        @break
-
-                                    @case('female')
-                                        Nữ
-                                        @break
-
-                                    @case('unisex')
-                                        Unisex
-                                        @break
-
-                                    @default
-                                        {{ $product->gender }}
-
-                                @endswitch
-
-                            </strong>
-
-                        </div>
-
-                    @endif
-
-
-                    @if($product->dimensions)
-
-                        <div class="product-spec-item">
-
-                            <span>
-                                Kích thước
-                            </span>
-
-                            <strong>
-                                {{ $product->dimensions }}
-                            </strong>
-
-                        </div>
-
-                    @endif
-
-                </div>
+        @endif
 
 
 
-                {{-- =================================================
-                    ADD TO CART
+        {{-- BASIC INFORMATION --}}
+
+        <div class="product-spec-grid">
+
+          @if($product->shape)
+
+          <div class="product-spec-item">
+
+            <span>
+              Kiểu dáng
+            </span>
+
+            <strong>
+              {{ $product->shape }}
+            </strong>
+
+          </div>
+
+          @endif
+
+
+          @if($product->material)
+
+          <div class="product-spec-item">
+
+            <span>
+              Chất liệu
+            </span>
+
+            <strong>
+              {{ $product->material }}
+            </strong>
+
+          </div>
+
+          @endif
+
+
+          @if($product->gender)
+
+          <div class="product-spec-item">
+
+            <span>
+              Đối tượng
+            </span>
+
+            <strong>
+
+              @switch($product->gender)
+
+              @case('male')
+              Nam
+              @break
+
+              @case('female')
+              Nữ
+              @break
+
+              @case('unisex')
+              Unisex
+              @break
+
+              @default
+              {{ $product->gender }}
+
+              @endswitch
+
+            </strong>
+
+          </div>
+
+          @endif
+
+
+          @if($product->dimensions)
+
+          <div class="product-spec-item">
+
+            <span>
+              Kích thước
+            </span>
+
+            <strong>
+              {{ $product->dimensions }}
+            </strong>
+
+          </div>
+
+          @endif
+
+        </div>
+
+
+
+        {{-- =================================================
+                    PURCHASE / WISHLIST
                 ================================================== --}}
 
-                <div class="product-purchase-box">
+        <div class="product-purchase-box">
 
-                    <h3>
-                        Chọn phiên bản sản phẩm
-                    </h3>
+          @auth
 
+          @if(auth()->user()->isCustomer())
 
-                    @auth
+          {{-- =========================================
+                                CART
+                            ========================================== --}}
 
-                        @if(auth()->user()->isCustomer())
+          <h3>
+            Chọn phiên bản để mua
+          </h3>
 
-                            <form
-                                action="{{ route('cart.store') }}"
-                                method="POST"
-                            >
+          <form action="{{ route('cart.store') }}" method="POST">
 
-                                @csrf
-
-
-                                <div class="form-group">
-
-                                    <label
-                                        for="variant_id"
-                                        class="form-label"
-                                    >
-                                        Màu / Size
-                                    </label>
+            @csrf
 
 
-                                    <select
-                                        id="variant_id"
-                                        name="variant_id"
-                                        class="form-control"
-                                        required
-                                    >
+            <div class="form-group">
 
-                                        <option value="">
-                                            -- Chọn phiên bản --
-                                        </option>
+              <label for="variant_id" class="form-label">
+                Màu / Size
+              </label>
 
 
-                                        @foreach($product->variants as $variant)
+              <select id="variant_id" name="variant_id" class="form-control" required>
 
-                                            <option
-                                                value="{{ $variant->id }}"
-                                                {{ old('variant_id')
-                                                    == $variant->id
+                <option value="">
+                  -- Chọn phiên bản --
+                </option>
+
+
+                @foreach($product->variants as $variant)
+
+                <option value="{{ $variant->id }}" {{ old('variant_id') == $variant->id
                                                     ? 'selected'
-                                                    : '' }}
-                                                {{ $variant->stock_quantity <= 0
+                                                    : '' }} {{ $variant->stock_quantity <= 0
                                                     ? 'disabled'
-                                                    : '' }}
-                                            >
+                                                    : '' }}>
 
-                                                {{ $variant->color }}
+                  {{ $variant->color }}
+                  /
+                  {{ $variant->size }}
 
-                                                /
+                  —
 
-                                                {{ $variant->size }}
-
-                                                —
-
-                                                {{ number_format(
+                  {{ number_format(
                                                     (float) $variant->final_price,
                                                     0,
                                                     ',',
                                                     '.'
                                                 ) }}đ
 
-                                                —
+                  —
 
-                                                @if(
-                                                    $variant->stock_quantity > 0
-                                                )
+                  @if($variant->stock_quantity > 0)
 
-                                                    Còn
-                                                    {{ $variant->stock_quantity }}
+                  Còn {{ $variant->stock_quantity }}
 
-                                                @else
+                  @else
 
-                                                    Hết hàng
+                  Hết hàng
 
-                                                @endif
+                  @endif
 
-                                            </option>
+                </option>
 
-                                        @endforeach
+                @endforeach
 
-                                    </select>
-
-                                </div>
-
-
-                                <div class="form-group">
-
-                                    <label
-                                        for="quantity"
-                                        class="form-label"
-                                    >
-                                        Số lượng
-                                    </label>
-
-
-                                    <input
-                                        type="number"
-                                        id="quantity"
-                                        name="quantity"
-                                        class="form-control"
-                                        style="max-width:150px;"
-                                        value="{{ old('quantity', 1) }}"
-                                        min="1"
-                                        required
-                                    >
-
-                                </div>
-
-
-                                <div class="product-purchase-actions">
-
-                                    <button
-                                        type="submit"
-                                        class="btn btn-primary product-add-cart-button"
-                                    >
-                                        Thêm vào giỏ hàng
-                                    </button>
-
-
-                                    <form
-                                        action="{{ route(
-                                            'wishlist.store',
-                                            $product
-                                        ) }}"
-                                        method="POST"
-                                    >
-
-                                        @csrf
-
-                                        <button
-                                            type="submit"
-                                            class="btn btn-outline"
-                                        >
-                                            ♡ Yêu thích
-                                        </button>
-
-                                    </form>
-                                    <form
-    action="{{ route(
-        'wishlist.store',
-        $product
-    ) }}"
-    method="POST"
-    style="margin-top:10px;"
->
-
-    @csrf
-
-
-                                </form>
-
-                                </div>
-
-                            </form>
-
-                        @else
-
-                            <div class="alert alert-warning">
-
-                                Chức năng mua hàng
-                                chỉ dành cho tài khoản Customer.
-
-                            </div>
-
-                        @endif
-
-                    @else
-
-                        <div class="product-login-notice">
-
-                            <p>
-                                Đăng nhập để chọn phiên bản
-                                và mua sản phẩm.
-                            </p>
-
-
-                            <a
-                                href="{{ route('login') }}"
-                                class="btn btn-primary"
-                            >
-                                Đăng nhập để mua hàng
-                            </a>
-
-                        </div>
-
-                    @endauth
-
-                </div>
+              </select>
 
             </div>
 
+
+            <div class="form-group">
+
+              <label for="quantity" class="form-label">
+                Số lượng
+              </label>
+
+
+              <input type="number" id="quantity" name="quantity" class="form-control" style="max-width:150px;"
+                value="{{ old('quantity', 1) }}" min="1" required>
+
+            </div>
+
+
+            <div class="product-purchase-actions">
+
+              <button type="submit" class="btn btn-primary product-add-cart-button">
+                Thêm vào giỏ hàng
+              </button>
+
+            </div>
+
+          </form>
+
+
+          {{-- =========================================
+                                WISHLIST
+                                Chỉ lưu Product, không cần Variant.
+                            ========================================== --}}
+
+          {{-- =========================================
+    WISHLIST
+========================================== --}}
+
+          @if($isWishlisted)
+
+          <form action="{{ route(
+            'wishlist.destroy',
+            $product
+        ) }}" method="POST">
+
+            @csrf
+            @method('DELETE')
+
+
+            <button type="submit" class="btn btn-outline">
+              ♥ Bỏ yêu thích
+            </button>
+
+          </form>
+
+          @else
+
+          <form action="{{ route(
+            'wishlist.store',
+            $product
+        ) }}" method="POST">
+
+            @csrf
+
+
+            <button type="submit" class="btn btn-outline">
+              ♡ Thêm vào yêu thích
+            </button>
+
+          </form>
+
+          @endif
+
+          @else
+
+          <div class="alert alert-warning">
+
+            Chức năng mua hàng và yêu thích
+            chỉ dành cho tài khoản Customer.
+
+          </div>
+
+          @endif
+
+          @else
+
+          <div class="product-login-notice">
+
+            <p>
+              Đăng nhập để mua hoặc lưu sản phẩm yêu thích.
+            </p>
+
+
+            <a href="{{ route('login') }}" class="btn btn-primary">
+              Đăng nhập
+            </a>
+
+          </div>
+
+          @endauth
+
         </div>
 
+      </div>
+
     </div>
+
+  </div>
 
 </section>
 
@@ -642,143 +601,143 @@
 
 <section class="section section-white">
 
-    <div class="velora-container">
+  <div class="velora-container">
 
-        <div class="product-information-grid">
+    <div class="product-information-grid">
 
-            <div>
+      <div>
 
-                <span class="hero-kicker">
-                    PRODUCT DETAILS
-                </span>
+        <span class="hero-kicker">
+          PRODUCT DETAILS
+        </span>
 
-                <h2>
-                    Thông tin sản phẩm
-                </h2>
-
-
-                @if($product->description)
-
-                    <div class="product-long-description">
-
-                        {!! nl2br(
-                            e($product->description)
-                        ) !!}
-
-                    </div>
-
-                @else
-
-                    <p class="text-muted">
-                        Sản phẩm chưa có mô tả chi tiết.
-                    </p>
-
-                @endif
+        <h2>
+          Thông tin sản phẩm
+        </h2>
 
 
-                @if($product->highlights)
+        @if($product->description)
 
-                    <div class="product-highlight-box">
+        <div class="product-long-description">
 
-                        <h3>
-                            Điểm nổi bật
-                        </h3>
-
-                        <p class="mb-0">
-
-                            {!! nl2br(
-                                e($product->highlights)
-                            ) !!}
-
-                        </p>
-
-                    </div>
-
-                @endif
-
-            </div>
-
-
-            <div class="card">
-
-                <h3>
-                    Thông số
-                </h3>
-
-
-                <div class="detail-spec-list">
-
-                    <div>
-
-                        <span>
-                            SKU
-                        </span>
-
-                        <strong>
-                            {{ $product->sku }}
-                        </strong>
-
-                    </div>
-
-
-                    <div>
-
-                        <span>
-                            Danh mục
-                        </span>
-
-                        <strong>
-                            {{ $product->category?->name ?? '-' }}
-                        </strong>
-
-                    </div>
-
-
-                    <div>
-
-                        <span>
-                            Kiểu dáng
-                        </span>
-
-                        <strong>
-                            {{ $product->shape ?? '-' }}
-                        </strong>
-
-                    </div>
-
-
-                    <div>
-
-                        <span>
-                            Chất liệu
-                        </span>
-
-                        <strong>
-                            {{ $product->material ?? '-' }}
-                        </strong>
-
-                    </div>
-
-
-                    <div>
-
-                        <span>
-                            Kích thước
-                        </span>
-
-                        <strong>
-                            {{ $product->dimensions ?? '-' }}
-                        </strong>
-
-                    </div>
-
-                </div>
-
-            </div>
+          {!! nl2br(
+          e($product->description)
+          ) !!}
 
         </div>
 
+        @else
+
+        <p class="text-muted">
+          Sản phẩm chưa có mô tả chi tiết.
+        </p>
+
+        @endif
+
+
+        @if($product->highlights)
+
+        <div class="product-highlight-box">
+
+          <h3>
+            Điểm nổi bật
+          </h3>
+
+          <p class="mb-0">
+
+            {!! nl2br(
+            e($product->highlights)
+            ) !!}
+
+          </p>
+
+        </div>
+
+        @endif
+
+      </div>
+
+
+      <div class="card">
+
+        <h3>
+          Thông số
+        </h3>
+
+
+        <div class="detail-spec-list">
+
+          <div>
+
+            <span>
+              SKU
+            </span>
+
+            <strong>
+              {{ $product->sku }}
+            </strong>
+
+          </div>
+
+
+          <div>
+
+            <span>
+              Danh mục
+            </span>
+
+            <strong>
+              {{ $product->category?->name ?? '-' }}
+            </strong>
+
+          </div>
+
+
+          <div>
+
+            <span>
+              Kiểu dáng
+            </span>
+
+            <strong>
+              {{ $product->shape ?? '-' }}
+            </strong>
+
+          </div>
+
+
+          <div>
+
+            <span>
+              Chất liệu
+            </span>
+
+            <strong>
+              {{ $product->material ?? '-' }}
+            </strong>
+
+          </div>
+
+
+          <div>
+
+            <span>
+              Kích thước
+            </span>
+
+            <strong>
+              {{ $product->dimensions ?? '-' }}
+            </strong>
+
+          </div>
+
+        </div>
+
+      </div>
+
     </div>
+
+  </div>
 
 </section>
 
@@ -790,165 +749,162 @@
 
 <section class="section">
 
-    <div class="velora-container">
+  <div class="velora-container">
 
-        <div class="section-heading">
+    <div class="section-heading">
 
-            <span class="hero-kicker">
-                OPTIONS
-            </span>
+      <span class="hero-kicker">
+        OPTIONS
+      </span>
 
-            <h2>
-                Màu sắc và kích thước
-            </h2>
+      <h2>
+        Màu sắc và kích thước
+      </h2>
 
-            <p>
-                Kiểm tra giá và tình trạng tồn kho
-                của từng phiên bản.
-            </p>
+      <p>
+        Kiểm tra giá và tình trạng tồn kho
+        của từng phiên bản.
+      </p>
 
-        </div>
-
-
-        <div class="table-wrapper">
-
-            <table class="velora-table">
-
-                <thead>
-
-                    <tr>
-
-                        <th>
-                            Màu
-                        </th>
-
-                        <th>
-                            Size
-                        </th>
-
-                        <th>
-                            SKU
-                        </th>
-
-                        <th>
-                            Giá
-                        </th>
-
-                        <th>
-                            Tồn kho
-                        </th>
-
-                        <th>
-                            Tình trạng
-                        </th>
-
-                    </tr>
-
-                </thead>
+    </div>
 
 
-                <tbody>
+    <div class="table-wrapper">
 
-                    @forelse($product->variants as $variant)
+      <table class="velora-table">
 
-                        <tr>
+        <thead>
 
-                            <td>
-                                <strong>
-                                    {{ $variant->color }}
-                                </strong>
-                            </td>
+          <tr>
+
+            <th>
+              Màu
+            </th>
+
+            <th>
+              Size
+            </th>
+
+            <th>
+              SKU
+            </th>
+
+            <th>
+              Giá
+            </th>
+
+            <th>
+              Tồn kho
+            </th>
+
+            <th>
+              Tình trạng
+            </th>
+
+          </tr>
+
+        </thead>
 
 
-                            <td>
-                                {{ $variant->size }}
-                            </td>
+        <tbody>
+
+          @forelse($product->variants as $variant)
+
+          <tr>
+
+            <td>
+              <strong>
+                {{ $variant->color }}
+              </strong>
+            </td>
 
 
-                            <td>
-                                {{ $variant->sku }}
-                            </td>
+            <td>
+              {{ $variant->size }}
+            </td>
 
 
-                            <td>
+            <td>
+              {{ $variant->sku }}
+            </td>
 
-                                <strong>
 
-                                    {{ number_format(
+            <td>
+
+              <strong>
+
+                {{ number_format(
                                         (float) $variant->final_price,
                                         0,
                                         ',',
                                         '.'
                                     ) }}đ
 
-                                </strong>
+              </strong>
 
-                            </td>
-
-
-                            <td>
-                                {{ $variant->stock_quantity }}
-                            </td>
+            </td>
 
 
-                            <td>
+            <td>
+              {{ $variant->stock_quantity }}
+            </td>
 
-                                @if(
-                                    $inventoryService
-                                        ->isOutOfStock(
-                                            $variant
-                                        )
-                                )
 
-                                    <span class="badge badge-danger">
-                                        Hết hàng
-                                    </span>
+            <td>
 
-                                @elseif(
-                                    $inventoryService
-                                        ->isLowStock(
-                                            $variant
-                                        )
-                                )
+              @if(
+              $inventoryService
+              ->isOutOfStock(
+              $variant
+              )
+              )
 
-                                    <span class="badge badge-warning">
-                                        Sắp hết hàng
-                                    </span>
+              <span class="badge badge-danger">
+                Hết hàng
+              </span>
 
-                                @else
+              @elseif(
+              $inventoryService
+              ->isLowStock(
+              $variant
+              )
+              )
 
-                                    <span class="badge badge-success">
-                                        Còn hàng
-                                    </span>
+              <span class="badge badge-warning">
+                Sắp hết hàng
+              </span>
 
-                                @endif
+              @else
 
-                            </td>
+              <span class="badge badge-success">
+                Còn hàng
+              </span>
 
-                        </tr>
+              @endif
 
-                    @empty
+            </td>
 
-                        <tr>
+          </tr>
 
-                            <td
-                                colspan="6"
-                                style="text-align:center;"
-                            >
-                                Chưa có phiên bản sản phẩm.
-                            </td>
+          @empty
 
-                        </tr>
+          <tr>
 
-                    @endforelse
+            <td colspan="6" style="text-align:center;">
+              Chưa có phiên bản sản phẩm.
+            </td>
 
-                </tbody>
+          </tr>
 
-            </table>
+          @endforelse
 
-        </div>
+        </tbody>
+
+      </table>
 
     </div>
+
+  </div>
 
 </section>
 
@@ -960,241 +916,210 @@
 
 <section class="section section-white">
 
-    <div class="velora-container">
+  <div class="velora-container">
 
-        <div class="section-heading-row">
+    <div class="section-heading-row">
 
-            <div>
+      <div>
 
-                <span class="hero-kicker">
-                    CUSTOMER REVIEWS
-                </span>
+        <span class="hero-kicker">
+          CUSTOMER REVIEWS
+        </span>
 
-                <h2 class="mb-1">
-                    Đánh giá khách hàng
-                </h2>
+        <h2 class="mb-1">
+          Đánh giá khách hàng
+        </h2>
 
 
-                @if($reviewCount > 0)
+        @if($reviewCount > 0)
 
-                    <p class="text-muted mb-0">
+        <p class="text-muted mb-0">
 
-                        Điểm trung bình
+          Điểm trung bình
 
-                        <strong
-                            style="
+          <strong style="
                                 color:var(--velora-navy);
                                 font-size:1.2rem;
-                            "
-                        >
-                            ★
-                            {{ number_format(
+                            ">
+            ★
+            {{ number_format(
                                 (float) $averageRating,
                                 1
                             ) }}/5
-                        </strong>
+          </strong>
 
-                        từ {{ $reviewCount }} đánh giá.
+          từ {{ $reviewCount }} đánh giá.
 
-                    </p>
+        </p>
 
-                @else
+        @else
 
-                    <p class="text-muted mb-0">
-                        Sản phẩm chưa có đánh giá.
-                    </p>
+        <p class="text-muted mb-0">
+          Sản phẩm chưa có đánh giá.
+        </p>
 
-                @endif
+        @endif
+
+      </div>
+
+    </div>
+
+
+
+    @if($product->reviews->count() > 0)
+
+    <div class="review-list">
+
+      @foreach($product->reviews as $review)
+
+      <article class="review-card">
+
+        <div class="review-header">
+
+          <div>
+
+            <strong>
+              {{ $review->user?->name
+                                        ?? 'Khách hàng VELORA' }}
+            </strong>
+
+
+            <div class="review-stars">
+
+              @for($i = 1; $i <= 5; $i++) <span class="{{ $i <= $review->rating
+                                                ? 'active'
+                                                : '' }}">
+                ★
+                </span>
+
+                @endfor
 
             </div>
+
+          </div>
+
+
+          <span class="text-muted">
+
+            {{ $review->created_at
+                                    ?->format('d/m/Y') }}
+
+          </span>
 
         </div>
 
 
+        @if($review->comment)
 
-        @if($product->reviews->count() > 0)
+        <p class="review-comment mb-0">
 
-            <div class="review-list">
+          {{ $review->comment }}
 
-                @foreach($product->reviews as $review)
-
-                    <article class="review-card">
-
-                        <div class="review-header">
-
-                            <div>
-
-                                <strong>
-                                    {{ $review->user?->name
-                                        ?? 'Khách hàng VELORA' }}
-                                </strong>
-
-
-                                <div class="review-stars">
-
-                                    @for($i = 1; $i <= 5; $i++)
-
-                                        <span
-                                            class="{{ $i <= $review->rating
-                                                ? 'active'
-                                                : '' }}"
-                                        >
-                                            ★
-                                        </span>
-
-                                    @endfor
-
-                                </div>
-
-                            </div>
-
-
-                            <span class="text-muted">
-
-                                {{ $review->created_at
-                                    ?->format('d/m/Y') }}
-
-                            </span>
-
-                        </div>
-
-
-                        @if($review->comment)
-
-                            <p class="review-comment mb-0">
-
-                                {{ $review->comment }}
-
-                            </p>
-
-                        @endif
-
-                    </article>
-
-                @endforeach
-
-            </div>
-
-        @else
-
-            <div class="empty-state">
-
-                Chưa có khách hàng nào
-                đánh giá sản phẩm này.
-
-            </div>
+        </p>
 
         @endif
 
+      </article>
 
-
-        {{-- REVIEW FORM --}}
-
-        @auth
-
-            @if(
-                auth()->user()->isCustomer()
-                && Route::has('reviews.store')
-            )
-
-                <div class="review-form-card">
-
-                    <h3>
-                        Viết đánh giá của bạn
-                    </h3>
-
-                    <p class="text-muted">
-                        Hệ thống sẽ kiểm tra điều kiện
-                        mua hàng trước khi chấp nhận đánh giá.
-                    </p>
-
-
-                    <form
-                        action="{{ route(
-                            'reviews.store',
-                            $product
-                        ) }}"
-                        method="POST"
-                    >
-
-                        @csrf
-
-
-                        <div class="form-group">
-
-                            <label
-                                for="rating"
-                                class="form-label"
-                            >
-                                Số sao
-                            </label>
-
-                            <select
-                                name="rating"
-                                id="rating"
-                                class="form-control"
-                                required
-                            >
-
-                                <option value="">
-                                    -- Chọn đánh giá --
-                                </option>
-
-                                @for($rating = 5; $rating >= 1; $rating--)
-
-                                    <option
-                                        value="{{ $rating }}"
-                                        {{ old('rating')
-                                            == $rating
-                                            ? 'selected'
-                                            : '' }}
-                                    >
-                                        {{ $rating }} sao
-                                    </option>
-
-                                @endfor
-
-                            </select>
-
-                        </div>
-
-
-                        <div class="form-group">
-
-                            <label
-                                for="comment"
-                                class="form-label"
-                            >
-                                Nhận xét
-                            </label>
-
-                            <textarea
-                                id="comment"
-                                name="comment"
-                                class="form-control"
-                                maxlength="500"
-                                placeholder="Chia sẻ trải nghiệm của bạn..."
-                            >{{ old('comment') }}</textarea>
-
-                        </div>
-
-
-                        <button
-                            type="submit"
-                            class="btn btn-primary"
-                        >
-                            Gửi đánh giá
-                        </button>
-
-                    </form>
-
-                </div>
-
-            @endif
-
-        @endauth
+      @endforeach
 
     </div>
+
+    @else
+
+    <div class="empty-state">
+
+      Chưa có khách hàng nào
+      đánh giá sản phẩm này.
+
+    </div>
+
+    @endif
+
+
+
+    {{-- REVIEW FORM --}}
+
+    @auth
+
+    @if(
+    auth()->user()->isCustomer()
+    && Route::has('reviews.store')
+    )
+
+    <div class="review-form-card">
+
+      <h3>
+        Viết đánh giá của bạn
+      </h3>
+
+      <p class="text-muted">
+        Hệ thống sẽ kiểm tra điều kiện
+        mua hàng trước khi chấp nhận đánh giá.
+      </p>
+
+
+      <form action="{{ route(
+                            'reviews.store',
+                            $product
+                        ) }}" method="POST">
+
+        @csrf
+
+
+        <div class="form-group">
+
+          <label for="rating" class="form-label">
+            Số sao
+          </label>
+
+          <select name="rating" id="rating" class="form-control" required>
+
+            <option value="">
+              -- Chọn đánh giá --
+            </option>
+
+            @for($rating = 5; $rating >= 1; $rating--)
+
+            <option value="{{ $rating }}" {{ old('rating')
+                                            == $rating
+                                            ? 'selected'
+                                            : '' }}>
+              {{ $rating }} sao
+            </option>
+
+            @endfor
+
+          </select>
+
+        </div>
+
+
+        <div class="form-group">
+
+          <label for="comment" class="form-label">
+            Nhận xét
+          </label>
+
+          <textarea id="comment" name="comment" class="form-control" maxlength="500"
+            placeholder="Chia sẻ trải nghiệm của bạn...">{{ old('comment') }}</textarea>
+
+        </div>
+
+
+        <button type="submit" class="btn btn-primary">
+          Gửi đánh giá
+        </button>
+
+      </form>
+
+    </div>
+
+    @endif
+
+    @endauth
+
+  </div>
 
 </section>
 
@@ -1206,58 +1131,55 @@
 
 @if($recommendedProducts->count() > 0)
 
-    <section class="section">
+<section class="section">
 
-        <div class="velora-container">
+  <div class="velora-container">
 
-            <div class="section-heading-row">
+    <div class="section-heading-row">
 
-                <div>
+      <div>
 
-                    <span class="hero-kicker">
-                        RECOMMENDED FOR YOU
-                    </span>
+        <span class="hero-kicker">
+          RECOMMENDED FOR YOU
+        </span>
 
-                    <h2 class="mb-1">
-                        Có thể bạn cũng thích
-                    </h2>
+        <h2 class="mb-1">
+          Có thể bạn cũng thích
+        </h2>
 
-                    <p class="text-muted mb-0">
-                        Các sản phẩm được VELORA
-                        gợi ý dựa trên sản phẩm bạn đang xem.
-                    </p>
+        <p class="text-muted mb-0">
+          Các sản phẩm được VELORA
+          gợi ý dựa trên sản phẩm bạn đang xem.
+        </p>
 
-                </div>
-
-
-                <a
-                    href="{{ route('products.index') }}"
-                    class="btn btn-outline"
-                >
-                    Xem thêm
-                </a>
-
-            </div>
+      </div>
 
 
-            <div class="grid grid-4">
+      <a href="{{ route('products.index') }}" class="btn btn-outline">
+        Xem thêm
+      </a>
 
-                @foreach($recommendedProducts as $recommended)
+    </div>
 
-                    @include(
-                        'components.product-card',
-                        [
-                            'product' => $recommended
-                        ]
-                    )
 
-                @endforeach
+    <div class="grid grid-4">
 
-            </div>
+      @foreach($recommendedProducts as $recommended)
 
-        </div>
+      @include(
+      'components.product-card',
+      [
+      'product' => $recommended
+      ]
+      )
 
-    </section>
+      @endforeach
+
+    </div>
+
+  </div>
+
+</section>
 
 @endif
 

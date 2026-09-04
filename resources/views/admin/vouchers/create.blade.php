@@ -2,14 +2,14 @@
 
 
 @section(
-    'title',
-    'Thêm Voucher - VELORA Eyes'
+'title',
+'Thêm Voucher - VELORA Eyes'
 )
 
 
 @section(
-    'page-title',
-    'Thêm Voucher'
+'page-title',
+'Thêm Voucher'
 )
 
 
@@ -18,444 +18,545 @@
 
 <div class="admin-page-header">
 
-    <div>
+  <div>
 
-        <span class="admin-page-kicker">
-            CREATE VOUCHER
-        </span>
+    <span class="admin-page-kicker">
+      CREATE VOUCHER
+    </span>
 
-        <h1>
-            Thêm Voucher
-        </h1>
+    <h1>
+      Thêm Voucher
+    </h1>
 
-        <p>
-            Tạo chương trình giảm giá mới
-            cho khách hàng.
-        </p>
+    <p>
+      Tạo chương trình giảm giá mới
+      cho khách hàng.
+    </p>
 
-    </div>
+  </div>
 
 
-    <a
-        href="{{ route(
+  <a href="{{ route(
             'admin.vouchers.index'
-        ) }}"
-        class="admin-btn admin-btn-secondary"
-    >
-        <i class="bi bi-arrow-left"></i>
-        Danh sách
-    </a>
+        ) }}" class="admin-btn admin-btn-secondary">
+    <i class="bi bi-arrow-left"></i>
+    Danh sách
+  </a>
 
 </div>
 
 
 
-<form
-    action="{{ route(
+<form action="{{ route(
         'admin.vouchers.store'
-    ) }}"
-    method="POST"
-    class="admin-voucher-form-layout"
->
+    ) }}" method="POST" class="admin-voucher-form-layout">
 
-    @csrf
+  @csrf
 
 
-    <div class="admin-voucher-form-main">
+  <div class="admin-voucher-form-main">
 
-        <section class="admin-panel">
 
-            <div class="admin-panel-header">
+    {{-- =====================================================
+            THÔNG TIN VOUCHER
+        ====================================================== --}}
 
-                <div>
+    <section class="admin-panel">
 
-                    <h2>
-                        Thông tin Voucher
-                    </h2>
+      <div class="admin-panel-header">
 
-                </div>
+        <div>
 
+          <h2>
+            Thông tin Voucher
+          </h2>
+
+        </div>
+
+      </div>
+
+
+      <div class="admin-form-body">
+
+        <div class="admin-form-grid">
+
+
+          {{-- MÃ VOUCHER --}}
+
+          <div class="admin-form-group">
+
+            <label for="code">
+              Mã Voucher
+              <span>*</span>
+            </label>
+
+            <input type="text" id="code" name="code" value="{{ old('code') }}" maxlength="50" class="admin-form-control"
+              placeholder="VELORA10" required>
+
+            <small class="admin-voucher-help">
+              Chỉ dùng chữ, số và dấu gạch ngang.
+            </small>
+
+            @error('code')
+
+            <div class="admin-field-error">
+              {{ $message }}
             </div>
 
+            @enderror
 
-            <div class="admin-form-body">
-
-                <div class="admin-form-grid">
-
-                    <div class="admin-form-group">
-
-                        <label for="code">
-                            Mã Voucher
-                            <span>*</span>
-                        </label>
-
-                        <input
-                            type="text"
-                            id="code"
-                            name="code"
-                            value="{{ old('code') }}"
-                            maxlength="50"
-                            class="admin-form-control"
-                            placeholder="VELORA10"
-                            required
-                        >
-
-                        <small class="admin-voucher-help">
-                            Chỉ dùng chữ, số và dấu gạch ngang.
-                        </small>
-
-                        @error('code')
-                            <div class="admin-field-error">
-                                {{ $message }}
-                            </div>
-                        @enderror
-
-                    </div>
+          </div>
 
 
-                    <div class="admin-form-group">
 
-                        <label for="discount_type">
-                            Loại giảm
-                            <span>*</span>
-                        </label>
+          {{-- LOẠI GIẢM --}}
 
-                        <select
-                            id="discount_type"
-                            name="discount_type"
-                            class="admin-form-control"
-                            required
-                        >
+          <div class="admin-form-group">
 
-                            <option value="">
-                                Chọn loại giảm
-                            </option>
+            <label for="discount_type">
+              Loại giảm
+              <span>*</span>
+            </label>
 
-                            <option
-                                value="percentage"
-                                {{
+            <select id="discount_type" name="discount_type" class="admin-form-control" required>
+
+              <option value="">
+                Chọn loại giảm
+              </option>
+
+              <option value="percentage" {{
                                     old('discount_type')
                                     === 'percentage'
                                         ? 'selected'
                                         : ''
-                                }}
-                            >
-                                Giảm theo phần trăm
-                            </option>
+                                }}>
+                Giảm theo phần trăm
+              </option>
 
-                            <option
-                                value="fixed"
-                                {{
+              <option value="fixed" {{
                                     old('discount_type')
                                     === 'fixed'
                                         ? 'selected'
                                         : ''
-                                }}
-                            >
-                                Giảm tiền cố định
-                            </option>
+                                }}>
+                Giảm tiền cố định
+              </option>
 
-                        </select>
+            </select>
 
-                        @error('discount_type')
-                            <div class="admin-field-error">
-                                {{ $message }}
-                            </div>
-                        @enderror
+            @error('discount_type')
 
-                    </div>
+            <div class="admin-field-error">
+              {{ $message }}
+            </div>
 
+            @enderror
 
-                    <div class="admin-form-group">
-
-                        <label for="discount_value">
-                            Giá trị giảm
-                            <span>*</span>
-                        </label>
-
-                        <input
-                            type="number"
-                            id="discount_value"
-                            name="discount_value"
-                            value="{{ old('discount_value') }}"
-                            min="0.01"
-                            step="0.01"
-                            class="admin-form-control"
-                            placeholder="10 hoặc 100000"
-                            required
-                        >
-
-                        @error('discount_value')
-                            <div class="admin-field-error">
-                                {{ $message }}
-                            </div>
-                        @enderror
-
-                    </div>
+          </div>
 
 
-                    <div class="admin-form-group">
 
-                        <label for="minimum_order_amount">
-                            Giá trị đơn tối thiểu
-                            <span>*</span>
-                        </label>
+          {{-- GIÁ TRỊ GIẢM --}}
 
-                        <input
-                            type="number"
-                            id="minimum_order_amount"
-                            name="minimum_order_amount"
-                            value="{{ old(
+          <div class="admin-form-group">
+
+            <label for="discount_value">
+              Giá trị giảm
+              <span>*</span>
+            </label>
+
+            <input type="number" id="discount_value" name="discount_value" value="{{ old(
+                                'discount_value'
+                            ) }}" min="0.01" step="0.01" class="admin-form-control" placeholder="10 hoặc 100000"
+              required>
+
+            @error('discount_value')
+
+            <div class="admin-field-error">
+              {{ $message }}
+            </div>
+
+            @enderror
+
+          </div>
+
+
+
+          {{-- ĐƠN TỐI THIỂU --}}
+
+          <div class="admin-form-group">
+
+            <label for="minimum_order_amount">
+              Giá trị đơn tối thiểu
+              <span>*</span>
+            </label>
+
+            <input type="number" id="minimum_order_amount" name="minimum_order_amount" value="{{ old(
                                 'minimum_order_amount',
                                 0
-                            ) }}"
-                            min="0"
-                            step="1"
-                            class="admin-form-control"
-                            required
-                        >
+                            ) }}" min="0" step="1" class="admin-form-control" required>
 
-                        @error('minimum_order_amount')
-                            <div class="admin-field-error">
-                                {{ $message }}
-                            </div>
-                        @enderror
+            @error('minimum_order_amount')
 
-                    </div>
-
-                </div>
-
+            <div class="admin-field-error">
+              {{ $message }}
             </div>
 
-        </section>
+            @enderror
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
 
 
 
-        <section class="admin-panel">
+    {{-- =====================================================
+            THỜI GIAN HIỆU LỰC
+        ====================================================== --}}
 
-            <div class="admin-panel-header">
+    <section class="admin-panel">
 
-                <div>
-                    <h2>Thời gian hiệu lực</h2>
-                </div>
+      <div class="admin-panel-header">
 
-            </div>
+        <div>
+
+          <h2>
+            Thời gian hiệu lực
+          </h2>
+
+        </div>
+
+      </div>
 
 
-            <div class="admin-form-body">
+      <div class="admin-form-body">
 
-                <div class="admin-form-grid">
+        <div class="admin-form-grid">
 
-                    <div class="admin-form-group">
 
-                        <label for="starts_at">
-                            Bắt đầu
-                            <span>*</span>
-                        </label>
+          {{-- BẮT ĐẦU --}}
 
-                        <input
-                            type="datetime-local"
-                            id="starts_at"
-                            name="starts_at"
-                            value="{{ old(
+          <div class="admin-form-group">
+
+            <label for="starts_at">
+              Bắt đầu
+              <span>*</span>
+            </label>
+
+            <input type="datetime-local" id="starts_at" name="starts_at" value="{{ old(
                                 'starts_at',
                                 now()->format(
                                     'Y-m-d\TH:i'
                                 )
-                            ) }}"
-                            class="admin-form-control"
-                            required
-                        >
+                            ) }}" class="admin-form-control" required>
 
-                        @error('starts_at')
-                            <div class="admin-field-error">
-                                {{ $message }}
-                            </div>
-                        @enderror
+            @error('starts_at')
 
-                    </div>
-
-
-                    <div class="admin-form-group">
-
-                        <label for="ends_at">
-                            Kết thúc
-                            <span>*</span>
-                        </label>
-
-                        <input
-                            type="datetime-local"
-                            id="ends_at"
-                            name="ends_at"
-                            value="{{ old('ends_at') }}"
-                            class="admin-form-control"
-                            required
-                        >
-
-                        @error('ends_at')
-                            <div class="admin-field-error">
-                                {{ $message }}
-                            </div>
-                        @enderror
-
-                    </div>
-
-                </div>
-
+            <div class="admin-field-error">
+              {{ $message }}
             </div>
 
-        </section>
+            @enderror
+
+          </div>
 
 
 
-        <section class="admin-panel">
+          {{-- KẾT THÚC --}}
 
-            <div class="admin-panel-header">
+          <div class="admin-form-group">
 
-                <div>
-                    <h2>Giới hạn sử dụng</h2>
-                </div>
+            <label for="ends_at">
+              Kết thúc
+              <span>*</span>
+            </label>
 
+            <input type="datetime-local" id="ends_at" name="ends_at" value="{{ old('ends_at') }}"
+              class="admin-form-control" required>
+
+            @error('ends_at')
+
+            <div class="admin-field-error">
+              {{ $message }}
             </div>
 
+            @enderror
 
-            <div class="admin-form-body">
+          </div>
 
-                <div class="admin-form-group">
+        </div>
 
-                    <label for="usage_limit">
-                        Usage Limit
-                    </label>
+      </div>
 
-                    <input
-                        type="number"
-                        id="usage_limit"
-                        name="usage_limit"
-                        value="{{ old('usage_limit') }}"
-                        min="1"
-                        step="1"
-                        class="admin-form-control"
-                        placeholder="Để trống nếu không giới hạn"
-                    >
-
-                    <small class="admin-voucher-help">
-                        Usage Count sẽ bắt đầu từ 0
-                        và hệ thống tự tăng khi Voucher được sử dụng.
-                    </small>
-
-                    @error('usage_limit')
-                        <div class="admin-field-error">
-                            {{ $message }}
-                        </div>
-                    @enderror
-
-                </div>
-
-            </div>
-
-        </section>
-
-    </div>
+    </section>
 
 
 
-    <aside class="admin-voucher-form-sidebar">
+    {{-- =====================================================
+            GIỚI HẠN SỬ DỤNG
+        ====================================================== --}}
 
-        <section class="admin-panel">
+    <section class="admin-panel">
 
-            <div class="admin-panel-header">
-                <div>
-                    <h2>Trạng thái</h2>
-                </div>
-            </div>
+      <div class="admin-panel-header">
+
+        <div>
+
+          <h2>
+            Giới hạn sử dụng
+          </h2>
+
+        </div>
+
+      </div>
 
 
-            <div class="admin-staff-switch">
+      <div class="admin-form-body">
 
-                <input
-                    type="checkbox"
-                    id="is_active"
-                    name="is_active"
-                    value="1"
-                    {{
+        <div class="admin-form-group">
+
+          <label for="usage_limit">
+            Giới hạn lượt sử dụng
+          </label>
+
+          <input type="number" id="usage_limit" name="usage_limit" value="{{ old(
+                            'usage_limit'
+                        ) }}" min="1" step="1" class="admin-form-control" placeholder="Để trống nếu không giới hạn">
+
+          <small class="admin-voucher-help">
+
+            Lượt đã dùng sẽ bắt đầu từ 0
+            và được hệ thống tự động tăng
+            khi Voucher được sử dụng.
+
+          </small>
+
+          @error('usage_limit')
+
+          <div class="admin-field-error">
+            {{ $message }}
+          </div>
+
+          @enderror
+
+        </div>
+
+      </div>
+
+    </section>
+
+  </div>
+
+
+
+  {{-- =====================================================
+        SIDEBAR
+    ====================================================== --}}
+
+  <aside class="admin-voucher-form-sidebar">
+
+
+    {{-- =====================================================
+            TRẠNG THÁI
+        ====================================================== --}}
+
+    <section class="admin-panel">
+
+      <div class="admin-panel-header">
+
+        <div>
+
+          <h2>
+            Trạng thái
+          </h2>
+
+        </div>
+
+      </div>
+
+
+
+      {{-- KÍCH HOẠT --}}
+
+      <div class="admin-staff-switch">
+
+        <input type="checkbox" id="is_active" name="is_active" value="1" {{
                         old(
                             'is_active',
                             true
                         )
                             ? 'checked'
                             : ''
-                    }}
-                >
+                    }}>
 
-                <label for="is_active">
+        <label for="is_active">
 
-                    <span></span>
+          <span></span>
 
-                    <div>
+          <div>
 
-                        <strong>
-                            Kích hoạt Voucher
-                        </strong>
+            <strong>
+              Kích hoạt Voucher
+            </strong>
 
-                        <small>
-                            Voucher vẫn phải đúng thời gian,
-                            còn lượt và đạt điều kiện đơn hàng.
-                        </small>
+            <small>
 
-                    </div>
+              Voucher vẫn phải đúng thời gian,
+              còn lượt và đạt điều kiện đơn hàng.
 
-                </label>
+            </small>
 
-            </div>
+          </div>
 
-        </section>
+        </label>
 
-
-        <section class="admin-voucher-info-box">
-
-            <i class="bi bi-info-circle"></i>
-
-            <div>
-
-                <strong>
-                    Điều kiện sử dụng
-                </strong>
-
-                <span>
-                    Active<br>
-                    Đúng thời gian<br>
-                    Còn lượt sử dụng<br>
-                    Đạt giá trị đơn tối thiểu
-                </span>
-
-            </div>
-
-        </section>
+      </div>
 
 
-        <section class="admin-panel admin-form-actions">
 
-            <button
-                type="submit"
-                class="admin-btn admin-btn-primary admin-btn-full"
-            >
-                <i class="bi bi-plus-lg"></i>
-                Tạo Voucher
-            </button>
+      {{-- CÔNG KHAI CHO KHÁCH HÀNG --}}
+
+      <div class="admin-staff-switch">
+
+        <input type="checkbox" id="is_public" name="is_public" value="1" {{
+                        old(
+                            'is_public',
+                            true
+                        )
+                            ? 'checked'
+                            : ''
+                    }}>
+
+        <label for="is_public">
+
+          <span></span>
+
+          <div>
+
+            <strong>
+              Công khai cho khách hàng
+            </strong>
+
+            <small>
+
+              Khi bật, Voucher sẽ xuất hiện
+              trong danh sách "Chọn voucher"
+              ở phía khách hàng.
+
+            </small>
+
+          </div>
+
+        </label>
+
+      </div>
+
+    </section>
 
 
-            <a
-                href="{{ route(
+
+    {{-- =====================================================
+            GỢI Ý
+        ====================================================== --}}
+
+    <section class="admin-voucher-info-box">
+
+      <i class="bi bi-info-circle"></i>
+
+      <div>
+
+        <strong>
+          Hiển thị Voucher
+        </strong>
+
+        <span>
+
+          <strong>Công khai:</strong>
+          khách hàng nhìn thấy mã
+          trong danh sách Voucher.
+          <br><br>
+
+          <strong>Không công khai:</strong>
+          Voucher không xuất hiện trong danh sách,
+          nhưng khách vẫn có thể sử dụng
+          nếu biết chính xác mã.
+
+        </span>
+
+      </div>
+
+    </section>
+
+
+
+    <section class="admin-voucher-info-box">
+
+      <i class="bi bi-check-circle"></i>
+
+      <div>
+
+        <strong>
+          Điều kiện sử dụng
+        </strong>
+
+        <span>
+
+          Được kích hoạt
+          <br>
+
+          Đúng thời gian
+          <br>
+
+          Còn lượt sử dụng
+          <br>
+
+          Đạt giá trị đơn tối thiểu
+
+        </span>
+
+      </div>
+
+    </section>
+
+
+
+    {{-- =====================================================
+            ACTIONS
+        ====================================================== --}}
+
+    <section class="
+                admin-panel
+                admin-form-actions
+            ">
+
+      <button type="submit" class="
+                    admin-btn
+                    admin-btn-primary
+                    admin-btn-full
+                ">
+        <i class="bi bi-plus-lg"></i>
+
+        Tạo Voucher
+      </button>
+
+
+      <a href="{{ route(
                     'admin.vouchers.index'
-                ) }}"
-                class="admin-btn admin-btn-secondary admin-btn-full"
-            >
-                Hủy
-            </a>
+                ) }}" class="
+                    admin-btn
+                    admin-btn-secondary
+                    admin-btn-full
+                ">
+        Hủy
+      </a>
 
-        </section>
+    </section>
 
-    </aside>
+  </aside>
 
 </form>
 

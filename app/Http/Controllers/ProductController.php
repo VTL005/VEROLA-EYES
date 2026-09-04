@@ -489,22 +489,54 @@ return view(
                     4
                 );
 
+/*
+|--------------------------------------------------------------------------
+| WISHLIST STATUS
+|------------------------------------------------------------------------
 
+|
+*/
+
+$isWishlisted = false;
+
+
+if (
+    auth()->check()
+    && auth()->user()->isCustomer()
+) {
+
+    $isWishlisted = auth()
+        ->user()
+        ->wishlist()
+        ->whereHas(
+            'items',
+            function ($query) use ($product) {
+
+                $query->where(
+                    'product_id',
+                    $product->id
+                );
+
+            }
+        )
+        ->exists();
+}
         /*
         |--------------------------------------------------------------------------
         | RETURN VIEW
         |--------------------------------------------------------------------------
         */
 
-        return view(
-            'products.show',
-            compact(
-                'product',
-                'inventoryService',
-                'averageRating',
-                'reviewCount',
-                'recommendedProducts'
-            )
-        );
+      return view(
+    'products.show',
+    compact(
+        'product',
+        'inventoryService',
+        'averageRating',
+        'reviewCount',
+        'recommendedProducts',
+        'isWishlisted'
+    )
+);
     }
 }
