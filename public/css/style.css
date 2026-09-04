@@ -24007,3 +24007,39 @@ input[type="radio"]:checked {
         margin-left: auto;
     }
 }
+
+
+/* =========================================================
+   SOCIAL LOGIN - COMPLETE PROFILE
+========================================================= */
+
+.social-profile-summary {
+    display: grid;
+    gap: 12px;
+    margin-bottom: 22px;
+}
+
+.social-profile-item {
+    padding: 14px 16px;
+    border: 1px solid rgba(47, 111, 179, 0.14);
+    border-radius: 12px;
+    background: rgba(47, 111, 179, 0.05);
+}
+
+.social-profile-item span {
+    display: block;
+    margin-bottom: 4px;
+    color: var(--velora-muted);
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+.social-profile-item strong {
+    display: block;
+    color: var(--velora-navy);
+    font-size: 14px;
+    line-height: 1.45;
+    word-break: break-word;
+}

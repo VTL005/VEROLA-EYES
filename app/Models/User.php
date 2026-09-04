@@ -17,15 +17,17 @@ class User extends Authenticatable
      * Các field được phép mass assignment.
      */
     protected $fillable = [
-        'role_id',
-        'name',
-        'email',
-        'phone',
-        'avatar',
-        'position',
-        'is_active',
-        'password',
-    ];
+    'role_id',
+    'name',
+    'email',
+    'google_id',
+    'facebook_id',
+    'phone',
+    'avatar',
+    'position',
+    'is_active',
+    'password',
+        ];
 
     /**
      * Không đưa các field này ra JSON.

@@ -45,6 +45,7 @@ use App\Http\Controllers\Admin\AppointmentController as AdminAppointmentControll
 use App\Http\Controllers\Admin\PaymentController as AdminPaymentController;
 use App\Http\Controllers\Admin\WarrantyController as AdminWarrantyController;
 use App\Http\Controllers\PasswordResetController;
+use App\Http\Controllers\SocialAuthController;
 
 
 /*
@@ -99,6 +100,35 @@ Route::get(
 */
 
 Route::middleware('guest')->group(function () {
+
+    /*
+    |--------------------------------------------------------------------------
+    | GOOGLE LOGIN
+    |--------------------------------------------------------------------------
+    */
+
+    Route::get(
+        '/auth/google',
+        [SocialAuthController::class, 'redirectToGoogle']
+    )->name('social.google.redirect');
+
+
+    Route::get(
+        '/auth/google/callback',
+        [SocialAuthController::class, 'handleGoogleCallback']
+    )->name('social.google.callback');
+
+
+    Route::get(
+        '/auth/google/complete-profile',
+        [SocialAuthController::class, 'showGoogleCompleteProfile']
+    )->name('social.google.complete');
+
+
+    Route::post(
+        '/auth/google/complete-profile',
+        [SocialAuthController::class, 'completeGoogleProfile']
+    )->name('social.google.complete.store');
 
     /*
     |--------------------------------------------------------------------------
