@@ -44,6 +44,7 @@ use App\Http\Controllers\Staff\DashboardController as StaffDashboardController;
 use App\Http\Controllers\Admin\AppointmentController as AdminAppointmentController;
 use App\Http\Controllers\Admin\PaymentController as AdminPaymentController;
 use App\Http\Controllers\Admin\WarrantyController as AdminWarrantyController;
+use App\Http\Controllers\PasswordResetController;
 
 
 /*
@@ -98,6 +99,41 @@ Route::get(
 */
 
 Route::middleware('guest')->group(function () {
+
+    /*
+    |--------------------------------------------------------------------------
+    | FORGOT PASSWORD
+    |--------------------------------------------------------------------------
+    */
+
+    Route::get(
+        '/forgot-password',
+        [PasswordResetController::class, 'showForgotPasswordForm']
+    )->name('password.request');
+
+
+    Route::post(
+        '/forgot-password',
+        [PasswordResetController::class, 'sendResetLink']
+    )->name('password.email');
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | RESET PASSWORD
+    |--------------------------------------------------------------------------
+    */
+
+    Route::get(
+        '/reset-password/{token}',
+        [PasswordResetController::class, 'showResetPasswordForm']
+    )->name('password.reset');
+
+
+    Route::post(
+        '/reset-password',
+        [PasswordResetController::class, 'resetPassword']
+    )->name('password.update');
 
 
     Route::get(

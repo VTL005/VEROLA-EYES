@@ -213,20 +213,30 @@
 
           <div class="auth-options">
 
-            <label class="auth-checkbox">
+  <label class="auth-checkbox">
 
-              <input type="checkbox" name="remember" value="1" {{ old('remember')
-                                    ? 'checked'
-                                    : '' }}>
+    <input
+      type="checkbox"
+      name="remember"
+      value="1"
+      {{ old('remember') ? 'checked' : '' }}
+    >
+
+    <span>
+      Ghi nhớ đăng nhập
+    </span>
+
+  </label>
 
 
-              <span>
-                Ghi nhớ đăng nhập
-              </span>
+  <a
+    href="{{ route('password.request') }}"
+    class="auth-forgot-link"
+  >
+    Quên mật khẩu?
+  </a>
 
-            </label>
-
-          </div>
+</div>
 
 
           {{-- =======================================

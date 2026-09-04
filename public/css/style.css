@@ -23979,3 +23979,31 @@ input[type="radio"]:checked {
 .staff-body .staff-sidebar {
     background: radial-gradient( circle at 18% 0%, rgba(104, 214, 232, .09), transparent 34%), linear-gradient( 180deg, #0b213d 0%, #091c34 45%, #07182d 100%) !important;
 }
+
+
+/* =========================================================
+   AUTH - FORGOT PASSWORD LINK
+========================================================= */
+
+.auth-forgot-link {
+    color: var(--velora-blue);
+    font-size: 14px;
+    font-weight: 700;
+    text-decoration: none;
+    transition: color 0.2s ease, opacity 0.2s ease;
+}
+
+.auth-forgot-link:hover {
+    color: var(--velora-navy);
+    text-decoration: underline;
+}
+
+@media (max-width: 520px) {
+    .auth-options {
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+    .auth-forgot-link {
+        margin-left: auto;
+    }
+}
