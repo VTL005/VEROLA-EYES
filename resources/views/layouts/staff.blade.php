@@ -296,7 +296,51 @@
             <span class="staff-nav-label">
                 KHÁCH HÀNG
             </span>
+@if(Route::has('staff.chat.index'))
 
+    <a
+        href="{{ route(
+            'staff.chat.index'
+        ) }}"
+        class="staff-nav-item
+            {{ request()->routeIs(
+                'staff.chat.*'
+            )
+                ? 'active'
+                : '' }}"
+    >
+
+        <span class="staff-nav-icon">
+            ✉
+        </span>
+
+        <span class="staff-nav-chat-label">
+
+    <span>
+        Tư vấn khách hàng
+    </span>
+
+
+    <span
+    class="staff-nav-chat-badge
+        {{ ($staffChatUnreadCount ?? 0) > 0
+            ? ''
+            : 'is-empty'
+        }}"
+    id="staffSidebarChatBadge"
+    data-count="{{ (int) ($staffChatUnreadCount ?? 0) }}"
+>
+    {{ ($staffChatUnreadCount ?? 0) > 99
+        ? '99+'
+        : ($staffChatUnreadCount ?? 0)
+    }}
+</span>
+
+</span>
+
+    </a>
+
+@endif
 
             @if(Route::has('staff.reviews.index'))
 
@@ -543,6 +587,136 @@ if (
 
 }
 
+</script>
+
+
+@vite('resources/js/app.js')
+
+
+<script>
+document.addEventListener(
+    'DOMContentLoaded',
+    function () {
+
+        const currentStaffId =
+            {{ (int) auth()->id() }};
+
+        const badge =
+            document.getElementById(
+                'staffSidebarChatBadge'
+            );
+
+
+        if (
+            !window.Echo
+            || !badge
+            || !currentStaffId
+        ) {
+            return;
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | TĂNG BADGE CHAT
+        |--------------------------------------------------------------------------
+        */
+
+        function increaseChatBadge(event) {
+
+            if (
+                !event
+                || !event.conversation
+            ) {
+                return;
+            }
+        /*
+ * Nếu Staff đang mở đúng hội thoại này
+ * thì tin nhắn đã được nhìn thấy trực tiếp,
+ * không tăng badge sidebar.
+ */
+
+const openConversation =
+    document.querySelector(
+        '[data-open-conversation-id]'
+    );
+
+
+if (
+    openConversation
+    && Number(
+        openConversation.dataset
+            .openConversationId
+    )
+    === Number(
+        event.conversation.id
+    )
+) {
+    return;
+}
+
+
+            let count =
+                parseInt(
+                    badge.dataset.count,
+                    10
+                ) || 0;
+
+
+            count++;
+
+
+            badge.dataset.count =
+                count;
+
+
+            badge.textContent =
+                count > 99
+                    ? '99+'
+                    : count;
+
+
+            badge.classList.remove(
+                'is-empty'
+            );
+
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | CHAT CHƯA CÓ STAFF NHẬN
+        |--------------------------------------------------------------------------
+        */
+
+        window.Echo
+            .private(
+                'staff.chat.inbox'
+            )
+            .listen(
+                '.staff.chat.inbox.updated',
+                increaseChatBadge
+            );
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | CHAT STAFF HIỆN TẠI ĐANG PHỤ TRÁCH
+        |--------------------------------------------------------------------------
+        */
+
+        window.Echo
+            .private(
+                'staff.chat.inbox.'
+                + currentStaffId
+            )
+            .listen(
+                '.staff.chat.inbox.updated',
+                increaseChatBadge
+            );
+
+    }
+);
 </script>
 
 

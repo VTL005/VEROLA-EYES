@@ -1,9 +1,8 @@
 <?php
 
 namespace App\Models;
-use App\Models\Address;
+
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -17,17 +16,17 @@ class User extends Authenticatable
      * Các field được phép mass assignment.
      */
     protected $fillable = [
-    'role_id',
-    'name',
-    'email',
-    'google_id',
-    'facebook_id',
-    'phone',
-    'avatar',
-    'position',
-    'is_active',
-    'password',
-        ];
+        'role_id',
+        'name',
+        'email',
+        'google_id',
+        'facebook_id',
+        'phone',
+        'avatar',
+        'position',
+        'is_active',
+        'password',
+    ];
 
     /**
      * Không đưa các field này ra JSON.
@@ -52,11 +51,11 @@ class User extends Authenticatable
     /**
      * User thuộc một Role.
      */
-   public function role()
+    public function role()
     {
-    return $this->belongsTo(
-        Role::class,
-        'role_id'
+        return $this->belongsTo(
+            Role::class,
+            'role_id'
         );
     }
 
@@ -65,9 +64,9 @@ class User extends Authenticatable
      */
     public function addresses()
     {
-    return $this->hasMany(
-        Address::class,
-        'user_id'
+        return $this->hasMany(
+            Address::class,
+            'user_id'
         );
     }
 
@@ -85,6 +84,39 @@ class User extends Authenticatable
     public function cart(): HasOne
     {
         return $this->hasOne(Cart::class);
+    }
+
+    /**
+     * Các cuộc trò chuyện mà User là Customer.
+     */
+    public function customerChatConversations(): HasMany
+    {
+        return $this->hasMany(
+            ChatConversation::class,
+            'customer_id'
+        );
+    }
+
+    /**
+     * Các cuộc trò chuyện mà User là Staff phụ trách.
+     */
+    public function staffChatConversations(): HasMany
+    {
+        return $this->hasMany(
+            ChatConversation::class,
+            'staff_id'
+        );
+    }
+
+    /**
+     * Các tin nhắn User đã gửi.
+     */
+    public function chatMessages(): HasMany
+    {
+        return $this->hasMany(
+            ChatMessage::class,
+            'sender_id'
+        );
     }
 
     /**

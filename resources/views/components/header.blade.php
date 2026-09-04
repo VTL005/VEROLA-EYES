@@ -400,7 +400,26 @@
 
                             @endif
 
+{{-- CUSTOMER CHAT --}}
 
+@if(Route::has('customer.chat.index'))
+
+    <a
+        href="{{ route('customer.chat.index') }}"
+        class="{{ request()->routeIs('customer.chat.*') ? 'active' : '' }}"
+    >
+
+        <span class="account-menu-icon">
+            ✉
+        </span>
+
+        <span>
+            Tư vấn trực tuyến
+        </span>
+
+    </a>
+
+@endif
 
                             <div class="account-menu-divider">
                             </div>

@@ -114,9 +114,53 @@
 
 
   @include('components.footer')
+  {{-- =========================================================
+    CUSTOMER FLOATING CHAT
+========================================================= --}}
 
+@auth
 
-  @stack('scripts')
+    @if (
+        auth()->user()->isCustomer()
+        && Route::has('customer.chat.index')
+        && !request()->routeIs('customer.chat.*')
+    )
+
+        <a
+            href="{{ route('customer.chat.index') }}"
+            class="customer-floating-chat"
+            aria-label="Tư vấn trực tuyến"
+            title="Tư vấn trực tuyến"
+        >
+
+            <span class="customer-floating-chat-icon">
+
+                <svg
+                    viewBox="0 0 24 24"
+                    aria-hidden="true"
+                >
+                    <path
+                        d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4v8Z"
+                    ></path>
+
+                    <path d="M8 9h8"></path>
+                    <path d="M8 13h5"></path>
+                </svg>
+
+            </span>
+
+            <span class="customer-floating-chat-text">
+                Tư vấn
+            </span>
+
+        </a>
+
+    @endif
+
+@endauth
+
+@vite('resources/js/app.js')
+@stack('scripts')
 
 </body>
 
