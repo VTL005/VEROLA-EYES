@@ -1,421 +1,256 @@
 @extends('layouts.app')
 
-
 @section('title', 'Chỉnh sửa địa chỉ - VELORA Eyes')
 
+@push('styles')
+<link rel="stylesheet" href="{{ asset('css/address-selector.css') }}">
+@endpush
 
 @section('content')
 
-<section class="address-form-section">
-
+<section class="address-form-section" data-ghn-provinces-url="{{ route('ghn.provinces') }}"
+  data-ghn-districts-url="{{ route('ghn.districts') }}" data-ghn-wards-url="{{ route('ghn.wards') }}">
   <div class="velora-container">
-
     <div class="address-form-wrapper">
 
-
-      {{-- =====================================================
-                INTRO
-            ====================================================== --}}
-
       <div class="address-form-intro">
-
         <span class="hero-kicker">
           UPDATE ADDRESS
         </span>
 
-        <h1>
-          Chỉnh sửa địa chỉ
-        </h1>
+        <h1>Chỉnh sửa địa chỉ</h1>
 
         <p>
-          Cập nhật thông tin nhận hàng
-          của bạn.
+          Chọn đầy đủ Tỉnh/Thành phố, Quận/Huyện và
+          Phường/Xã theo dữ liệu GHN.
         </p>
-
 
         <a href="{{ route('addresses.index') }}" class="address-back-link">
           ← Quay lại danh sách địa chỉ
         </a>
-
       </div>
 
-
-
-      {{-- =====================================================
-                FORM
-            ====================================================== --}}
-
       <div class="address-form-card">
-
-        <form action="{{ route(
-                        'addresses.update',
-                        $address
-                    ) }}" method="POST">
-
+        <form action="{{ route('addresses.update', $address) }}" method="POST">
           @csrf
           @method('PUT')
 
-
           <div class="address-form-grid">
 
-
-            {{-- =================================================
-                            RECIPIENT
-                        ================================================== --}}
-
+            {{-- Tên người nhận --}}
             <div class="form-group">
-
               <label for="recipient_name" class="form-label">
                 Tên người nhận
               </label>
 
-
               <input type="text" id="recipient_name" name="recipient_name"
-                class="form-control @error('recipient_name') input-error @enderror" value="{{ old(
-                                    'recipient_name',
-                                    $address->recipient_name
-                                ) }}" placeholder="Nguyễn Văn A" required autofocus>
-
+                class="form-control @error('recipient_name') input-error @enderror"
+                value="{{ old('recipient_name', $address->recipient_name) }}" placeholder="Nguyễn Văn A" required
+                autofocus>
 
               @error('recipient_name')
-
-              <div class="field-error">
-                {{ $message }}
-              </div>
-
+              <div class="field-error">{{ $message }}</div>
               @enderror
-
             </div>
 
-
-
-            {{-- =================================================
-                            PHONE
-                        ================================================== --}}
-
+            {{-- Số điện thoại --}}
             <div class="form-group">
-
               <label for="phone" class="form-label">
                 Số điện thoại
               </label>
 
-
               <input type="text" id="phone" name="phone" class="form-control @error('phone') input-error @enderror"
-                value="{{ old(
-                                    'phone',
-                                    $address->phone
-                                ) }}" placeholder="0912345678" inputmode="numeric" maxlength="10" required>
-
+                value="{{ old('phone', $address->phone) }}" placeholder="0912345678" inputmode="numeric" maxlength="10"
+                required>
 
               @error('phone')
-
-              <div class="field-error">
-                {{ $message }}
-              </div>
-
+              <div class="field-error">{{ $message }}</div>
               @enderror
-
             </div>
 
-
-
-            {{-- =================================================
-                            PROVINCE
-                        ================================================== --}}
-
+            {{-- Tỉnh / Thành phố --}}
             <div class="form-group">
-
-              <label for="province_code" class="form-label">
+              <label for="province_picker" class="form-label">
                 Tỉnh / Thành phố
               </label>
 
+              <input type="hidden" id="province" name="province" value="{{ old('province', $address->province) }}">
 
-              {{--
-                                Lưu tên Tỉnh/Thành phố.
+              <input type="hidden" id="ghn_province_id" name="ghn_province_id"
+                value="{{ old('ghn_province_id', $address->ghn_province_id) }}"
+                data-selected-id="{{ old('ghn_province_id', $address->ghn_province_id) }}"
+                data-selected-name="{{ old('province', $address->province) }}">
 
-                                Với địa chỉ mới:
-                                province_code sẽ có mã.
+              <div class="address-location-combobox" data-location-combobox="province">
+                <input type="text" id="province_picker" class="form-control address-location-picker
+                    @error('province') input-error @enderror
+                    @error('ghn_province_id') input-error @enderror" value="{{ old('province', $address->province) }}"
+                  placeholder="Chọn hoặc nhập Tỉnh/Thành phố" autocomplete="off" role="combobox"
+                  aria-autocomplete="list" aria-expanded="false" aria-controls="province_dropdown" required disabled>
 
-                                Với địa chỉ cũ:
-                                JavaScript sẽ thử tìm lại
-                                Tỉnh/Thành theo tên.
-                            --}}
+                <div id="province_dropdown" class="address-location-dropdown" role="listbox" hidden></div>
+              </div>
 
-              <input type="hidden" id="province" name="province" value="{{ old(
-                                    'province',
-                                    $address->province
-                                ) }}">
-
-
-              <select id="province_code" name="province_code"
-                class="form-control @error('province') input-error @enderror @error('province_code') input-error @enderror"
-                data-selected-code="{{ old(
-                                    'province_code',
-                                    $address->province_code
-                                ) }}" data-selected-name="{{ old(
-                                    'province',
-                                    $address->province
-                                ) }}" required disabled>
-
-                <option value="">
-                  Đang tải Tỉnh/Thành phố...
-                </option>
-
-              </select>
-
+              <small class="address-location-hint">
+                Bấm để xem danh sách hoặc gõ có dấu/không dấu để tìm.
+              </small>
 
               @error('province')
-
-              <div class="field-error">
-                {{ $message }}
-              </div>
-
+              <div class="field-error">{{ $message }}</div>
               @enderror
 
-
-              @error('province_code')
-
-              <div class="field-error">
-                {{ $message }}
-              </div>
-
+              @error('ghn_province_id')
+              <div class="field-error">{{ $message }}</div>
               @enderror
-
             </div>
 
-
-
-            {{-- =================================================
-                            WARD
-                        ================================================== --}}
-
+            {{-- Quận / Huyện --}}
             <div class="form-group">
-
-              <label for="ward_code" class="form-label">
-                Phường / Xã / Đặc khu
+              <label for="district_picker" class="form-label">
+                Quận / Huyện
               </label>
 
+              <input type="hidden" id="district" name="district" value="{{ old('district', $address->district) }}">
 
-              <input type="hidden" id="ward" name="ward" value="{{ old(
-                                    'ward',
-                                    $address->ward
-                                ) }}">
+              <input type="hidden" id="ghn_district_id" name="ghn_district_id"
+                value="{{ old('ghn_district_id', $address->ghn_district_id) }}"
+                data-selected-id="{{ old('ghn_district_id', $address->ghn_district_id) }}"
+                data-selected-name="{{ old('district', $address->district) }}">
 
+              <div class="address-location-combobox" data-location-combobox="district">
+                <input type="text" id="district_picker" class="form-control address-location-picker
+                    @error('district') input-error @enderror
+                    @error('ghn_district_id') input-error @enderror" value="{{ old('district', $address->district) }}"
+                  placeholder="Chọn Tỉnh/Thành phố trước" autocomplete="off" role="combobox" aria-autocomplete="list"
+                  aria-expanded="false" aria-controls="district_dropdown" required disabled>
 
-              <select id="ward_code" name="ward_code"
-                class="form-control @error('ward') input-error @enderror @error('ward_code') input-error @enderror"
-                data-selected-code="{{ old(
-                                    'ward_code',
-                                    $address->ward_code
-                                ) }}" data-selected-name="{{ old(
-                                    'ward',
-                                    $address->ward
-                                ) }}" required disabled>
+                <div id="district_dropdown" class="address-location-dropdown" role="listbox" hidden></div>
+              </div>
 
-                <option value="">
-                  Chọn Tỉnh/Thành phố trước
-                </option>
+              @error('district')
+              <div class="field-error">{{ $message }}</div>
+              @enderror
 
-              </select>
+              @error('ghn_district_id')
+              <div class="field-error">{{ $message }}</div>
+              @enderror
+            </div>
 
+            {{-- Phường / Xã --}}
+            <div class="form-group address-grid-full">
+              <label for="ward_picker" class="form-label">
+                Phường / Xã
+              </label>
+
+              <input type="hidden" id="ward" name="ward" value="{{ old('ward', $address->ward) }}">
+
+              <input type="hidden" id="ghn_ward_code" name="ghn_ward_code"
+                value="{{ old('ghn_ward_code', $address->ghn_ward_code) }}"
+                data-selected-code="{{ old('ghn_ward_code', $address->ghn_ward_code) }}"
+                data-selected-name="{{ old('ward', $address->ward) }}">
+
+              <div class="address-location-combobox" data-location-combobox="ward">
+                <input type="text" id="ward_picker" class="form-control address-location-picker
+                    @error('ward') input-error @enderror
+                    @error('ghn_ward_code') input-error @enderror" value="{{ old('ward', $address->ward) }}"
+                  placeholder="Chọn Quận/Huyện trước" autocomplete="off" role="combobox" aria-autocomplete="list"
+                  aria-expanded="false" aria-controls="ward_dropdown" required disabled>
+
+                <div id="ward_dropdown" class="address-location-dropdown" role="listbox" hidden></div>
+              </div>
 
               @error('ward')
-
-              <div class="field-error">
-                {{ $message }}
-              </div>
-
+              <div class="field-error">{{ $message }}</div>
               @enderror
 
-
-              @error('ward_code')
-
-              <div class="field-error">
-                {{ $message }}
-              </div>
-
+              @error('ghn_ward_code')
+              <div class="field-error">{{ $message }}</div>
               @enderror
-
             </div>
 
-
-
-            {{-- =================================================
-                            API STATUS
-                        ================================================== --}}
-
+            {{-- Trạng thái GHN --}}
             <div class="form-group address-grid-full">
-
               <small id="address-location-status" aria-live="polite"></small>
-
             </div>
 
-
-
-            {{-- =================================================
-                            DETAIL ADDRESS
-                        ================================================== --}}
-
+            {{-- Địa chỉ chi tiết --}}
             <div class="form-group address-grid-full">
-
               <label for="detail_address" class="form-label">
                 Địa chỉ chi tiết
               </label>
 
-
               <input type="text" id="detail_address" name="detail_address"
-                class="form-control @error('detail_address') input-error @enderror" value="{{ old(
-                                    'detail_address',
-                                    $address->detail_address
-                                ) }}" placeholder="Số nhà, tên đường, tòa nhà..." required>
-
+                class="form-control @error('detail_address') input-error @enderror"
+                value="{{ old('detail_address', $address->detail_address) }}"
+                placeholder="Số nhà, tên đường, tòa nhà..." required>
 
               @error('detail_address')
-
-              <div class="field-error">
-                {{ $message }}
-              </div>
-
+              <div class="field-error">{{ $message }}</div>
               @enderror
-
 
               <small>
                 Ví dụ: Số 15 đường Trần Thái Tông.
               </small>
-
             </div>
 
-
-
-            {{-- =================================================
-                            LABEL
-                        ================================================== --}}
-
+            {{-- Tên gợi nhớ --}}
             <div class="form-group address-grid-full">
-
               <label for="label" class="form-label">
                 Tên gợi nhớ
               </label>
 
-
               <input type="text" id="label" name="label" class="form-control @error('label') input-error @enderror"
-                value="{{ old(
-                                    'label',
-                                    $address->label
-                                ) }}" placeholder="Nhà riêng, Công ty..." maxlength="50">
-
+                value="{{ old('label', $address->label) }}" placeholder="Nhà riêng, Công ty..." maxlength="50">
 
               @error('label')
-
-              <div class="field-error">
-                {{ $message }}
-              </div>
-
+              <div class="field-error">{{ $message }}</div>
               @enderror
-
             </div>
-
           </div>
-
-
-
-          {{-- =====================================================
-                        LEGACY ADDRESS NOTICE
-                    ====================================================== --}}
 
           @if(
-          !$address->province_code
-          || !$address->ward_code
+          !$address->ghn_province_id
+          || !$address->ghn_district_id
+          || !$address->ghn_ward_code
           )
-
           <div class="alert alert-warning">
-
-            Địa chỉ này được lưu theo dữ liệu hành chính cũ.
-            Vui lòng kiểm tra và chọn lại
-            Tỉnh/Thành phố và Phường/Xã/Đặc khu
-            trước khi cập nhật.
-
+            Địa chỉ này chưa có đầy đủ mã GHN.
+            Vui lòng chọn lại Tỉnh/Thành phố, Quận/Huyện và
+            Phường/Xã trước khi cập nhật.
           </div>
-
           @endif
 
-
-
-          {{-- =====================================================
-                        DEFAULT ADDRESS
-                    ====================================================== --}}
-
           <label class="address-default-checkbox">
-
-            <input type="checkbox" name="is_default" value="1" {{
-                                old(
-                                    'is_default',
-                                    $address->is_default
-                                )
-                                    ? 'checked'
-                                    : ''
-                            }}>
-
+            <input type="checkbox" name="is_default" value="1"
+              {{ old('is_default', $address->is_default) ? 'checked' : '' }}>
 
             <span>
-
-              <strong>
-                Đặt làm địa chỉ mặc định
-              </strong>
+              <strong>Đặt làm địa chỉ mặc định</strong>
 
               <small>
-
                 @if($address->is_default)
-
-                Đây hiện là địa chỉ mặc định
-                của bạn.
-
+                Đây hiện là địa chỉ mặc định của bạn.
                 @else
-
-                Chọn để ưu tiên địa chỉ này
-                khi thanh toán.
-
+                Chọn để ưu tiên địa chỉ này khi thanh toán.
                 @endif
-
               </small>
-
             </span>
-
           </label>
 
-
-
-          {{-- =====================================================
-                        ACTIONS
-                    ====================================================== --}}
-
           <div class="address-form-actions">
-
             <a href="{{ route('addresses.index') }}" class="btn btn-outline">
               Hủy
             </a>
 
-
             <button type="submit" class="btn btn-primary">
               Cập nhật địa chỉ
             </button>
-
           </div>
-
         </form>
-
       </div>
-
     </div>
-
   </div>
-
 </section>
-
-
-{{-- =========================================================
-    ADDRESS SELECTOR
-========================================================= --}}
 
 <script src="{{ asset('js/address-selector.js') }}" defer></script>
 

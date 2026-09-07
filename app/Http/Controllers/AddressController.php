@@ -141,6 +141,9 @@ class AddressController extends Controller
                             )
                             : null,
 
+                    'ghn_province_id' =>
+                        (int) $request->ghn_province_id,
+
 
                     /*
                      * Quận / Huyện.
@@ -156,6 +159,9 @@ class AddressController extends Controller
                                 $request->district
                             )
                             : null,
+
+                    'ghn_district_id' =>
+                        (int) $request->ghn_district_id,
 
 
                     /*
@@ -174,6 +180,11 @@ class AddressController extends Controller
                                 $request->ward_code
                             )
                             : null,
+
+                    'ghn_ward_code' =>
+                        trim(
+                            $request->ghn_ward_code
+                        ),
 
 
                     'detail_address' =>
@@ -322,6 +333,9 @@ class AddressController extends Controller
                             )
                             : null,
 
+                    'ghn_province_id' =>
+                        (int) $request->ghn_province_id,
+
 
                     /*
                      * Quận / Huyện.
@@ -337,6 +351,9 @@ class AddressController extends Controller
                                 $request->district
                             )
                             : null,
+
+                    'ghn_district_id' =>
+                        (int) $request->ghn_district_id,
 
 
                     /*
@@ -355,6 +372,11 @@ class AddressController extends Controller
                                 $request->ward_code
                             )
                             : null,
+
+                    'ghn_ward_code' =>
+                        trim(
+                            $request->ghn_ward_code
+                        ),
 
 
                     'detail_address' =>

@@ -1,0 +1,229 @@
+/* =========================================================
+   VELORA EYES - GHN ADDRESS COMBOBOX
+========================================================= */
+
+.address-form-section .address-form-card,
+.address-form-section .address-form-grid,
+.address-form-section .form-group {
+    overflow: visible;
+}
+
+/* =========================================================
+   COMBOBOX
+========================================================= */
+
+.address-location-combobox {
+    position: relative;
+    width: 100%;
+}
+
+.address-location-combobox.is-open {
+    z-index: 100;
+}
+
+.address-location-combobox::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    right: 18px;
+    width: 8px;
+    height: 8px;
+    border-right: 2px solid #64748b;
+    border-bottom: 2px solid #64748b;
+    pointer-events: none;
+    transform: translateY(-70%) rotate(45deg);
+    transition: transform 0.2s ease;
+}
+
+.address-location-combobox.is-open::after {
+    transform: translateY(-25%) rotate(225deg);
+}
+
+.address-location-combobox:has(.address-location-picker:disabled)::after {
+    opacity: 0.4;
+}
+
+/* =========================================================
+   INPUT
+========================================================= */
+
+.address-location-picker {
+    width: 100%;
+    padding-right: 48px;
+    background-color: #ffffff;
+    cursor: pointer;
+}
+
+.address-location-picker:not(:disabled):focus {
+    cursor: text;
+}
+
+.address-location-picker:disabled {
+    cursor: not-allowed;
+    background-color: #f8fafc;
+    color: #94a3b8;
+    opacity: 0.75;
+}
+
+/* =========================================================
+   DROPDOWN
+========================================================= */
+
+.address-location-dropdown {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    right: 0;
+    z-index: 1000;
+
+    max-height: 270px;
+    padding: 7px;
+
+    overflow-x: hidden;
+    overflow-y: auto;
+
+    background-color: #ffffff;
+    border: 1px solid rgba(15, 39, 71, 0.14);
+    border-radius: 14px;
+
+    box-shadow:
+        0 18px 40px rgba(15, 39, 71, 0.14),
+        0 4px 12px rgba(15, 39, 71, 0.08);
+
+    animation: addressDropdownOpen 0.16s ease;
+}
+
+.address-location-dropdown[hidden] {
+    display: none !important;
+}
+
+@keyframes addressDropdownOpen {
+    from {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* =========================================================
+   OPTIONS
+========================================================= */
+
+.address-location-option {
+    display: block;
+    width: 100%;
+    padding: 11px 13px;
+
+    border: 0;
+    border-radius: 9px;
+    background: transparent;
+
+    color: #102a4c;
+    font-family: inherit;
+    font-size: 0.94rem;
+    font-weight: 600;
+    line-height: 1.4;
+    text-align: left;
+
+    cursor: pointer;
+    transition:
+        color 0.15s ease,
+        background-color 0.15s ease,
+        transform 0.15s ease;
+}
+
+.address-location-option:hover,
+.address-location-option.is-active,
+.address-location-option[aria-selected="true"] {
+    color: #1769c2;
+    background-color: #eef6ff;
+}
+
+.address-location-option:active {
+    transform: scale(0.99);
+}
+
+/* =========================================================
+   EMPTY RESULT
+========================================================= */
+
+.address-location-empty {
+    padding: 18px 14px;
+    color: #64748b;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    text-align: center;
+}
+
+/* =========================================================
+   SCROLLBAR
+========================================================= */
+
+.address-location-dropdown {
+    scrollbar-width: thin;
+    scrollbar-color: #b7c9df transparent;
+}
+
+.address-location-dropdown::-webkit-scrollbar {
+    width: 7px;
+}
+
+.address-location-dropdown::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.address-location-dropdown::-webkit-scrollbar-thumb {
+    background-color: #b7c9df;
+    border-radius: 999px;
+}
+
+.address-location-dropdown::-webkit-scrollbar-thumb:hover {
+    background-color: #8faac8;
+}
+
+/* =========================================================
+   HINT AND STATUS
+========================================================= */
+
+.address-location-hint {
+    display: block;
+    margin-top: 7px;
+    color: #6b7280;
+    font-size: 0.82rem;
+    line-height: 1.5;
+}
+
+#address-location-status {
+    display: block;
+    min-height: 20px;
+    color: #64748b;
+    font-size: 0.87rem;
+}
+
+#address-location-status[data-state="error"] {
+    color: #b42318;
+}
+
+#address-location-status[data-state="success"] {
+    color: #067647;
+}
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 640px) {
+    .address-location-dropdown {
+        max-height: 230px;
+        border-radius: 12px;
+    }
+
+    .address-location-option {
+        padding: 12px;
+        font-size: 0.92rem;
+    }
+}

@@ -5,9 +5,13 @@ namespace App\Http\Controllers;
 use App\Http\Requests\Cart\AddToCartRequest;
 use App\Http\Requests\Cart\ApplyVoucherRequest;
 use App\Http\Requests\Cart\UpdateCartItemRequest;
+use App\Models\Cart;
 use App\Models\ProductVariant;
 use App\Services\CartService;
 use App\Services\VoucherService;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use Illuminate\Validation\ValidationException;
 
 class CartController extends Controller
@@ -20,128 +24,74 @@ class CartController extends Controller
         VoucherService $voucherService
     ) {
         $cart = $cartService
-            ->getOrCreateCart(
-                auth()->user()
-            );
+            ->getOrCreateCart(auth()->user());
 
         $cart->load([
             'items.variant.product.primaryImage',
         ]);
 
-
         /*
-         * =====================================================
-         * 1. TẠM TÍNH GIỎ HÀNG
-         * =====================================================
+         * Chỉ tính các CartItem đang được chọn.
+         * Nếu chưa có Session, mặc định chọn tất cả
+         * sản phẩm có thể thanh toán.
          */
-        $subtotal = (float) $cart->total_amount;
+        $selectedItems = $this->selectedItems($cart);
+
+        $selectedCartItemIds = $selectedItems
+            ->pluck('id')
+            ->map(fn ($id) => (int) $id)
+            ->values();
+
+        $subtotal = (float) $selectedItems
+            ->sum(fn ($item) => (float) $item->subtotal);
 
         $discountAmount = 0;
-
         $finalAmount = $subtotal;
-
         $appliedVoucher = null;
-
         $voucherError = null;
 
+        $voucherCode = session('cart_voucher_code');
 
-        /*
-         * =====================================================
-         * 2. KIỂM TRA VOUCHER ĐANG ĐƯỢC ÁP
-         * =====================================================
-         */
-        $voucherCode = session(
-            'cart_voucher_code'
-        );
-
-
-        if (
-            $voucherCode
-            && !$cart->items->isEmpty()
-        ) {
+        if ($voucherCode && $selectedItems->isNotEmpty()) {
             try {
-
                 $result = $voucherService->apply(
                     $voucherCode,
                     $subtotal
                 );
 
+                $appliedVoucher = $result['voucher'];
+                $discountAmount = $result['discount_amount'];
+                $finalAmount = $result['final_amount'];
+            } catch (ValidationException $exception) {
+                session()->forget('cart_voucher_code');
 
-                $appliedVoucher =
-                    $result['voucher'];
-
-
-                $discountAmount =
-                    $result['discount_amount'];
-
-
-                $finalAmount =
-                    $result['final_amount'];
-
-            } catch (
-                ValidationException $exception
-            ) {
-
-                /*
-                 * Voucher không còn hợp lệ
-                 * với Cart hiện tại
-                 * thì tự động loại khỏi Session.
-                 */
-                session()->forget(
-                    'cart_voucher_code'
-                );
-
-
-                $errors = $exception
-                    ->errors();
-
-
-                $voucherError = collect(
-                    $errors
-                )
+                $voucherError = collect($exception->errors())
                     ->flatten()
                     ->first();
             }
+        } elseif ($voucherCode) {
+            session()->forget('cart_voucher_code');
+
+            $voucherError =
+                'Voucher đã được bỏ vì bạn chưa chọn sản phẩm.';
         }
 
-
-        /*
-         * =====================================================
-         * 3. DANH SÁCH VOUCHER CÔNG KHAI
-         * =====================================================
-         */
         $availableVouchers = [];
-
         $lockedVouchers = [];
 
+        if ($selectedItems->isNotEmpty()) {
+            $voucherOptions = $voucherService
+                ->getPublicVoucherOptions($subtotal);
 
-        if (!$cart->items->isEmpty()) {
-
-            $voucherOptions =
-                $voucherService
-                    ->getPublicVoucherOptions(
-                        $subtotal
-                    );
-
-
-            $availableVouchers =
-                $voucherOptions['available'];
-
-
-            $lockedVouchers =
-                $voucherOptions['locked'];
+            $availableVouchers = $voucherOptions['available'];
+            $lockedVouchers = $voucherOptions['locked'];
         }
 
-
-        /*
-         * =====================================================
-         * 4. HIỂN THỊ CART
-         * =====================================================
-         */
         return view(
             'cart.index',
             compact(
                 'cart',
+                'selectedCartItemIds',
                 'subtotal',
                 'discountAmount',
                 'finalAmount',
@@ -152,7 +102,6 @@ class CartController extends Controller
             )
         );
     }
-
 
     /**
      * Thêm Variant vào giỏ hàng.
@@ -165,13 +114,17 @@ class CartController extends Controller
             $request->variant_id
         );
 
-
         $cartService->add(
             auth()->user(),
             $variant,
             (int) $request->quantity
         );
 
+        /*
+         * Khi thêm sản phẩm mới, cho phép trang giỏ hàng
+         * khởi tạo lại danh sách sản phẩm có thể chọn.
+         */
+        session()->forget('cart_selected_item_ids');
 
         return redirect()
             ->route('cart.index')
@@ -180,7 +133,6 @@ class CartController extends Controller
                 'Đã thêm sản phẩm vào giỏ hàng.'
             );
     }
-
 
     /**
      * Cập nhật số lượng.
@@ -196,7 +148,6 @@ class CartController extends Controller
             (int) $request->quantity
         );
 
-
         return redirect()
             ->route('cart.index')
             ->with(
@@ -204,7 +155,6 @@ class CartController extends Controller
                 'Đã cập nhật số lượng sản phẩm.'
             );
     }
-
 
     /**
      * Xóa một Variant khỏi Cart.
@@ -218,7 +168,6 @@ class CartController extends Controller
             $variant
         );
 
-
         return redirect()
             ->route('cart.index')
             ->with(
@@ -227,26 +176,20 @@ class CartController extends Controller
             );
     }
 
-
     /**
      * Xóa toàn bộ Cart.
      */
     public function clear(
         CartService $cartService
     ) {
-        $cartService->clear(
-            auth()->user()
-        );
+        $cartService->clear(auth()->user());
 
-
-        /*
-         * Cart trống thì Voucher
-         * cũng phải được xóa.
-         */
-        session()->forget(
-            'cart_voucher_code'
-        );
-
+        session()->forget([
+            'cart_voucher_code',
+            'cart_selected_item_ids',
+            'checkout_cart_item_ids',
+            'checkout_amount_after_discount',
+        ]);
 
         return redirect()
             ->route('cart.index')
@@ -256,9 +199,118 @@ class CartController extends Controller
             );
     }
 
+    /**
+     * Lưu các sản phẩm Customer đang chọn.
+     */
+    public function updateSelection(
+        Request $request,
+        CartService $cartService,
+        VoucherService $voucherService
+    ): JsonResponse {
+        $validated = $request->validate([
+            'selected_items' => [
+                'present',
+                'array',
+            ],
+            'selected_items.*' => [
+                'integer',
+                'distinct',
+                'min:1',
+            ],
+        ]);
+
+        $cart = $cartService
+            ->getOrCreateCart(auth()->user());
+
+        $cart->load([
+            'items.variant.product',
+        ]);
+
+        $eligibleItems = $this->eligibleItems($cart);
+
+        $eligibleIds = $eligibleItems
+            ->pluck('id')
+            ->map(fn ($id) => (int) $id)
+            ->values();
+
+        $selectedIds = collect($validated['selected_items'])
+            ->map(fn ($id) => (int) $id)
+            ->filter(fn ($id) => $id > 0)
+            ->unique()
+            ->values();
+
+        /*
+         * Không cho browser gửi CartItem không thuộc Cart
+         * hoặc không đủ điều kiện thanh toán.
+         */
+        if ($selectedIds->diff($eligibleIds)->isNotEmpty()) {
+            throw ValidationException::withMessages([
+                'selected_items' => 'Danh sách sản phẩm được chọn không hợp lệ.',
+            ]);
+        }
+
+        session()->put(
+            'cart_selected_item_ids',
+            $selectedIds->all()
+        );
+
+        $selectedItems = $eligibleItems
+            ->whereIn('id', $selectedIds->all())
+            ->values();
+
+        $subtotal = (float) $selectedItems
+            ->sum(fn ($item) => (float) $item->subtotal);
+
+        $discountAmount = 0;
+        $finalAmount = $subtotal;
+        $voucherRemoved = false;
+        $message = null;
+
+        $voucherCode = session('cart_voucher_code');
+
+        if ($voucherCode && $selectedItems->isNotEmpty()) {
+            try {
+                $result = $voucherService->apply(
+                    $voucherCode,
+                    $subtotal
+                );
+
+                $discountAmount =
+                    (float) $result['discount_amount'];
+
+                $finalAmount =
+                    (float) $result['final_amount'];
+            } catch (ValidationException $exception) {
+                session()->forget('cart_voucher_code');
+
+                $voucherRemoved = true;
+                $message = collect($exception->errors())
+                    ->flatten()
+                    ->first();
+            }
+        } elseif ($voucherCode) {
+            session()->forget('cart_voucher_code');
+
+            $voucherRemoved = true;
+            $message =
+                'Voucher đã được bỏ vì bạn chưa chọn sản phẩm.';
+        }
+
+        return response()->json([
+            'data' => [
+                'selected_ids' => $selectedIds->all(),
+                'selected_count' => $selectedIds->count(),
+                'subtotal' => $subtotal,
+                'discount_amount' => $discountAmount,
+                'final_amount' => $finalAmount,
+                'voucher_removed' => $voucherRemoved,
+                'message' => $message,
+            ],
+        ]);
+    }
 
     /**
-     * Áp mã giảm giá.
+     * Áp mã giảm giá cho các sản phẩm đang chọn.
      */
     public function applyVoucher(
         ApplyVoucherRequest $request,
@@ -266,22 +318,13 @@ class CartController extends Controller
         VoucherService $voucherService
     ) {
         $cart = $cartService
-            ->getOrCreateCart(
-                auth()->user()
-            );
-
+            ->getOrCreateCart(auth()->user());
 
         $cart->load([
             'items.variant.product',
         ]);
 
-
-        /*
-         * Không được áp Voucher
-         * nếu Cart đang trống.
-         */
         if ($cart->items->isEmpty()) {
-
             return redirect()
                 ->route('cart.index')
                 ->with(
@@ -290,129 +333,129 @@ class CartController extends Controller
                 );
         }
 
+        $selectedItems = $this->selectedItems($cart);
 
-        $subtotal =
-            (float) $cart->total_amount;
+        if ($selectedItems->isEmpty()) {
+            return redirect()
+                ->to(route('cart.index').'#cart-voucher')
+                ->with(
+                    'error',
+                    'Vui lòng chọn ít nhất một sản phẩm trước khi áp voucher.'
+                );
+        }
 
+        $subtotal = (float) $selectedItems
+            ->sum(fn ($item) => (float) $item->subtotal);
 
-        /*
-         * Lưu lại Voucher cũ
-         * để biết đây là áp mới
-         * hay đổi Voucher.
-         */
         $previousVoucherCode =
             session('cart_voucher_code');
 
-
-        /*
-         * Kiểm tra và áp Voucher.
-         */
         $result = $voucherService->apply(
             $request->voucher_code,
             $subtotal
         );
 
+        $newVoucherCode = $result['voucher']->code;
 
-        $newVoucherCode =
-            $result['voucher']->code;
-
-
-        /*
-         * Chỉ lưu Code vào Session.
-         */
         session([
-            'cart_voucher_code' =>
-                $newVoucherCode,
+            'cart_voucher_code' => $newVoucherCode,
         ]);
 
-
-        /*
-         * Nội dung thông báo riêng
-         * dành cho thao tác Voucher.
-         */
         if (
             $previousVoucherCode
-            && $previousVoucherCode
-                !== $newVoucherCode
+            && $previousVoucherCode !== $newVoucherCode
         ) {
-
             $message =
                 'Đã đổi voucher sang mã '
-                . $newVoucherCode
-                . '.';
-
-        } elseif (
-            $previousVoucherCode
-            === $newVoucherCode
-        ) {
-
+                .$newVoucherCode
+                .'.';
+        } elseif ($previousVoucherCode === $newVoucherCode) {
             $message =
                 'Voucher '
-                . $newVoucherCode
-                . ' đang được áp dụng.';
-
+                .$newVoucherCode
+                .' đang được áp dụng.';
         } else {
-
             $message =
                 'Áp dụng voucher '
-                . $newVoucherCode
-                . ' thành công.';
+                .$newVoucherCode
+                .' thành công.';
         }
 
-
-        /*
-         * Không dùng session "success"
-         * để tránh thông báo xuất hiện đầu trang.
-         *
-         * Đồng thời thêm #cart-voucher
-         * để trình duyệt tự quay lại
-         * khu vực Voucher sau khi reload.
-         */
         return redirect()
-            ->to(
-                route('cart.index')
-                . '#cart-voucher'
-            )
-            ->with(
-                'voucher_success',
-                $message
-            );
+            ->to(route('cart.index').'#cart-voucher')
+            ->with('voucher_success', $message);
     }
-
 
     /**
      * Hủy Voucher khỏi Cart.
      */
     public function removeVoucher()
     {
-        $voucherCode =
-            session('cart_voucher_code');
+        $voucherCode = session('cart_voucher_code');
 
-
-        session()->forget(
-            'cart_voucher_code'
-        );
-
+        session()->forget('cart_voucher_code');
 
         $message = $voucherCode
-            ? 'Đã bỏ voucher '
-                . $voucherCode
-                . '.'
+            ? 'Đã bỏ voucher '.$voucherCode.'.'
             : 'Đã bỏ voucher.';
 
-
-        /*
-         * Sau khi bỏ Voucher,
-         * quay lại đúng khu vực Voucher.
-         */
         return redirect()
-            ->to(
-                route('cart.index')
-                . '#cart-voucher'
+            ->to(route('cart.index').'#cart-voucher')
+            ->with('voucher_success', $message);
+    }
+
+    /**
+     * Các CartItem có thể thanh toán.
+     */
+    private function eligibleItems(Cart $cart): Collection
+    {
+        return $cart->items
+            ->filter(function ($item) {
+                $variant = $item->variant;
+                $product = $variant?->product;
+
+                return $variant
+                    && $product
+                    && $product->is_active
+                    && $variant->is_active
+                    && (int) $variant->stock_quantity
+                        >= (int) $item->quantity;
+            })
+            ->values();
+    }
+
+    /**
+     * Lấy lựa chọn hiện tại từ Session.
+     */
+    private function selectedItems(Cart $cart): Collection
+    {
+        $eligibleItems = $this->eligibleItems($cart);
+
+        $eligibleIds = $eligibleItems
+            ->pluck('id')
+            ->map(fn ($id) => (int) $id)
+            ->values();
+
+        if (session()->has('cart_selected_item_ids')) {
+            $selectedIds = collect(
+                session('cart_selected_item_ids', [])
             )
-            ->with(
-                'voucher_success',
-                $message
-            );
+                ->map(fn ($id) => (int) $id)
+                ->filter(fn ($id) => $id > 0)
+                ->unique()
+                ->intersect($eligibleIds)
+                ->values();
+        } else {
+            $selectedIds = $eligibleIds;
+        }
+
+        session()->put(
+            'cart_selected_item_ids',
+            $selectedIds->all()
+        );
+
+        return $eligibleItems
+            ->whereIn('id', $selectedIds->all())
+            ->values();
     }
 }

@@ -24,6 +24,7 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\CustomerChatController;
 use App\Http\Controllers\EyePrescriptionController;
+use App\Http\Controllers\GhnLocationController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PasswordController;
@@ -373,6 +374,10 @@ Route::middleware([
         '/cart',
         [CartController::class, 'store']
     )->name('cart.store');
+    Route::patch(
+        '/cart/selection',
+        [CartController::class, 'updateSelection']
+    )->name('cart.selection.update');
 
     Route::patch(
         '/cart/{variant}',
@@ -426,9 +431,38 @@ Route::middleware([
 
     /*
     |--------------------------------------------------------------------------
+    | GHN LOCATION
+    |--------------------------------------------------------------------------
+    */
+
+    Route::prefix('ghn')
+        ->name('ghn.')
+        ->group(function () {
+            Route::get(
+                '/provinces',
+                [GhnLocationController::class, 'provinces']
+            )->name('provinces');
+
+            Route::get(
+                '/districts',
+                [GhnLocationController::class, 'districts']
+            )->name('districts');
+
+            Route::get(
+                '/wards',
+                [GhnLocationController::class, 'wards']
+            )->name('wards');
+        });
+
+    /*
+    |--------------------------------------------------------------------------
     | CHECKOUT
     |--------------------------------------------------------------------------
     */
+    Route::get(
+        '/checkout/shipping-fee',
+        [CheckoutController::class, 'shippingFee']
+    )->name('checkout.shipping-fee');
 
     Route::get(
         '/checkout',
@@ -467,20 +501,25 @@ Route::middleware([
     )->name('orders.cancel');
 
     /*
-|--------------------------------------------------------------------------
-| PAYMENT QR
-|--------------------------------------------------------------------------
-*/
+    |--------------------------------------------------------------------------
+    | PAYMENT PAYOS QR
+    |--------------------------------------------------------------------------
+    */
 
     Route::get(
         '/payments/qr/{order}',
         [PaymentController::class, 'showQr']
     )->name('payments.qr.show');
 
-    Route::post(
-        '/payments/qr/{order}/confirm',
-        [PaymentController::class, 'confirmQr']
-    )->name('payments.qr.confirm');
+    Route::get(
+        '/payments/payos/{order}/return',
+        [PaymentController::class, 'payOSReturn']
+    )->name('payments.payos.return');
+
+    Route::get(
+        '/payments/payos/{order}/cancel',
+        [PaymentController::class, 'payOSCancel']
+    )->name('payments.payos.cancel');
 
     /*
     |--------------------------------------------------------------------------
@@ -519,6 +558,21 @@ Route::middleware([
     )->name('profile.update');
 
 });
+
+/*
+|--------------------------------------------------------------------------
+| PAYOS WEBHOOK
+|--------------------------------------------------------------------------
+|
+| Route này được máy chủ payOS gọi trực tiếp nên không đặt
+| trong middleware auth hoặc customer.
+|
+*/
+
+Route::post(
+    '/payments/payos/webhook',
+    [PaymentController::class, 'payOSWebhook']
+)->name('payments.payos.webhook');
 
 /*
 |--------------------------------------------------------------------------
@@ -1001,6 +1055,11 @@ Route::prefix('admin')
             '/products/{product}',
             [AdminProductController::class, 'update']
         )->name('products.update');
+
+        Route::patch(
+            '/products/{product}/activate',
+            [AdminProductController::class, 'activate']
+        )->name('products.activate');
 
         Route::delete(
             '/products/{product}',
