@@ -3,108 +3,105 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\CheckoutRequest;
+use App\Http\Requests\PrepareCheckoutRequest;
 use App\Mail\OrderConfirmationMail;
 use App\Models\Address;
 use App\Models\Order;
 use App\Services\CartService;
 use App\Services\CheckoutService;
+use App\Services\ShippingFeeService;
 use App\Services\VoucherService;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\ValidationException;
-use App\Http\Requests\PrepareCheckoutRequest;
 use Throwable;
 
 class CheckoutController extends Controller
 {
-
-/**
- * Nhận danh sách CartItem Customer muốn thanh toán.
- */
-public function prepare(
-    PrepareCheckoutRequest $request,
-    CartService $cartService
-) {
-    $user = auth()->user();
-
-    $cart = $cartService
-        ->getOrCreateCart($user);
-
-
-    $validated = $request->validated();
-
-
-    /*
-     * Chuẩn hóa ID.
+    /**
+     * Nhận danh sách CartItem Customer muốn thanh toán.
      */
-    $selectedIds = collect(
-        $validated['selected_items']
-    )
-        ->map(
-            fn ($id) => (int) $id
-        )
-        ->filter(
-            fn ($id) => $id > 0
-        )
-        ->unique()
-        ->values();
-
-
-    /*
-     * Chỉ lấy CartItem thuộc đúng Cart
-     * của Customer hiện tại.
-     */
-    $ownedItems = $cart
-        ->items()
-        ->whereIn(
-            'id',
-            $selectedIds->all()
-        )
-        ->get();
-
-
-    /*
-     * Nếu Customer sửa HTML và gửi
-     * CartItem của người khác -> chặn.
-     */
-    if (
-        $ownedItems->count()
-        !== $selectedIds->count()
+    public function prepare(
+        PrepareCheckoutRequest $request,
+        CartService $cartService
     ) {
+        $user = auth()->user();
+
+        $cart = $cartService
+            ->getOrCreateCart($user);
+
+        $validated = $request->validated();
+
+        /*
+         * Chuẩn hóa ID.
+         */
+        $selectedIds = collect(
+            $validated['selected_items']
+        )
+            ->map(
+                fn ($id) => (int) $id
+            )
+            ->filter(
+                fn ($id) => $id > 0
+            )
+            ->unique()
+            ->values();
+
+        /*
+         * Chỉ lấy CartItem thuộc đúng Cart
+         * của Customer hiện tại.
+         */
+        $ownedItems = $cart
+            ->items()
+            ->whereIn(
+                'id',
+                $selectedIds->all()
+            )
+            ->get();
+
+        /*
+         * Nếu Customer sửa HTML và gửi
+         * CartItem của người khác -> chặn.
+         */
+        if (
+            $ownedItems->count()
+            !== $selectedIds->count()
+        ) {
+            return redirect()
+                ->route('cart.index')
+                ->with(
+                    'error',
+                    'Danh sách sản phẩm thanh toán không hợp lệ.'
+                );
+        }
+
+        /*
+         * Lưu lựa chọn vào Session.
+         *
+         * Không tin selected_items từ browser
+         * ở bước tạo Order; CheckoutService
+         * vẫn sẽ kiểm tra lại.
+         */
+        session()->put(
+            'checkout_cart_item_ids',
+            $selectedIds->all()
+        );
+
         return redirect()
-            ->route('cart.index')
-            ->with(
-                'error',
-                'Danh sách sản phẩm thanh toán không hợp lệ.'
-            );
+            ->route('checkout.index');
     }
 
-
-    /*
-     * Lưu lựa chọn vào Session.
-     *
-     * Không tin selected_items từ browser
-     * ở bước tạo Order; CheckoutService
-     * vẫn sẽ kiểm tra lại.
-     */
-    session()->put(
-        'checkout_cart_item_ids',
-        $selectedIds->all()
-    );
-
-
-    return redirect()
-        ->route('checkout.index');
-}
     /**
      * Hiển thị trang Checkout.
      */
     public function index(
         CartService $cartService,
-        VoucherService $voucherService
+        VoucherService $voucherService,
+        ShippingFeeService $shippingFeeService
     ) {
         $user = auth()->user();
-
 
         /*
          * Lấy Cart hiện tại.
@@ -112,11 +109,9 @@ public function prepare(
         $cart = $cartService
             ->getOrCreateCart($user);
 
-
         $cart->load([
             'items.variant.product.primaryImage',
         ]);
-
 
         /*
 |--------------------------------------------------------------------------
@@ -124,72 +119,68 @@ public function prepare(
 |--------------------------------------------------------------------------
 */
 
-$selectedIds = collect(
-    session(
-        'checkout_cart_item_ids',
-        []
-    )
-)
-    ->map(
-        fn ($id) => (int) $id
-    )
-    ->filter(
-        fn ($id) => $id > 0
-    )
-    ->unique()
-    ->values();
+        $selectedIds = collect(
+            session(
+                'checkout_cart_item_ids',
+                []
+            )
+        )
+            ->map(
+                fn ($id) => (int) $id
+            )
+            ->filter(
+                fn ($id) => $id > 0
+            )
+            ->unique()
+            ->values();
 
+        if ($selectedIds->isEmpty()) {
 
-if ($selectedIds->isEmpty()) {
+            return redirect()
+                ->route('cart.index')
+                ->with(
+                    'error',
+                    'Vui lòng chọn sản phẩm cần thanh toán.'
+                );
+        }
 
-    return redirect()
-        ->route('cart.index')
-        ->with(
-            'error',
-            'Vui lòng chọn sản phẩm cần thanh toán.'
+        $selectedItems = $cart->items
+            ->whereIn(
+                'id',
+                $selectedIds->all()
+            )
+            ->values();
+
+        /*
+         * Selection không còn hợp lệ.
+         *
+         * Ví dụ CartItem đã bị xóa ở tab khác.
+         */
+        if (
+            $selectedItems->count()
+            !== $selectedIds->count()
+        ) {
+
+            session()->forget(
+                'checkout_cart_item_ids'
+            );
+
+            return redirect()
+                ->route('cart.index')
+                ->with(
+                    'error',
+                    'Giỏ hàng đã thay đổi. Vui lòng chọn lại sản phẩm.'
+                );
+        }
+
+        /*
+         * Từ đây checkout view chỉ nhìn thấy
+         * các sản phẩm được chọn.
+         */
+        $cart->setRelation(
+            'items',
+            $selectedItems
         );
-}
-
-
-$selectedItems = $cart->items
-    ->whereIn(
-        'id',
-        $selectedIds->all()
-    )
-    ->values();
-
-
-/*
- * Selection không còn hợp lệ.
- *
- * Ví dụ CartItem đã bị xóa ở tab khác.
- */
-if (
-    $selectedItems->count()
-    !== $selectedIds->count()
-) {
-
-    session()->forget(
-        'checkout_cart_item_ids'
-    );
-
-    return redirect()
-        ->route('cart.index')
-        ->with(
-            'error',
-            'Giỏ hàng đã thay đổi. Vui lòng chọn lại sản phẩm.'
-        );
-}
-
-
-/*
- * Từ đây checkout view chỉ nhìn thấy
- * các sản phẩm được chọn.
- */
-$cart->setRelation(
-    'items',
-    $selectedItems
-);
 
         /*
          * Không cho Checkout nếu Cart trống.
@@ -204,7 +195,6 @@ $cart->setRelation(
                 );
         }
 
-
         /*
          * Lấy địa chỉ của Customer hiện tại.
          */
@@ -216,7 +206,6 @@ $cart->setRelation(
             ->orderByDesc('is_default')
             ->latest()
             ->get();
-
 
         /*
          * Chưa có địa chỉ thì bắt tạo trước.
@@ -231,16 +220,13 @@ $cart->setRelation(
                 );
         }
 
-
         /*
  * Chỉ tính tiền các sản phẩm được chọn.
  */
-$subtotal = (float) $selectedItems
-    ->sum(
-        fn ($item) =>
-            (float) $item->subtotal
-    );
-
+        $subtotal = (float) $selectedItems
+            ->sum(
+                fn ($item) => (float) $item->subtotal
+            );
 
         $discountAmount = 0;
 
@@ -248,14 +234,12 @@ $subtotal = (float) $selectedItems
 
         $appliedVoucher = null;
 
-
         /*
          * Lấy Voucher đang áp trong Session.
          */
         $voucherCode = session(
             'cart_voucher_code'
         );
-
 
         if ($voucherCode) {
 
@@ -267,14 +251,11 @@ $subtotal = (float) $selectedItems
                         $subtotal
                     );
 
-
                 $appliedVoucher =
                     $result['voucher'];
 
-
                 $discountAmount =
                     $result['discount_amount'];
-
 
                 $finalAmount =
                     $result['final_amount'];
@@ -291,7 +272,6 @@ $subtotal = (float) $selectedItems
                     'cart_voucher_code'
                 );
 
-
                 return redirect()
                     ->route('cart.index')
                     ->withErrors(
@@ -300,18 +280,71 @@ $subtotal = (float) $selectedItems
             }
         }
 
+        /*
+         * Xác định địa chỉ đang được chọn.
+         */
+        $selectedAddressId = (int) old(
+            'address_id',
+            $addresses
+                ->firstWhere('is_default', true)
+                ?->id
+                ?? $addresses->first()?->id
+        );
+
+        $selectedAddress =
+            $addresses->firstWhere(
+                'id',
+                $selectedAddressId
+            )
+            ?? $addresses->first();
 
         /*
-         * Hiện tại chưa tích hợp
-         * đơn vị vận chuyển.
+         * Lưu số tiền sau voucher vào Session.
+         *
+         * Endpoint cập nhật phí vận chuyển
+         * sẽ sử dụng giá trị này.
          */
+        session([
+            'checkout_amount_after_discount' => $finalAmount,
+        ]);
+
         $shippingFee = 0;
 
+        $shippingError = null;
+
+        $isFreeShipping = false;
+
+        /*
+         * Tính phí cho địa chỉ đang chọn.
+         */
+        try {
+            $shippingResult =
+                $shippingFeeService
+                    ->calculateForAddress(
+                        $selectedAddress,
+                        $finalAmount
+                    );
+
+            $shippingFee =
+                (float) $shippingResult['fee'];
+
+            $isFreeShipping =
+                (bool) $shippingResult['is_free'];
+        } catch (ValidationException $exception) {
+            $shippingError = collect(
+                $exception->errors()
+            )
+                ->flatten()
+                ->first();
+        } catch (\RuntimeException $exception) {
+            $shippingError =
+                'Không thể lấy phí vận chuyển từ GHN. '
+                .$exception->getMessage();
+        }
 
         $total =
             $finalAmount
             + $shippingFee;
-
 
         return view(
             'checkout.index',
@@ -321,12 +354,101 @@ $subtotal = (float) $selectedItems
                 'subtotal',
                 'discountAmount',
                 'shippingFee',
+                'shippingError',
+                'isFreeShipping',
+                'selectedAddressId',
                 'total',
                 'appliedVoucher'
             )
         );
     }
 
+    /**
+     * Tính lại phí vận chuyển khi Customer đổi địa chỉ.
+     */
+    public function shippingFee(
+        Request $request,
+        ShippingFeeService $shippingFeeService
+    ): JsonResponse {
+        $validated = $request->validate([
+            'address_id' => [
+                'required',
+                'integer',
+                'min:1',
+            ],
+        ]);
+
+        /*
+         * Chỉ cho phép dùng địa chỉ
+         * thuộc Customer đang đăng nhập.
+         */
+        $address = Address::query()
+            ->where(
+                'id',
+                $validated['address_id']
+            )
+            ->where(
+                'user_id',
+                auth()->id()
+            )
+            ->first();
+
+        if (! $address) {
+            throw ValidationException::withMessages([
+                'address_id' => 'Địa chỉ nhận hàng không hợp lệ.',
+            ]);
+        }
+
+        /*
+         * Giá trị này đã được index()
+         * tính từ sản phẩm được chọn và voucher.
+         */
+        if (
+            ! session()->has(
+                'checkout_amount_after_discount'
+            )
+        ) {
+            return response()->json([
+                'message' => 'Phiên thanh toán đã hết hạn. '
+                    .'Vui lòng quay lại giỏ hàng.',
+            ], 409);
+        }
+
+        $amountAfterDiscount = (float) session(
+            'checkout_amount_after_discount'
+        );
+
+        try {
+            $shippingResult = $shippingFeeService
+                ->calculateForAddress(
+                    $address,
+                    $amountAfterDiscount
+                );
+        } catch (\RuntimeException $exception) {
+            return response()->json([
+                'message' => 'Không thể lấy phí vận chuyển từ GHN. '
+                    .$exception->getMessage(),
+            ], 502);
+        }
+
+        $shippingFee =
+            (float) $shippingResult['fee'];
+
+        return response()->json([
+            'data' => [
+                'address_id' => (int) $address->id,
+
+                'shipping_fee' => $shippingFee,
+
+                'is_free' => (bool) $shippingResult['is_free'],
+
+                'amount_after_discount' => $amountAfterDiscount,
+
+                'total' => $amountAfterDiscount
+                    + $shippingFee,
+            ],
+        ]);
+    }
 
     /**
      * Customer đặt hàng.
@@ -338,32 +460,30 @@ $subtotal = (float) $selectedItems
         $user = auth()->user();
 
         $selectedCartItemIds = collect(
-    session(
-        'checkout_cart_item_ids',
-        []
-    )
-)
-    ->map(
-        fn ($id) => (int) $id
-    )
-    ->filter(
-        fn ($id) => $id > 0
-    )
-    ->unique()
-    ->values()
-    ->all();
+            session(
+                'checkout_cart_item_ids',
+                []
+            )
+        )
+            ->map(
+                fn ($id) => (int) $id
+            )
+            ->filter(
+                fn ($id) => $id > 0
+            )
+            ->unique()
+            ->values()
+            ->all();
 
+        if (empty($selectedCartItemIds)) {
 
-if (empty($selectedCartItemIds)) {
-
-    return redirect()
-        ->route('cart.index')
-        ->with(
-            'error',
-            'Vui lòng chọn sản phẩm cần thanh toán.'
-        );
-}
-
+            return redirect()
+                ->route('cart.index')
+                ->with(
+                    'error',
+                    'Vui lòng chọn sản phẩm cần thanh toán.'
+                );
+        }
 
         /*
          * Dữ liệu đã được validate
@@ -371,7 +491,6 @@ if (empty($selectedCartItemIds)) {
          */
         $validated =
             $request->validated();
-
 
         /*
          * Kiểm tra Address phải thuộc
@@ -388,8 +507,7 @@ if (empty($selectedCartItemIds)) {
             )
             ->first();
 
-
-        if (!$address) {
+        if (! $address) {
 
             return redirect()
                 ->route('checkout.index')
@@ -399,7 +517,6 @@ if (empty($selectedCartItemIds)) {
                 );
         }
 
-
         /*
          * Voucher hiện tại đang lưu
          * trong Session.
@@ -407,7 +524,6 @@ if (empty($selectedCartItemIds)) {
         $voucherCode = session(
             'cart_voucher_code'
         );
-
 
         /*
          * CheckoutService chịu trách nhiệm:
@@ -424,15 +540,14 @@ if (empty($selectedCartItemIds)) {
          * - Xóa CartItem
          */
         $order = $checkoutService
-    ->placeOrder(
-        $user,
-        $address,
-        $validated['payment_method'],
-        $validated['note'] ?? null,
-        $voucherCode,
-        $selectedCartItemIds
-    );
-
+            ->placeOrder(
+                $user,
+                $address,
+                $validated['payment_method'],
+                $validated['note'] ?? null,
+                $voucherCode,
+                $selectedCartItemIds
+            );
 
         /*
         |--------------------------------------------------------------------------
@@ -457,7 +572,6 @@ if (empty($selectedCartItemIds)) {
                 'payment',
             ]);
 
-
             /*
              * Gửi email xác nhận.
              */
@@ -480,31 +594,27 @@ if (empty($selectedCartItemIds)) {
             Log::error(
                 'Không thể gửi email xác nhận đơn hàng.',
                 [
-                    'order_id' =>
-                        $order->id,
+                    'order_id' => $order->id,
 
-                    'order_code' =>
-                        $order->order_code,
+                    'order_code' => $order->order_code,
 
-                    'email' =>
-                        $order->email,
+                    'email' => $order->email,
 
-                    'error' =>
-                        $exception->getMessage(),
+                    'error' => $exception->getMessage(),
                 ]
             );
         }
-
 
         /*
          * Sau khi tạo Order thành công
          * thì bỏ Voucher khỏi Session.
          */
         session()->forget([
-    'cart_voucher_code',
-    'checkout_cart_item_ids',
-                        ]);
-
+            'cart_voucher_code',
+            'cart_selected_item_ids',
+            'checkout_cart_item_ids',
+            'checkout_amount_after_discount',
+        ]);
 
         /*
          * QR:
@@ -522,7 +632,6 @@ if (empty($selectedCartItemIds)) {
                 );
         }
 
-
         /*
          * VNPay:
          * chuyển sang cổng VNPay mô phỏng.
@@ -538,7 +647,6 @@ if (empty($selectedCartItemIds)) {
                     $order
                 );
         }
-
 
         /*
          * COD:
@@ -556,7 +664,6 @@ if (empty($selectedCartItemIds)) {
             );
     }
 
-
     /**
      * Trang đặt hàng thành công.
      */
@@ -573,7 +680,6 @@ if (empty($selectedCartItemIds)) {
             403
         );
 
-
         /*
          * Load thông tin phục vụ giao diện.
          */
@@ -581,7 +687,6 @@ if (empty($selectedCartItemIds)) {
             'details',
             'payment',
         ]);
-
 
         return view(
             'checkout.success',

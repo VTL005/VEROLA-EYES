@@ -18,11 +18,9 @@ return [
         'key' => env('POSTMARK_API_KEY'),
     ],
 
-
     'resend' => [
         'key' => env('RESEND_API_KEY'),
     ],
-
 
     'ses' => [
         'key' => env('AWS_ACCESS_KEY_ID'),
@@ -33,20 +31,17 @@ return [
         ),
     ],
 
-
     'slack' => [
 
         'notifications' => [
 
-            'bot_user_oauth_token' =>
-                env(
-                    'SLACK_BOT_USER_OAUTH_TOKEN'
-                ),
+            'bot_user_oauth_token' => env(
+                'SLACK_BOT_USER_OAUTH_TOKEN'
+            ),
 
-            'channel' =>
-                env(
-                    'SLACK_BOT_USER_DEFAULT_CHANNEL'
-                ),
+            'channel' => env(
+                'SLACK_BOT_USER_DEFAULT_CHANNEL'
+            ),
         ],
     ],
 
@@ -64,17 +59,14 @@ return [
 
     'google' => [
 
-        'client_id' =>
-            env('GOOGLE_CLIENT_ID'),
+        'client_id' => env('GOOGLE_CLIENT_ID'),
 
-        'client_secret' =>
-            env('GOOGLE_CLIENT_SECRET'),
+        'client_secret' => env('GOOGLE_CLIENT_SECRET'),
 
-        'redirect' =>
-            env(
-                'GOOGLE_REDIRECT_URI',
-                'http://127.0.0.1:8000/auth/google/callback'
-            ),
+        'redirect' => env(
+            'GOOGLE_REDIRECT_URI',
+            'http://127.0.0.1:8000/auth/google/callback'
+        ),
     ],
     /*
     |--------------------------------------------------------------------------
@@ -90,17 +82,34 @@ return [
 
     'ghn' => [
 
-        'token' =>
-            env('GHN_TOKEN'),
+        'token' => env('GHN_TOKEN'),
 
-        'shop_id' =>
-            env('GHN_SHOP_ID'),
+        'shop_id' => env('GHN_SHOP_ID'),
 
-        'base_url' =>
-            env(
-                'GHN_BASE_URL',
-                'https://dev-online-gateway.ghn.vn'
-            ),
+        'base_url' => env(
+            'GHN_BASE_URL',
+            'https://dev-online-gateway.ghn.vn'
+        ),
+    ],
+    /*
+    |--------------------------------------------------------------------------
+    | PAYOS PAYMENT
+    |--------------------------------------------------------------------------
+    |
+    | Cấu hình cổng thanh toán payOS.
+    |
+    | Các khóa bí mật được lưu trong file .env
+    | và không được ghi trực tiếp vào source code.
+    |
+    */
+
+    'payos' => [
+
+        'client_id' => env('PAYOS_CLIENT_ID'),
+
+        'api_key' => env('PAYOS_API_KEY'),
+
+        'checksum_key' => env('PAYOS_CHECKSUM_KEY'),
     ],
 
 ];

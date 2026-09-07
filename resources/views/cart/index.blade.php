@@ -134,7 +134,7 @@ return
 
             <label class="cart-select-all">
 
-              <input type="checkbox" id="selectAllCheckout" checked>
+              <input type="checkbox" id="selectAllCheckout">
 
               Chọn tất cả sản phẩm có thể thanh toán
 
@@ -210,9 +210,9 @@ return
               <div class="cart-select-item">
 
                 <input type="checkbox" class="checkout-item-checkbox" name="selected_items[]" value="{{ $item->id }}"
-                  data-subtotal="{{ (float) $item->subtotal }}" form="checkout-selection-form" {{ $checkoutEligible
-                                            ? 'checked'
-                                            : 'disabled' }}>
+                  data-subtotal="{{ (float) $item->subtotal }}" form="checkout-selection-form"
+                  {{ $checkoutEligible && $selectedCartItemIds->contains((int) $item->id) ? 'checked' : '' }}
+                  {{ $checkoutEligible ? '' : 'disabled' }}>
 
               </div>
 
@@ -1060,7 +1060,7 @@ return
                 Tạm tính
               </span>
 
-              <strong>
+              <strong id="cartSummarySubtotal">
 
                 {{ number_format(
                                     (float) $subtotal,
@@ -1082,7 +1082,7 @@ return
                 Giảm giá
               </span>
 
-              <strong style="
+              <strong id="cartSummaryDiscount" style="
                                         color:var(--velora-success);
                                     ">
 
@@ -1123,7 +1123,7 @@ return
               Tổng thanh toán
             </span>
 
-            <strong>
+            <strong id="cartSummaryTotal">
 
               {{ number_format(
                                 (float) $finalAmount,
@@ -1175,7 +1175,8 @@ return
           </div>
 
 
-          <form id="checkout-selection-form" action="{{ route('checkout.prepare') }}" method="POST">
+          <form id="checkout-selection-form" action="{{ route('checkout.prepare') }}" method="POST"
+            data-selection-url="{{ route('cart.selection.update') }}" data-csrf-token="{{ csrf_token() }}">
 
             @csrf
 
@@ -1209,142 +1210,268 @@ return
   @push('scripts')
 
   <script>
-  document.addEventListener(
-    'DOMContentLoaded',
-    function() {
+  document.addEventListener('DOMContentLoaded', function() {
+    const checkboxes = Array.from(
+      document.querySelectorAll(
+        '.checkout-item-checkbox:not(:disabled)'
+      )
+    );
 
-      const checkboxes = Array.from(
-        document.querySelectorAll(
-          '.checkout-item-checkbox:not(:disabled)'
-        )
+    const selectAll = document.getElementById(
+      'selectAllCheckout'
+    );
+
+    const countElement = document.getElementById(
+      'selectedCheckoutCount'
+    );
+
+    const selectedSubtotalElement = document.getElementById(
+      'selectedCheckoutSubtotal'
+    );
+
+    const summarySubtotalElement = document.getElementById(
+      'cartSummarySubtotal'
+    );
+
+    const summaryDiscountElement = document.getElementById(
+      'cartSummaryDiscount'
+    );
+
+    const summaryTotalElement = document.getElementById(
+      'cartSummaryTotal'
+    );
+
+    const checkoutForm = document.getElementById(
+      'checkout-selection-form'
+    );
+
+    const checkoutButton = document.getElementById(
+      'checkoutSelectedButton'
+    );
+
+    if (!checkoutForm) {
+      return;
+    }
+
+    const selectionUrl = checkoutForm.dataset.selectionUrl;
+    const csrfToken = checkoutForm.dataset.csrfToken;
+
+    let saveQueue = Promise.resolve();
+    let isReloading = false;
+    let selectionVersion = 0;
+
+    function formatMoney(value) {
+      return new Intl.NumberFormat('vi-VN')
+        .format(Number(value) || 0) + 'đ';
+    }
+
+    function getSelectedCheckboxes() {
+      return checkboxes.filter(
+        checkbox => checkbox.checked
       );
+    }
 
+    function getSelectedIds() {
+      return getSelectedCheckboxes().map(
+        checkbox => Number(checkbox.value)
+      );
+    }
 
-      const selectAll =
-        document.getElementById(
-          'selectAllCheckout'
-        );
-
-
-      const countElement =
-        document.getElementById(
-          'selectedCheckoutCount'
-        );
-
-
-      const subtotalElement =
-        document.getElementById(
-          'selectedCheckoutSubtotal'
-        );
-
-
-      const checkoutButton =
-        document.getElementById(
-          'checkoutSelectedButton'
-        );
-
-
-      function formatMoney(value) {
-
-        return new Intl.NumberFormat(
-          'vi-VN'
-        ).format(value) + 'đ';
-
-      }
-
-
-      function refreshCheckoutSummary() {
-
-        const selected =
-          checkboxes.filter(
-            checkbox =>
-            checkbox.checked
+    function getSelectedSubtotal() {
+      return getSelectedCheckboxes().reduce(
+        (total, checkbox) => {
+          return total + Number(
+            checkbox.dataset.subtotal || 0
           );
+        },
+        0
+      );
+    }
 
+    function refreshLocalSummary() {
+      const selected = getSelectedCheckboxes();
+      const subtotal = getSelectedSubtotal();
 
-        const subtotal =
-          selected.reduce(
-            (total, checkbox) => {
+      countElement.textContent = selected.length;
+      selectedSubtotalElement.textContent =
+        formatMoney(subtotal);
 
-              return total +
-                Number(
-                  checkbox.dataset.subtotal ||
-                  0
-                );
-
-            },
-            0
-          );
-
-
-        countElement.textContent =
-          selected.length;
-
-
-        subtotalElement.textContent =
+      if (summarySubtotalElement) {
+        summarySubtotalElement.textContent =
           formatMoney(subtotal);
-
-
-        checkoutButton.disabled =
-          selected.length === 0;
-
-
-        if (selectAll) {
-
-          selectAll.checked =
-            checkboxes.length > 0 &&
-            selected.length ===
-            checkboxes.length;
-
-
-          selectAll.indeterminate =
-            selected.length > 0 &&
-            selected.length <
-            checkboxes.length;
-        }
       }
 
+      checkoutButton.disabled = selected.length === 0;
 
       if (selectAll) {
+        selectAll.checked =
+          checkboxes.length > 0 &&
+          selected.length === checkboxes.length;
 
-        selectAll.addEventListener(
-          'change',
-          function() {
+        selectAll.indeterminate =
+          selected.length > 0 &&
+          selected.length < checkboxes.length;
+      }
+    }
 
-            checkboxes.forEach(
-              checkbox => {
-
-                checkbox.checked =
-                  selectAll.checked;
-
-              }
-            );
-
-
-            refreshCheckoutSummary();
-
-          }
-        );
-
+    function applyServerSummary(data) {
+      if (summarySubtotalElement) {
+        summarySubtotalElement.textContent =
+          formatMoney(data.subtotal);
       }
 
+      if (summaryDiscountElement) {
+        summaryDiscountElement.textContent =
+          '-' + formatMoney(data.discount_amount);
+      }
 
-      checkboxes.forEach(
-        checkbox => {
+      if (summaryTotalElement) {
+        summaryTotalElement.textContent =
+          formatMoney(data.final_amount);
+      }
+    }
 
-          checkbox.addEventListener(
-            'change',
-            refreshCheckoutSummary
-          );
+    async function sendSelection(selectedIds) {
+      const response = await fetch(selectionUrl, {
+        method: 'PATCH',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+          'X-Requested-With': 'XMLHttpRequest',
+          'X-CSRF-TOKEN': csrfToken,
+        },
+        credentials: 'same-origin',
+        body: JSON.stringify({
+          selected_items: selectedIds,
+        }),
+      });
 
-        }
+      const payload = await response.json().catch(
+        () => null
       );
 
+      if (!response.ok) {
+        throw new Error(
+          payload?.message ||
+          'Không thể lưu sản phẩm đã chọn.'
+        );
+      }
 
-      refreshCheckoutSummary();
+      const data = payload?.data;
 
+      if (!data) {
+        throw new Error(
+          'Dữ liệu giỏ hàng không hợp lệ.'
+        );
+      }
+
+      applyServerSummary(data);
+
+      if (data.voucher_removed && !isReloading) {
+        isReloading = true;
+
+        window.alert(
+          data.message ||
+          'Voucher không còn phù hợp với sản phẩm đã chọn.'
+        );
+
+        window.location.reload();
+      }
+
+      return data;
     }
-  );
+
+    function queueSelectionSave() {
+      const selectedIds = getSelectedIds();
+
+      saveQueue = saveQueue
+        .catch(() => undefined)
+        .then(() => sendSelection(selectedIds));
+
+      return saveQueue;
+    }
+
+    function saveAfterChange() {
+      const currentVersion = ++selectionVersion;
+
+      refreshLocalSummary();
+
+      queueSelectionSave()
+        .then(() => {
+          /*
+           * Chỉ reload sau lần thay đổi cuối cùng.
+           *
+           * Lựa chọn đã được lưu trong Laravel Session,
+           * nên sau reload checkbox vẫn được giữ nguyên.
+           */
+          if (
+            currentVersion === selectionVersion &&
+            !isReloading
+          ) {
+            isReloading = true;
+            window.location.reload();
+          }
+        })
+        .catch(error => {
+          window.alert(error.message);
+        });
+    }
+
+    if (selectAll) {
+      selectAll.addEventListener('change', function() {
+        checkboxes.forEach(checkbox => {
+          checkbox.checked = selectAll.checked;
+        });
+
+        saveAfterChange();
+      });
+    }
+
+    checkboxes.forEach(checkbox => {
+      checkbox.addEventListener(
+        'change',
+        saveAfterChange
+      );
+    });
+
+    document
+      .querySelectorAll('.cart-voucher form')
+      .forEach(form => {
+        form.addEventListener('submit', async event => {
+          if (form.dataset.selectionSaved === 'true') {
+            return;
+          }
+
+          event.preventDefault();
+
+          try {
+            await queueSelectionSave();
+            form.dataset.selectionSaved = 'true';
+            form.submit();
+          } catch (error) {
+            window.alert(error.message);
+          }
+        });
+      });
+
+    checkoutForm.addEventListener('submit', async event => {
+      if (checkoutForm.dataset.selectionSaved === 'true') {
+        return;
+      }
+
+      event.preventDefault();
+
+      try {
+        await queueSelectionSave();
+        checkoutForm.dataset.selectionSaved = 'true';
+        checkoutForm.submit();
+      } catch (error) {
+        window.alert(error.message);
+      }
+    });
+
+    refreshLocalSummary();
+  });
   </script>
 
   @endpush

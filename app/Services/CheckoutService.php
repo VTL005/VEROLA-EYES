@@ -17,9 +17,10 @@ use Illuminate\Validation\ValidationException;
 class CheckoutService
 {
     public function __construct(
-        private VoucherService $voucherService
-    ) {
-    }
+    private VoucherService $voucherService,
+    private ShippingFeeService $shippingFeeService
+) {
+}
 
 
     /**
@@ -381,18 +382,45 @@ if (
                  */
 
                 /*
-                 * Chưa tích hợp API vận chuyển.
-                 */
-                $shippingFee = 0;
+ * Giá trị tiền hàng sau khi áp dụng voucher.
+ */
+$amountAfterDiscount = max(
+    0,
+    $subtotal - $discountAmount
+);
 
 
-                $total = max(
-                    0,
-                    $subtotal
-                    - $discountAmount
-                    + $shippingFee
-                );
+/*
+ * Tính phí vận chuyển:
+ *
+ * - Từ 2.000.000đ: miễn phí vận chuyển.
+ * - Dưới 2.000.000đ: tính phí qua GHN Test.
+ */
+try {
+    $shippingResult =
+        $this->shippingFeeService
+            ->calculateForAddress(
+                $address,
+                $amountAfterDiscount
+            );
 
+    $shippingFee =
+        (float) $shippingResult['fee'];
+} catch (\RuntimeException $exception) {
+    throw ValidationException::withMessages([
+        'address_id' =>
+            'Không thể tính phí vận chuyển. '
+            . $exception->getMessage(),
+    ]);
+}
+
+
+/*
+ * Tổng tiền khách phải thanh toán.
+ */
+$total =
+    $amountAfterDiscount
+    + $shippingFee;
 
                 /*
                  * =====================================================

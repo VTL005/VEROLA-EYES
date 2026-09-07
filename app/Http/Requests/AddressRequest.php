@@ -11,7 +11,6 @@ class AddressRequest extends FormRequest
         return true;
     }
 
-
     public function rules(): array
     {
         return [
@@ -27,7 +26,6 @@ class AddressRequest extends FormRequest
                 'regex:/^0[0-9]{9}$/',
             ],
 
-
             /*
             |--------------------------------------------------------------------------
             | Tỉnh / Thành phố
@@ -40,33 +38,42 @@ class AddressRequest extends FormRequest
                 'max:100',
             ],
 
+            'ghn_province_id' => [
+                'required',
+                'integer',
+                'min:1',
+            ],
+
+            /*
+             * Giữ lại để tương thích dữ liệu cũ.
+             */
             'province_code' => [
                 'nullable',
                 'string',
                 'max:20',
             ],
 
-
             /*
             |--------------------------------------------------------------------------
             | Quận / Huyện
             |--------------------------------------------------------------------------
-            |
-            | Chỉ giữ để tương thích với địa chỉ cũ.
-            | Địa chỉ theo cấu trúc mới không bắt buộc trường này.
-            |
             */
 
             'district' => [
-                'nullable',
+                'required',
                 'string',
                 'max:100',
             ],
 
+            'ghn_district_id' => [
+                'required',
+                'integer',
+                'min:1',
+            ],
 
             /*
             |--------------------------------------------------------------------------
-            | Phường / Xã / Đặc khu
+            | Phường / Xã
             |--------------------------------------------------------------------------
             */
 
@@ -76,12 +83,20 @@ class AddressRequest extends FormRequest
                 'max:100',
             ],
 
+            'ghn_ward_code' => [
+                'required',
+                'string',
+                'max:20',
+            ],
+
+            /*
+             * Giữ lại để tương thích dữ liệu cũ.
+             */
             'ward_code' => [
                 'nullable',
                 'string',
                 'max:20',
             ],
-
 
             'detail_address' => [
                 'required',
@@ -102,7 +117,6 @@ class AddressRequest extends FormRequest
         ];
     }
 
-
     public function messages(): array
     {
         return [
@@ -115,13 +129,11 @@ class AddressRequest extends FormRequest
             'recipient_name.max' =>
                 'Tên người nhận không được vượt quá 100 ký tự.',
 
-
             'phone.required' =>
                 'Vui lòng nhập số điện thoại.',
 
             'phone.regex' =>
                 'Số điện thoại phải gồm 10 chữ số và bắt đầu bằng số 0.',
-
 
             'province.required' =>
                 'Vui lòng chọn Tỉnh/Thành phố.',
@@ -129,35 +141,41 @@ class AddressRequest extends FormRequest
             'province.max' =>
                 'Tỉnh/Thành phố không được vượt quá 100 ký tự.',
 
-            'province_code.max' =>
-                'Mã Tỉnh/Thành phố không hợp lệ.',
+            'ghn_province_id.required' =>
+                'Vui lòng chọn Tỉnh/Thành phố trong danh sách GHN.',
 
+            'ghn_province_id.integer' =>
+                'Mã Tỉnh/Thành phố GHN không hợp lệ.',
 
-            /*
-             * Không còn district.required
-             * vì Quận/Huyện không bắt buộc với địa chỉ mới.
-             */
+            'district.required' =>
+                'Vui lòng chọn Quận/Huyện.',
 
             'district.max' =>
                 'Quận/Huyện không được vượt quá 100 ký tự.',
 
+            'ghn_district_id.required' =>
+                'Vui lòng chọn Quận/Huyện trong danh sách GHN.',
+
+            'ghn_district_id.integer' =>
+                'Mã Quận/Huyện GHN không hợp lệ.',
 
             'ward.required' =>
-                'Vui lòng chọn Phường/Xã/Đặc khu.',
+                'Vui lòng chọn Phường/Xã.',
 
             'ward.max' =>
-                'Phường/Xã/Đặc khu không được vượt quá 100 ký tự.',
+                'Phường/Xã không được vượt quá 100 ký tự.',
 
-            'ward_code.max' =>
-                'Mã Phường/Xã/Đặc khu không hợp lệ.',
+            'ghn_ward_code.required' =>
+                'Vui lòng chọn Phường/Xã trong danh sách GHN.',
 
+            'ghn_ward_code.max' =>
+                'Mã Phường/Xã GHN không hợp lệ.',
 
             'detail_address.required' =>
                 'Vui lòng nhập địa chỉ chi tiết.',
 
             'detail_address.max' =>
                 'Địa chỉ chi tiết không được vượt quá 255 ký tự.',
-
 
             'label.max' =>
                 'Tên gợi nhớ địa chỉ không được vượt quá 50 ký tự.',

@@ -1,374 +1,598 @@
 document.addEventListener("DOMContentLoaded", () => {
-    const provinceSelect = document.getElementById("province_code");
+    const root = document.querySelector(".address-form-section");
 
-    const wardSelect = document.getElementById("ward_code");
-
-    const provinceInput = document.getElementById("province");
-
-    const wardInput = document.getElementById("ward");
-
-    const statusElement = document.getElementById("address-location-status");
-
-    /*
-    |--------------------------------------------------------------------------
-    | CHỈ CHẠY TRÊN FORM ĐỊA CHỈ
-    |--------------------------------------------------------------------------
-    */
-
-    if (!provinceSelect || !wardSelect || !provinceInput || !wardInput) {
+    if (!root) {
         return;
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | PROVINCE OPEN API V2
-    |--------------------------------------------------------------------------
-    */
+    const statusElement = document.getElementById("address-location-status");
 
-    const API_BASE = "https://provinces.open-api.vn/api/v2";
+    const controls = {
+        province: {
+            type: "province",
+            input: document.getElementById("province_picker"),
+            dropdown: document.getElementById("province_dropdown"),
+            nameField: document.getElementById("province"),
+            codeField: document.getElementById("ghn_province_id"),
+            valueKey: "id",
+            items: [],
+            activeIndex: -1,
+        },
 
-    /*
-    |--------------------------------------------------------------------------
-    | GIÁ TRỊ CŨ / GIÁ TRỊ SAU VALIDATION
-    |--------------------------------------------------------------------------
-    |
-    | Code:
-    | dùng cho địa chỉ mới.
-    |
-    | Name:
-    | dùng fallback cho địa chỉ cũ
-    | chưa có province_code / ward_code.
-    |
-    */
+        district: {
+            type: "district",
+            input: document.getElementById("district_picker"),
+            dropdown: document.getElementById("district_dropdown"),
+            nameField: document.getElementById("district"),
+            codeField: document.getElementById("ghn_district_id"),
+            valueKey: "id",
+            items: [],
+            activeIndex: -1,
+        },
 
-    const selectedProvinceCode = provinceSelect.dataset.selectedCode || "";
+        ward: {
+            type: "ward",
+            input: document.getElementById("ward_picker"),
+            dropdown: document.getElementById("ward_dropdown"),
+            nameField: document.getElementById("ward"),
+            codeField: document.getElementById("ghn_ward_code"),
+            valueKey: "code",
+            items: [],
+            activeIndex: -1,
+        },
+    };
 
-    const selectedProvinceName = provinceSelect.dataset.selectedName || "";
+    const initialValues = {
+        provinceId:
+            controls.province.codeField?.dataset.selectedId ||
+            controls.province.codeField?.value ||
+            "",
 
-    const selectedWardCode = wardSelect.dataset.selectedCode || "";
+        districtId:
+            controls.district.codeField?.dataset.selectedId ||
+            controls.district.codeField?.value ||
+            "",
 
-    const selectedWardName = wardSelect.dataset.selectedName || "";
+        wardCode:
+            controls.ward.codeField?.dataset.selectedCode ||
+            controls.ward.codeField?.value ||
+            "",
+    };
 
-    /**
-     * Hiển thị trạng thái tải dữ liệu.
-     */
-    const showStatus = (message = "", isError = false) => {
+    const normalizeText = (value) => {
+        return String(value ?? "")
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "")
+            .replace(/đ/g, "d")
+            .replace(/Đ/g, "D")
+            .toLowerCase()
+            .trim();
+    };
+
+    const setStatus = (message = "", state = "") => {
         if (!statusElement) {
             return;
         }
 
         statusElement.textContent = message;
 
-        statusElement.dataset.state = isError ? "error" : "normal";
-    };
-
-    /**
-     * Tạo option.
-     */
-    const createOption = (value, label, name = "") => {
-        const option = document.createElement("option");
-
-        option.value = value;
-        option.textContent = label;
-
-        if (name) {
-            option.dataset.name = name;
+        if (state) {
+            statusElement.dataset.state = state;
+        } else {
+            delete statusElement.dataset.state;
         }
-
-        return option;
     };
 
-    /**
-     * Gọi API.
-     */
-    const fetchJson = async (url) => {
-        const response = await fetch(url, {
-            headers: {
-                Accept: "application/json",
-            },
+    const fetchData = async (url, parameters = {}) => {
+        const requestUrl = new URL(url, window.location.origin);
+
+        Object.entries(parameters).forEach(([key, value]) => {
+            requestUrl.searchParams.set(key, value);
         });
 
+        const response = await fetch(requestUrl.toString(), {
+            method: "GET",
+            headers: {
+                Accept: "application/json",
+                "X-Requested-With": "XMLHttpRequest",
+            },
+            credentials: "same-origin",
+        });
+
+        const result = await response.json().catch(() => null);
+
         if (!response.ok) {
-            throw new Error(`HTTP ${response.status}`);
+            throw new Error(
+                result?.message || "Không thể tải dữ liệu địa chỉ GHN.",
+            );
         }
 
-        return response.json();
+        if (!Array.isArray(result?.data)) {
+            throw new Error("Dữ liệu địa chỉ GHN không hợp lệ.");
+        }
+
+        return result.data;
     };
 
-    /**
-     * Tìm option theo tên.
-     *
-     * Dùng cho địa chỉ cũ chưa lưu code.
-     */
-    const findOptionByName = (select, name) => {
-        if (!name) {
-            return null;
+    const closeDropdown = (control) => {
+        if (!control?.dropdown || !control?.input) {
+            return;
         }
 
-        const normalizedName = name.trim().toLocaleLowerCase("vi");
+        control.dropdown.hidden = true;
+        control.input.setAttribute("aria-expanded", "false");
+        control.input
+            .closest(".address-location-combobox")
+            ?.classList.remove("is-open");
 
-        return (
-            [...select.options].find((option) => {
-                const optionName = (
-                    option.dataset.name ||
-                    option.textContent ||
-                    ""
-                )
-                    .trim()
-                    .toLocaleLowerCase("vi");
+        control.activeIndex = -1;
+    };
 
-                return optionName === normalizedName;
-            }) || null
+    const closeAllDropdowns = (exceptControl = null) => {
+        Object.values(controls).forEach((control) => {
+            if (control !== exceptControl) {
+                closeDropdown(control);
+            }
+        });
+    };
+
+    const setDisabled = (control, disabled, placeholder = "") => {
+        if (!control?.input) {
+            return;
+        }
+
+        control.input.disabled = disabled;
+
+        if (placeholder) {
+            control.input.placeholder = placeholder;
+        }
+
+        if (disabled) {
+            closeDropdown(control);
+        }
+    };
+
+    const clearControl = (control, placeholder, disabled = true) => {
+        control.items = [];
+        control.activeIndex = -1;
+
+        if (control.input) {
+            control.input.value = "";
+            control.input.setCustomValidity("");
+        }
+
+        if (control.nameField) {
+            control.nameField.value = "";
+        }
+
+        if (control.codeField) {
+            control.codeField.value = "";
+        }
+
+        if (control.dropdown) {
+            control.dropdown.replaceChildren();
+        }
+
+        setDisabled(control, disabled, placeholder);
+    };
+
+    const getFilteredItems = (control) => {
+        const keyword = normalizeText(control.input.value);
+
+        if (!keyword) {
+            return control.items;
+        }
+
+        return control.items.filter((item) => {
+            return normalizeText(item.name).includes(keyword);
+        });
+    };
+
+    const updateActiveOption = (control) => {
+        const options = Array.from(
+            control.dropdown.querySelectorAll(".address-location-option"),
         );
+
+        options.forEach((option, index) => {
+            const isActive = index === control.activeIndex;
+
+            option.classList.toggle("is-active", isActive);
+            option.setAttribute("aria-selected", isActive ? "true" : "false");
+        });
+
+        const activeOption = options[control.activeIndex];
+
+        if (activeOption) {
+            activeOption.scrollIntoView({
+                block: "nearest",
+            });
+        }
     };
 
-    /**
-     * Reset Phường/Xã.
-     */
-    const resetWards = (message = "Chọn Tỉnh/Thành phố trước") => {
-        wardSelect.innerHTML = "";
+    const openDropdown = (control) => {
+        if (!control?.input || !control?.dropdown || control.input.disabled) {
+            return;
+        }
 
-        wardSelect.appendChild(createOption("", message));
+        closeAllDropdowns(control);
 
-        wardSelect.disabled = true;
-
-        wardInput.value = "";
+        control.dropdown.hidden = false;
+        control.input.setAttribute("aria-expanded", "true");
+        control.input
+            .closest(".address-location-combobox")
+            ?.classList.add("is-open");
     };
 
-    /**
-     * Load Phường/Xã/Đặc khu.
-     */
-    const loadWards = async (
-        provinceCode,
-        preferredWardCode = "",
-        preferredWardName = "",
+    const applySelection = (control, item) => {
+        const selectedValue = item[control.valueKey];
+
+        control.input.value = item.name;
+        control.nameField.value = item.name;
+        control.codeField.value = selectedValue;
+        control.input.setCustomValidity("");
+
+        closeDropdown(control);
+    };
+
+    const loadWards = async (districtId, selectedWardCode = "") => {
+        clearControl(controls.ward, "Đang tải Phường/Xã...", true);
+
+        setStatus("Đang tải danh sách Phường/Xã...");
+
+        try {
+            const wards = await fetchData(root.dataset.ghnWardsUrl, {
+                district_id: districtId,
+            });
+
+            controls.ward.items = wards.sort((first, second) => {
+                return first.name.localeCompare(second.name, "vi");
+            });
+
+            setDisabled(controls.ward, false, "Chọn hoặc nhập Phường/Xã");
+
+            if (selectedWardCode) {
+                const selectedWard = controls.ward.items.find(
+                    (item) => String(item.code) === String(selectedWardCode),
+                );
+
+                if (selectedWard) {
+                    applySelection(controls.ward, selectedWard);
+                }
+            }
+
+            setStatus("Dữ liệu địa chỉ GHN đã sẵn sàng.", "success");
+        } catch (error) {
+            clearControl(controls.ward, "Không thể tải Phường/Xã", true);
+
+            setStatus(error.message, "error");
+        }
+    };
+
+    const loadDistricts = async (
+        provinceId,
+        selectedDistrictId = "",
+        selectedWardCode = "",
     ) => {
-        if (!provinceCode) {
-            resetWards();
+        clearControl(controls.district, "Đang tải Quận/Huyện...", true);
+
+        clearControl(controls.ward, "Chọn Quận/Huyện trước", true);
+
+        setStatus("Đang tải danh sách Quận/Huyện...");
+
+        try {
+            const districts = await fetchData(root.dataset.ghnDistrictsUrl, {
+                province_id: provinceId,
+            });
+
+            controls.district.items = districts.sort((first, second) => {
+                return first.name.localeCompare(second.name, "vi");
+            });
+
+            setDisabled(controls.district, false, "Chọn hoặc nhập Quận/Huyện");
+
+            if (selectedDistrictId) {
+                const selectedDistrict = controls.district.items.find(
+                    (item) => String(item.id) === String(selectedDistrictId),
+                );
+
+                if (selectedDistrict) {
+                    applySelection(controls.district, selectedDistrict);
+
+                    await loadWards(selectedDistrict.id, selectedWardCode);
+
+                    return;
+                }
+            }
+
+            setStatus("Hãy chọn Quận/Huyện.", "success");
+        } catch (error) {
+            clearControl(controls.district, "Không thể tải Quận/Huyện", true);
+
+            clearControl(controls.ward, "Chọn Quận/Huyện trước", true);
+
+            setStatus(error.message, "error");
+        }
+    };
+
+    const selectItem = async (control, item) => {
+        applySelection(control, item);
+
+        if (control.type === "province") {
+            await loadDistricts(item.id);
+        }
+
+        if (control.type === "district") {
+            await loadWards(item.id);
+        }
+
+        if (control.type === "ward") {
+            setStatus("Đã chọn đầy đủ địa chỉ giao hàng.", "success");
+        }
+    };
+
+    const renderDropdown = (control) => {
+        const filteredItems = getFilteredItems(control);
+
+        control.dropdown.replaceChildren();
+        control.activeIndex = -1;
+
+        if (filteredItems.length === 0) {
+            const emptyElement = document.createElement("div");
+
+            emptyElement.className = "address-location-empty";
+
+            emptyElement.textContent = "Không tìm thấy địa chỉ phù hợp.";
+
+            control.dropdown.appendChild(emptyElement);
+            openDropdown(control);
 
             return;
         }
 
-        wardSelect.disabled = true;
+        filteredItems.forEach((item) => {
+            const option = document.createElement("button");
 
-        wardSelect.innerHTML = "";
+            option.type = "button";
+            option.className = "address-location-option";
+            option.setAttribute("role", "option");
+            option.setAttribute("aria-selected", "false");
+            option.textContent = item.name;
 
-        wardSelect.appendChild(createOption("", "Đang tải Phường/Xã..."));
-
-        showStatus("Đang tải danh sách Phường/Xã/Đặc khu...");
-
-        try {
-            const wards = await fetchJson(
-                `${API_BASE}/w/?province=${encodeURIComponent(provinceCode)}`,
-            );
-
-            wardSelect.innerHTML = "";
-
-            wardSelect.appendChild(createOption("", "Chọn Phường/Xã/Đặc khu"));
-
-            const sortedWards = Array.isArray(wards)
-                ? [...wards].sort((a, b) => a.name.localeCompare(b.name, "vi"))
-                : [];
-
-            sortedWards.forEach((ward) => {
-                wardSelect.appendChild(
-                    createOption(String(ward.code), ward.name, ward.name),
-                );
+            option.addEventListener("mousedown", (event) => {
+                event.preventDefault();
             });
 
-            /*
-            |--------------------------------------------------------------------------
-            | KHÔI PHỤC WARD
-            |--------------------------------------------------------------------------
-            */
+            option.addEventListener("click", async () => {
+                await selectItem(control, item);
+            });
 
-            let selectedOption = null;
+            control.dropdown.appendChild(option);
+        });
 
-            /*
-             * Ưu tiên code.
-             */
-            if (preferredWardCode) {
-                selectedOption =
-                    [...wardSelect.options].find(
-                        (option) => option.value === String(preferredWardCode),
-                    ) || null;
-            }
-
-            /*
-             * Nếu địa chỉ cũ chưa có code,
-             * thử tìm theo tên.
-             */
-            if (!selectedOption && preferredWardName) {
-                selectedOption = findOptionByName(
-                    wardSelect,
-                    preferredWardName,
-                );
-            }
-
-            if (selectedOption) {
-                wardSelect.value = selectedOption.value;
-
-                wardInput.value =
-                    selectedOption.dataset.name || selectedOption.textContent;
-            }
-
-            wardSelect.disabled = false;
-
-            showStatus("");
-        } catch (error) {
-            console.error("Không tải được Phường/Xã:", error);
-
-            wardSelect.innerHTML = "";
-
-            wardSelect.appendChild(createOption("", "Không tải được dữ liệu"));
-
-            wardSelect.disabled = true;
-
-            showStatus(
-                "Không thể tải danh sách Phường/Xã. Vui lòng thử lại.",
-                true,
-            );
-        }
+        openDropdown(control);
     };
 
-    /**
-     * Load danh sách Tỉnh/Thành phố.
-     */
-    const loadProvinces = async () => {
-        provinceSelect.disabled = true;
+    const findExactItem = (control) => {
+        const keyword = normalizeText(control.input.value);
 
-        provinceSelect.innerHTML = "";
+        if (!keyword) {
+            return null;
+        }
 
-        provinceSelect.appendChild(
-            createOption("", "Đang tải Tỉnh/Thành phố..."),
+        return (
+            control.items.find((item) => {
+                return normalizeText(item.name) === keyword;
+            }) ?? null
         );
+    };
 
-        resetWards();
+    const validateControl = async (control) => {
+        if (!control.input.value.trim()) {
+            control.input.setCustomValidity("Vui lòng chọn một địa chỉ.");
 
-        showStatus("Đang tải danh sách Tỉnh/Thành phố...");
+            return;
+        }
 
-        try {
-            const provinces = await fetchJson(`${API_BASE}/p/`);
+        const exactItem = findExactItem(control);
 
-            provinceSelect.innerHTML = "";
+        if (!exactItem) {
+            control.input.setCustomValidity(
+                "Vui lòng chọn một địa chỉ trong danh sách GHN.",
+            );
 
-            provinceSelect.appendChild(createOption("", "Chọn Tỉnh/Thành phố"));
+            return;
+        }
 
-            const sortedProvinces = Array.isArray(provinces)
-                ? [...provinces].sort((a, b) =>
-                      a.name.localeCompare(b.name, "vi"),
-                  )
-                : [];
+        if (
+            String(control.codeField.value) !==
+            String(exactItem[control.valueKey])
+        ) {
+            await selectItem(control, exactItem);
+        }
 
-            sortedProvinces.forEach((province) => {
-                provinceSelect.appendChild(
-                    createOption(
-                        String(province.code),
-                        province.name,
-                        province.name,
+        control.input.setCustomValidity("");
+    };
+
+    const registerControlEvents = (control) => {
+        control.input.addEventListener("focus", () => {
+            renderDropdown(control);
+        });
+
+        control.input.addEventListener("click", () => {
+            renderDropdown(control);
+        });
+
+        control.input.addEventListener("input", () => {
+            control.nameField.value = "";
+            control.codeField.value = "";
+            control.input.setCustomValidity("");
+
+            if (control.type === "province") {
+                clearControl(
+                    controls.district,
+                    "Chọn Tỉnh/Thành phố trước",
+                    true,
+                );
+
+                clearControl(controls.ward, "Chọn Quận/Huyện trước", true);
+            }
+
+            if (control.type === "district") {
+                clearControl(controls.ward, "Chọn Quận/Huyện trước", true);
+            }
+
+            renderDropdown(control);
+        });
+
+        control.input.addEventListener("keydown", async (event) => {
+            const options = Array.from(
+                control.dropdown.querySelectorAll(".address-location-option"),
+            );
+
+            if (event.key === "ArrowDown") {
+                event.preventDefault();
+
+                if (control.dropdown.hidden) {
+                    renderDropdown(control);
+                }
+
+                const updatedOptions = Array.from(
+                    control.dropdown.querySelectorAll(
+                        ".address-location-option",
                     ),
                 );
-            });
 
-            provinceSelect.disabled = false;
+                if (updatedOptions.length === 0) {
+                    return;
+                }
 
-            /*
-            |--------------------------------------------------------------------------
-            | KHÔI PHỤC PROVINCE
-            |--------------------------------------------------------------------------
-            */
-
-            let selectedOption = null;
-
-            /*
-             * Địa chỉ mới:
-             * ưu tiên province_code.
-             */
-            if (selectedProvinceCode) {
-                selectedOption =
-                    [...provinceSelect.options].find(
-                        (option) =>
-                            option.value === String(selectedProvinceCode),
-                    ) || null;
-            }
-
-            /*
-             * Địa chỉ cũ:
-             * chưa có province_code.
-             * Tìm theo tên province.
-             */
-            if (!selectedOption && selectedProvinceName) {
-                selectedOption = findOptionByName(
-                    provinceSelect,
-                    selectedProvinceName,
+                control.activeIndex = Math.min(
+                    control.activeIndex + 1,
+                    updatedOptions.length - 1,
                 );
+
+                updateActiveOption(control);
             }
 
-            if (selectedOption) {
-                provinceSelect.value = selectedOption.value;
+            if (event.key === "ArrowUp") {
+                event.preventDefault();
 
-                provinceInput.value =
-                    selectedOption.dataset.name || selectedOption.textContent;
+                if (options.length === 0) {
+                    return;
+                }
 
-                await loadWards(
-                    selectedOption.value,
-                    selectedWardCode,
-                    selectedWardName,
+                control.activeIndex = Math.max(control.activeIndex - 1, 0);
+
+                updateActiveOption(control);
+            }
+
+            if (event.key === "Enter") {
+                const activeOption = control.dropdown.querySelectorAll(
+                    ".address-location-option",
+                )[control.activeIndex];
+
+                if (activeOption) {
+                    event.preventDefault();
+                    activeOption.click();
+
+                    return;
+                }
+
+                const exactItem = findExactItem(control);
+
+                if (exactItem) {
+                    event.preventDefault();
+                    await selectItem(control, exactItem);
+                }
+            }
+
+            if (event.key === "Escape") {
+                closeDropdown(control);
+            }
+        });
+
+        control.input.addEventListener("blur", () => {
+            window.setTimeout(async () => {
+                closeDropdown(control);
+                await validateControl(control);
+            }, 120);
+        });
+    };
+
+    const loadProvinces = async () => {
+        setDisabled(controls.province, true, "Đang tải Tỉnh/Thành phố...");
+
+        setStatus("Đang tải dữ liệu địa chỉ GHN...");
+
+        try {
+            const provinces = await fetchData(root.dataset.ghnProvincesUrl);
+
+            controls.province.items = provinces
+                .filter((province) => {
+                    const name = normalizeText(province.name);
+
+                    return (
+                        String(province.id) !== "2002" &&
+                        !name.startsWith("test -")
+                    );
+                })
+                .sort((first, second) => {
+                    return first.name.localeCompare(second.name, "vi");
+                });
+
+            setDisabled(
+                controls.province,
+                false,
+                "Chọn hoặc nhập Tỉnh/Thành phố",
+            );
+
+            if (initialValues.provinceId) {
+                const selectedProvince = controls.province.items.find(
+                    (item) =>
+                        String(item.id) === String(initialValues.provinceId),
                 );
+
+                if (selectedProvince) {
+                    applySelection(controls.province, selectedProvince);
+
+                    await loadDistricts(
+                        selectedProvince.id,
+                        initialValues.districtId,
+                        initialValues.wardCode,
+                    );
+
+                    return;
+                }
             }
 
-            showStatus("");
+            setStatus("Dữ liệu địa chỉ GHN đã sẵn sàng.", "success");
         } catch (error) {
-            console.error("Không tải được Tỉnh/Thành phố:", error);
-
-            provinceSelect.innerHTML = "";
-
-            provinceSelect.appendChild(
-                createOption("", "Không tải được dữ liệu"),
-            );
-
-            provinceSelect.disabled = true;
-
-            showStatus(
-                "Không thể tải danh sách địa chỉ. Vui lòng kiểm tra kết nối Internet và thử lại.",
+            setDisabled(
+                controls.province,
                 true,
+                "Không thể tải Tỉnh/Thành phố",
             );
+
+            setStatus(error.message, "error");
         }
     };
 
-    /*
-    |--------------------------------------------------------------------------
-    | THAY ĐỔI TỈNH / THÀNH
-    |--------------------------------------------------------------------------
-    */
-
-    provinceSelect.addEventListener("change", async () => {
-        const option = provinceSelect.selectedOptions[0];
-
-        provinceInput.value = option?.dataset?.name || "";
-
-        wardInput.value = "";
-
-        await loadWards(provinceSelect.value);
+    Object.values(controls).forEach((control) => {
+        if (
+            control.input &&
+            control.dropdown &&
+            control.nameField &&
+            control.codeField
+        ) {
+            registerControlEvents(control);
+        }
     });
 
-    /*
-    |--------------------------------------------------------------------------
-    | THAY ĐỔI PHƯỜNG / XÃ
-    |--------------------------------------------------------------------------
-    */
-
-    wardSelect.addEventListener("change", () => {
-        const option = wardSelect.selectedOptions[0];
-
-        wardInput.value = option?.dataset?.name || "";
+    document.addEventListener("mousedown", (event) => {
+        if (!event.target.closest(".address-location-combobox")) {
+            closeAllDropdowns();
+        }
     });
-
-    /*
-    |--------------------------------------------------------------------------
-    | INIT
-    |--------------------------------------------------------------------------
-    */
 
     loadProvinces();
 });

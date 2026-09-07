@@ -15,13 +15,19 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        /*
+         * payOS gọi webhook trực tiếp từ máy chủ của họ,
+         * vì vậy request sẽ không có CSRF token của Laravel.
+         */
+        $middleware->validateCsrfTokens(except: [
+            'payments/payos/webhook',
+        ]);
 
         $middleware->alias([
             'admin' => AdminMiddleware::class,
             'staff' => StaffMiddleware::class,
             'customer' => CustomerMiddleware::class,
         ]);
-
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

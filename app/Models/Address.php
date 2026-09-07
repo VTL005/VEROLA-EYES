@@ -18,19 +18,8 @@ class Address extends Model
 
         /*
         |--------------------------------------------------------------------------
-        | Địa chỉ hành chính
+        | Tên và mã địa chỉ hành chính hiện có
         |--------------------------------------------------------------------------
-        |
-        | province / ward:
-        |     lưu tên để hiển thị trực tiếp.
-        |
-        | province_code / ward_code:
-        |     lưu mã hành chính để dữ liệu được chuẩn hóa.
-        |
-        | district:
-        |     giữ lại để tương thích với các địa chỉ cũ.
-        |     Địa chỉ mới có thể để NULL.
-        |
         */
 
         'province',
@@ -41,6 +30,16 @@ class Address extends Model
         'ward',
         'ward_code',
 
+        /*
+        |--------------------------------------------------------------------------
+        | Mã địa chỉ GHN
+        |--------------------------------------------------------------------------
+        */
+
+        'ghn_province_id',
+        'ghn_district_id',
+        'ghn_ward_code',
+
         'detail_address',
 
         'label',
@@ -48,14 +47,14 @@ class Address extends Model
         'is_default',
     ];
 
-
     protected function casts(): array
     {
         return [
             'is_default' => 'boolean',
+            'ghn_province_id' => 'integer',
+            'ghn_district_id' => 'integer',
         ];
     }
-
 
     /**
      * Address thuộc một User.
