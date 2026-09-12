@@ -23,18 +23,14 @@ class OrderController extends Controller
             )
         );
 
-
         $orderStatus =
             $request->query('order_status');
-
 
         $paymentStatus =
             $request->query('payment_status');
 
-
         $paymentMethod =
             $request->query('payment_method');
-
 
         $validOrderStatuses = [
             Order::STATUS_PENDING,
@@ -46,7 +42,6 @@ class OrderController extends Controller
             Order::STATUS_CANCELLED,
         ];
 
-
         $validPaymentStatuses = [
             Order::PAYMENT_UNPAID,
             Order::PAYMENT_PENDING,
@@ -55,17 +50,15 @@ class OrderController extends Controller
             Order::PAYMENT_REFUNDED,
         ];
 
-
         $validPaymentMethods = [
             'cod',
             'qr',
             'vnpay',
         ];
 
-
         if (
             $orderStatus
-            && !in_array(
+            && ! in_array(
                 $orderStatus,
                 $validOrderStatuses,
                 true
@@ -74,10 +67,9 @@ class OrderController extends Controller
             $orderStatus = null;
         }
 
-
         if (
             $paymentStatus
-            && !in_array(
+            && ! in_array(
                 $paymentStatus,
                 $validPaymentStatuses,
                 true
@@ -86,10 +78,9 @@ class OrderController extends Controller
             $paymentStatus = null;
         }
 
-
         if (
             $paymentMethod
-            && !in_array(
+            && ! in_array(
                 $paymentMethod,
                 $validPaymentMethods,
                 true
@@ -97,7 +88,6 @@ class OrderController extends Controller
         ) {
             $paymentMethod = null;
         }
-
 
         $orders = Order::query()
 
@@ -197,7 +187,6 @@ class OrderController extends Controller
 
             ->withQueryString();
 
-
         /*
          * Thống kê nhanh.
          */
@@ -208,7 +197,6 @@ class OrderController extends Controller
             )
             ->count();
 
-
         $shippingCount = Order::query()
             ->where(
                 'order_status',
@@ -216,14 +204,12 @@ class OrderController extends Controller
             )
             ->count();
 
-
         $completedCount = Order::query()
             ->where(
                 'order_status',
                 Order::STATUS_COMPLETED
             )
             ->count();
-
 
         return view(
             'staff.orders.index',
@@ -240,7 +226,6 @@ class OrderController extends Controller
         );
     }
 
-
     /**
      * Chi tiết đơn hàng.
      */
@@ -249,19 +234,17 @@ class OrderController extends Controller
         OrderStatusService $orderStatusService
     ) {
         $order->load([
-    'details.warranty',
+            'details.warranty',
 
-    'payment',
+            'payment',
 
-    'statusHistories' =>
-        function ($query) {
+            'statusHistories' => function ($query) {
 
-            $query->oldest();
-        },
+                $query->oldest();
+            },
 
-    'statusHistories.updater',
-]);
-
+            'statusHistories.updater',
+        ]);
 
         /*
          * Trạng thái tiếp theo được phép.
@@ -269,7 +252,6 @@ class OrderController extends Controller
         $nextStatuses =
             $orderStatusService
                 ->nextStatuses($order);
-
 
         return view(
             'staff.orders.show',
@@ -280,7 +262,6 @@ class OrderController extends Controller
             )
         );
     }
-
 
     /**
      * Cập nhật trạng thái.
@@ -302,26 +283,22 @@ class OrderController extends Controller
                             Order::STATUS_PREPARING,
                             Order::STATUS_PACKED,
                             Order::STATUS_SHIPPING,
-                            Order::STATUS_COMPLETED,
+                            Order::STATUS_DELIVERED,
                         ]),
                     ],
                 ],
                 [
-                    'order_status.required' =>
-                        'Vui lòng chọn trạng thái đơn hàng.',
+                    'order_status.required' => 'Vui lòng chọn trạng thái đơn hàng.',
 
-                    'order_status.in' =>
-                        'Trạng thái đơn hàng không hợp lệ.',
+                    'order_status.in' => 'Trạng thái đơn hàng không hợp lệ.',
                 ]
             );
-
 
         $orderStatusService->updateStatus(
             $order,
             $validated['order_status'],
             auth()->user()
         );
-
 
         return redirect()
             ->route(
@@ -333,7 +310,6 @@ class OrderController extends Controller
                 'Cập nhật trạng thái đơn hàng thành công.'
             );
     }
-
 
     /**
      * Staff hủy đơn Pending.
@@ -347,7 +323,6 @@ class OrderController extends Controller
                 auth()->user(),
                 $order
             );
-
 
         return redirect()
             ->route(

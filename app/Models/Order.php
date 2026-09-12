@@ -7,8 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
-use App\Models\Payment;
-use App\Models\OrderDetail;
 
 class Order extends Model
 {
@@ -18,20 +16,32 @@ class Order extends Model
      * Các trạng thái chuẩn của Order.
      */
     public const STATUS_PENDING = 'pending';
+
     public const STATUS_CONFIRMED = 'confirmed';
+
     public const STATUS_PREPARING = 'preparing';
+
     public const STATUS_PACKED = 'packed';
+
     public const STATUS_SHIPPING = 'shipping';
+
+    public const STATUS_DELIVERED = 'delivered';
+
     public const STATUS_COMPLETED = 'completed';
+
     public const STATUS_CANCELLED = 'cancelled';
 
     /**
      * Payment status.
      */
     public const PAYMENT_UNPAID = 'unpaid';
+
     public const PAYMENT_PENDING = 'pending';
+
     public const PAYMENT_PAID = 'paid';
+
     public const PAYMENT_FAILED = 'failed';
+
     public const PAYMENT_REFUNDED = 'refunded';
 
     protected $fillable = [
@@ -111,6 +121,17 @@ class Order extends Model
     }
 
     /**
+     * Payment gần nhất của Order.
+     */
+    public function payment(): HasOne
+    {
+        return $this->hasOne(
+            Payment::class,
+            'order_id'
+        );
+    }
+
+    /**
      * Lịch sử Voucher của Order.
      *
      * Migration đã unique order_id,
@@ -127,6 +148,14 @@ class Order extends Model
     public function isCancellableByCustomer(): bool
     {
         return $this->order_status === self::STATUS_PENDING;
+    }
+
+    /**
+     * Đơn đã giao và đang chờ Customer xác nhận?
+     */
+    public function isDelivered(): bool
+    {
+        return $this->order_status === self::STATUS_DELIVERED;
     }
 
     /**
@@ -187,6 +216,10 @@ class Order extends Model
             ],
 
             self::STATUS_SHIPPING => [
+                self::STATUS_DELIVERED,
+            ],
+
+            self::STATUS_DELIVERED => [
                 self::STATUS_COMPLETED,
             ],
 
@@ -209,15 +242,4 @@ class Order extends Model
     {
         return $query->where('user_id', $userId);
     }
-
-    public function payment()
-        {
-    return $this->hasOne(
-        Payment::class,
-        'order_id'
-    );
-        }
-
-        
-
 }

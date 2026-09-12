@@ -43,8 +43,7 @@ class GhnShippingService
                 ),
             ])
             ->filter(
-                fn (array $province) =>
-                    $province['id'] > 0
+                fn (array $province) => $province['id'] > 0
                     && $province['name'] !== ''
             )
             ->sortBy('name')
@@ -78,8 +77,7 @@ class GhnShippingService
                 ),
             ])
             ->filter(
-                fn (array $district) =>
-                    $district['id'] > 0
+                fn (array $district) => $district['id'] > 0
                     && $district['name'] !== ''
             )
             ->sortBy('name')
@@ -115,8 +113,7 @@ class GhnShippingService
                 ),
             ])
             ->filter(
-                fn (array $ward) =>
-                    $ward['code'] !== ''
+                fn (array $ward) => $ward['code'] !== ''
                     && $ward['name'] !== ''
             )
             ->sortBy('name')
@@ -158,7 +155,7 @@ class GhnShippingService
             true
         );
 
-        if (!isset($data['total'])) {
+        if (! isset($data['total'])) {
             throw new RuntimeException(
                 'GHN không trả về phí vận chuyển hợp lệ.'
             );
@@ -195,11 +192,21 @@ class GhnShippingService
         }
 
         try {
-            $client = Http::withHeaders($headers)
+            /*
+             * Ép PHP cURL sử dụng IPv4 để tránh lỗi
+             * SSL connection timeout trên mạng ưu tiên IPv6/NAT64.
+             */
+            $client = Http::withOptions([
+                'curl' => [
+                    CURLOPT_IPRESOLVE => CURL_IPRESOLVE_V4,
+                ],
+            ])
+                ->withHeaders($headers)
                 ->acceptJson()
-                ->timeout(15);
+                ->connectTimeout(30)
+                ->timeout(45);
 
-            $url = $this->baseUrl() . $endpoint;
+            $url = $this->baseUrl().$endpoint;
 
             $response = $method === 'get'
                 ? $client->get($url, $data)
@@ -209,7 +216,7 @@ class GhnShippingService
 
             $responseData = $response->json('data');
 
-            if (!is_array($responseData)) {
+            if (! is_array($responseData)) {
                 throw new RuntimeException(
                     'GHN không trả về dữ liệu hợp lệ.'
                 );
@@ -228,7 +235,7 @@ class GhnShippingService
                 ?? 'GHN trả về lỗi không xác định.';
 
             throw new RuntimeException(
-                'GHN: ' . $message,
+                'GHN: '.$message,
                 previous: $exception
             );
         }

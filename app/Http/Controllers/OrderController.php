@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Order;
 use App\Services\OrderCancellationService;
+use App\Services\OrderStatusService;
 use Illuminate\Http\Request;
 
 class OrderController extends Controller
@@ -17,18 +18,9 @@ class OrderController extends Controller
         |--------------------------------------------------------------------------
         | LẤY TRẠNG THÁI TỪ URL
         |--------------------------------------------------------------------------
-        |
-        | Ví dụ:
-        |
-        | /orders
-        | /orders?status=pending
-        | /orders?status=shipping
-        | /orders?status=completed
-        |
         */
 
         $status = $request->query('status');
-
 
         /*
         |--------------------------------------------------------------------------
@@ -42,27 +34,20 @@ class OrderController extends Controller
             Order::STATUS_PREPARING,
             Order::STATUS_PACKED,
             Order::STATUS_SHIPPING,
+            Order::STATUS_DELIVERED,
             Order::STATUS_COMPLETED,
             Order::STATUS_CANCELLED,
         ];
-
 
         /*
         |--------------------------------------------------------------------------
         | KIỂM TRA STATUS
         |--------------------------------------------------------------------------
-        |
-        | Nếu Customer tự sửa URL thành:
-        |
-        | /orders?status=abc
-        |
-        | thì bỏ filter đó đi.
-        |
         */
 
         if (
             $status
-            && !in_array(
+            && ! in_array(
                 $status,
                 $allowedStatuses,
                 true
@@ -71,7 +56,6 @@ class OrderController extends Controller
             $status = null;
         }
 
-
         /*
         |--------------------------------------------------------------------------
         | LẤY ĐƠN HÀNG
@@ -79,84 +63,29 @@ class OrderController extends Controller
         */
 
         $orders = Order::query()
-
-            /*
-             * Chỉ lấy Order của Customer
-             * đang đăng nhập.
-             */
             ->where(
                 'user_id',
                 auth()->id()
             )
-
-
-            /*
-             * Nếu có status thì lọc.
-             *
-             * Ví dụ:
-             *
-             * ?status=pending
-             *
-             * => chỉ lấy Order pending.
-             */
             ->when(
                 $status,
                 function ($query) use ($status) {
-
                     $query->where(
                         'order_status',
                         $status
                     );
                 }
             )
-
-
-            /*
-             * Load thông tin Payment.
-             */
             ->with([
                 'payment',
 
-
-                /*
-                 * Load luôn OrderDetail
-                 * để trang danh sách có thể
-                 * hiển thị sản phẩm trong đơn.
-                 */
                 'details' => function ($query) {
-
                     $query->orderBy('id');
                 },
             ])
-
-
-            /*
-             * Đơn mới nhất lên trước.
-             */
             ->latest()
-
-
-            /*
-             * Mỗi trang 10 Order.
-             */
             ->paginate(10)
-
-
-            /*
-             * Giữ lại query string khi phân trang.
-             *
-             * Ví dụ:
-             *
-             * /orders?status=pending&page=2
-             */
             ->withQueryString();
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | RETURN VIEW
-        |--------------------------------------------------------------------------
-        */
 
         return view(
             'orders.index',
@@ -167,47 +96,27 @@ class OrderController extends Controller
         );
     }
 
-
     /**
      * Chi tiết đơn hàng.
      */
     public function show(
         Order $order
     ) {
-        /*
-         * Customer chỉ được xem
-         * Order của chính mình.
-         */
         $this->ensureOwnership(
             $order
         );
 
-
-        /*
-         * Load dữ liệu phục vụ trang
-         * chi tiết Order.
-         */
         $order->load([
             'details',
 
             'payment',
 
-            /*
-             * Timeline Order:
-             * trạng thái cũ trước,
-             * trạng thái mới sau.
-             */
             'statusHistories' => function ($query) {
-
                 $query->oldest();
             },
 
-            /*
-             * Người cập nhật trạng thái.
-             */
             'statusHistories.updater',
         ]);
-
 
         return view(
             'orders.show',
@@ -215,6 +124,32 @@ class OrderController extends Controller
         );
     }
 
+    /**
+     * Customer xác nhận đã nhận được hàng.
+     */
+    public function confirmReceived(
+        Order $order,
+        OrderStatusService $orderStatusService
+    ) {
+        $this->ensureOwnership(
+            $order
+        );
+
+        $orderStatusService->confirmReceived(
+            $order,
+            auth()->user()
+        );
+
+        return redirect()
+            ->route(
+                'orders.show',
+                $order
+            )
+            ->with(
+                'success',
+                'Cảm ơn bạn đã xác nhận nhận hàng. Đơn hàng đã hoàn thành.'
+            );
+    }
 
     /**
      * Customer hủy Order.
@@ -223,30 +158,14 @@ class OrderController extends Controller
         Order $order,
         OrderCancellationService $cancellationService
     ) {
-        /*
-         * Customer chỉ được hủy
-         * Order của chính mình.
-         */
         $this->ensureOwnership(
             $order
         );
 
-
-        /*
-         * Logic kiểm tra:
-         *
-         * - trạng thái Order
-         * - quyền hủy
-         * - hoàn Stock
-         *
-         * được xử lý trong
-         * OrderCancellationService.
-         */
         $cancellationService->cancel(
             auth()->user(),
             $order
         );
-
 
         return redirect()
             ->route(
@@ -259,21 +178,15 @@ class OrderController extends Controller
             );
     }
 
-
     /**
      * Kiểm tra quyền sở hữu Order.
      */
     private function ensureOwnership(
         Order $order
     ): void {
-        /*
-         * Nếu Order không thuộc
-         * Customer đang đăng nhập
-         * => trả về 403.
-         */
         abort_if(
-            $order->user_id
-                !== auth()->id(),
+            (int) $order->user_id
+                !== (int) auth()->id(),
             403
         );
     }

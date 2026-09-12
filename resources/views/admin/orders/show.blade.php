@@ -2,14 +2,14 @@
 
 
 @section(
-    'title',
-    'Đơn hàng ' . $order->order_code
+'title',
+'Đơn hàng ' . $order->order_code
 )
 
 
 @section(
-    'page-title',
-    'Chi tiết đơn hàng'
+'page-title',
+'Chi tiết đơn hàng'
 )
 
 
@@ -17,20 +17,20 @@
 
 @php
 
-    $paymentMethodLabels = [
-        'cod' => 'Thanh toán khi nhận hàng (COD)',
-        'qr' => 'Chuyển khoản QR',
-        'vnpay' => 'VNPay',
-    ];
+$paymentMethodLabels = [
+'cod' => 'Thanh toán khi nhận hàng (COD)',
+'qr' => 'Chuyển khoản QR',
+'vnpay' => 'VNPay',
+];
 
 
-    $paymentStatusLabels = [
-        'unpaid' => 'Chưa thanh toán',
-        'pending' => 'Chờ thanh toán',
-        'paid' => 'Đã thanh toán',
-        'failed' => 'Thanh toán thất bại',
-        'refunded' => 'Đã hoàn tiền',
-    ];
+$paymentStatusLabels = [
+'unpaid' => 'Chưa thanh toán',
+'pending' => 'Chờ thanh toán',
+'paid' => 'Đã thanh toán',
+'failed' => 'Thanh toán thất bại',
+'refunded' => 'Đã hoàn tiền',
+];
 
 @endphp
 
@@ -38,59 +38,53 @@
 
 <div class="admin-page-header">
 
-    <div>
+  <div>
 
-        <span class="admin-page-kicker">
-            ORDER DETAIL
-        </span>
+    <span class="admin-page-kicker">
+      ORDER DETAIL
+    </span>
 
-        <h1>
-            {{ $order->order_code }}
-        </h1>
+    <h1>
+      {{ $order->order_code }}
+    </h1>
 
-        <p>
-            Đặt lúc
-            {{ $order
+    <p>
+      Đặt lúc
+      {{ $order
                 ->created_at
                 ->format(
                     'H:i - d/m/Y'
                 ) }}
-        </p>
+    </p>
 
-    </div>
+  </div>
 
 
-    <div class="admin-order-header-actions">
+  <div class="admin-order-header-actions">
 
-        <a
-            href="{{ route(
+    <a href="{{ route(
                 'admin.orders.index'
-            ) }}"
-            class="admin-btn admin-btn-secondary"
-        >
-            <i class="bi bi-arrow-left"></i>
+            ) }}" class="admin-btn admin-btn-secondary">
+      <i class="bi bi-arrow-left"></i>
 
-            Danh sách
-        </a>
+      Danh sách
+    </a>
 
 
-        @if($order->payment)
+    @if($order->payment)
 
-            <a
-                href="{{ route(
+    <a href="{{ route(
                     'admin.payments.show',
                     $order->payment
-                ) }}"
-                class="admin-btn admin-btn-secondary"
-            >
-                <i class="bi bi-credit-card"></i>
+                ) }}" class="admin-btn admin-btn-secondary">
+      <i class="bi bi-credit-card"></i>
 
-                Giao dịch
-            </a>
+      Giao dịch
+    </a>
 
-        @endif
+    @endif
 
-    </div>
+  </div>
 
 </div>
 
@@ -100,76 +94,76 @@
 
 <div class="admin-order-summary">
 
-    <div>
+  <div>
 
-        <span>
-            Trạng thái đơn
-        </span>
+    <span>
+      Trạng thái đơn
+    </span>
 
-        <strong>
+    <strong>
 
-            {{ $orderStatusService
+      {{ $orderStatusService
                 ->statusLabel(
                     $order->order_status
                 ) }}
 
-        </strong>
+    </strong>
 
-    </div>
+  </div>
 
 
-    <div>
+  <div>
 
-        <span>
-            Thanh toán
-        </span>
+    <span>
+      Thanh toán
+    </span>
 
-        <strong>
+    <strong>
 
-            {{ $paymentStatusLabels[
+      {{ $paymentStatusLabels[
                 $order->payment_status
             ] ?? $order->payment_status }}
 
-        </strong>
+    </strong>
 
-    </div>
+  </div>
 
 
-    <div>
+  <div>
 
-        <span>
-            Tổng thanh toán
-        </span>
+    <span>
+      Tổng thanh toán
+    </span>
 
-        <strong class="money">
+    <strong class="money">
 
-            {{ number_format(
+      {{ number_format(
                 (float) $order->total,
                 0,
                 ',',
                 '.'
             ) }}đ
 
-        </strong>
+    </strong>
 
-    </div>
+  </div>
 
 
-    <div>
+  <div>
 
-        <span>
-            Số sản phẩm
-        </span>
+    <span>
+      Số sản phẩm
+    </span>
 
-        <strong>
+    <strong>
 
-            {{ $order
+      {{ $order
                 ->details
                 ->sum('quantity') }}
 
-        </strong>
+    </strong>
 
-    </div>
+  </div>
 
 </div>
 
@@ -178,257 +172,257 @@
 <div class="admin-order-detail-layout">
 
 
-    {{-- =====================================================
+  {{-- =====================================================
         MAIN
     ====================================================== --}}
 
-    <div class="admin-order-detail-main">
+  <div class="admin-order-detail-main">
 
 
-        {{-- CUSTOMER --}}
+    {{-- CUSTOMER --}}
 
-        <section class="admin-panel">
+    <section class="admin-panel">
 
-            <div class="admin-panel-header">
+      <div class="admin-panel-header">
 
-                <div>
+        <div>
 
-                    <h2>
-                        Khách hàng & giao hàng
-                    </h2>
+          <h2>
+            Khách hàng & giao hàng
+          </h2>
 
-                </div>
+        </div>
 
-            </div>
-
-
-            <div class="admin-order-customer-grid">
-
-                <div>
-
-                    <i class="bi bi-person"></i>
-
-                    <span>
-
-                        <small>
-                            Khách hàng
-                        </small>
-
-                        <strong>
-                            {{ $order->customer_name }}
-                        </strong>
-
-                    </span>
-
-                </div>
+      </div>
 
 
-                <div>
+      <div class="admin-order-customer-grid">
 
-                    <i class="bi bi-telephone"></i>
+        <div>
 
-                    <span>
+          <i class="bi bi-person"></i>
 
-                        <small>
-                            Số điện thoại
-                        </small>
+          <span>
 
-                        <strong>
-                            {{ $order->phone }}
-                        </strong>
+            <small>
+              Khách hàng
+            </small>
 
-                    </span>
+            <strong>
+              {{ $order->customer_name }}
+            </strong>
 
-                </div>
+          </span>
 
-
-                <div>
-
-                    <i class="bi bi-envelope"></i>
-
-                    <span>
-
-                        <small>
-                            Email
-                        </small>
-
-                        <strong>
-                            {{ $order->email }}
-                        </strong>
-
-                    </span>
-
-                </div>
+        </div>
 
 
-                <div>
+        <div>
 
-                    <i class="bi bi-geo-alt"></i>
+          <i class="bi bi-telephone"></i>
 
-                    <span>
+          <span>
 
-                        <small>
-                            Địa chỉ giao hàng
-                        </small>
+            <small>
+              Số điện thoại
+            </small>
 
-                        <strong>
-                            {{ $order->address }}
-                        </strong>
+            <strong>
+              {{ $order->phone }}
+            </strong>
 
-                    </span>
+          </span>
 
-                </div>
-
-            </div>
+        </div>
 
 
-            @if($order->note)
+        <div>
 
-                <div class="admin-order-note">
+          <i class="bi bi-envelope"></i>
 
-                    <span>
-                        Ghi chú của khách hàng
-                    </span>
+          <span>
 
-                    <p>
-                        {{ $order->note }}
-                    </p>
+            <small>
+              Email
+            </small>
 
-                </div>
+            <strong>
+              {{ $order->email }}
+            </strong>
 
-            @endif
+          </span>
 
-        </section>
+        </div>
+
+
+        <div>
+
+          <i class="bi bi-geo-alt"></i>
+
+          <span>
+
+            <small>
+              Địa chỉ giao hàng
+            </small>
+
+            <strong>
+              {{ $order->address }}
+            </strong>
+
+          </span>
+
+        </div>
+
+      </div>
+
+
+      @if($order->note)
+
+      <div class="admin-order-note">
+
+        <span>
+          Ghi chú của khách hàng
+        </span>
+
+        <p>
+          {{ $order->note }}
+        </p>
+
+      </div>
+
+      @endif
+
+    </section>
 
 
 
-        {{-- PRODUCTS --}}
+    {{-- PRODUCTS --}}
 
-        <section class="admin-panel">
+    <section class="admin-panel">
 
-            <div class="admin-panel-header">
+      <div class="admin-panel-header">
 
-                <div>
+        <div>
 
-                    <h2>
-                        Sản phẩm trong đơn
-                    </h2>
+          <h2>
+            Sản phẩm trong đơn
+          </h2>
 
-                    <p>
-                        {{ $order
+          <p>
+            {{ $order
                             ->details
                             ->count() }}
-                        dòng sản phẩm
-                    </p>
+            dòng sản phẩm
+          </p>
 
-                </div>
+        </div>
 
-            </div>
+      </div>
 
 
-            @if(
-                $order
-                    ->details
-                    ->isEmpty()
+      @if(
+      $order
+      ->details
+      ->isEmpty()
+      )
+
+      <div class="admin-empty-state">
+        Đơn hàng chưa có sản phẩm.
+      </div>
+
+      @else
+
+      <div class="admin-table-responsive">
+
+        <table class="admin-table">
+
+          <thead>
+
+            <tr>
+
+              <th>
+                Sản phẩm
+              </th>
+
+              <th>
+                SKU
+              </th>
+
+              <th>
+                Màu / Size
+              </th>
+
+              <th>
+                Đơn giá
+              </th>
+
+              <th>
+                SL
+              </th>
+
+              <th>
+                Thành tiền
+              </th>
+
+              <th>
+                Bảo hành
+              </th>
+
+            </tr>
+
+          </thead>
+
+
+          <tbody>
+
+            @foreach(
+            $order->details
+            as $detail
             )
 
-                <div class="admin-empty-state">
-                    Đơn hàng chưa có sản phẩm.
-                </div>
+            <tr>
 
-            @else
+              <td>
 
-                <div class="admin-table-responsive">
-
-                    <table class="admin-table">
-
-                        <thead>
-
-                            <tr>
-
-                                <th>
-                                    Sản phẩm
-                                </th>
-
-                                <th>
-                                    SKU
-                                </th>
-
-                                <th>
-                                    Màu / Size
-                                </th>
-
-                                <th>
-                                    Đơn giá
-                                </th>
-
-                                <th>
-                                    SL
-                                </th>
-
-                                <th>
-                                    Thành tiền
-                                </th>
-
-                                <th>
-                                    Bảo hành
-                                </th>
-
-                            </tr>
-
-                        </thead>
-
-
-                        <tbody>
-
-                            @foreach(
-                                $order->details
-                                as $detail
-                            )
-
-                                <tr>
-
-                                    <td>
-
-                                        <strong>
-                                            {{ $detail
+                <strong>
+                  {{ $detail
                                                 ->product_name }}
-                                        </strong>
+                </strong>
 
-                                    </td>
+              </td>
 
 
-                                    <td>
+              <td>
 
-                                        <code class="admin-product-sku">
+                <code class="admin-product-sku">
 
                                             {{ $detail->sku }}
 
                                         </code>
 
-                                    </td>
+              </td>
 
 
-                                    <td>
+              <td>
 
-                                        <div class="admin-order-variant">
+                <div class="admin-order-variant">
 
-                                            <span>
-                                                {{ $detail->color ?: '—' }}
-                                            </span>
+                  <span>
+                    {{ $detail->color ?: '—' }}
+                  </span>
 
-                                            <strong>
-                                                {{ $detail->size ?: '—' }}
-                                            </strong>
+                  <strong>
+                    {{ $detail->size ?: '—' }}
+                  </strong>
 
-                                        </div>
+                </div>
 
-                                    </td>
+              </td>
 
 
-                                    <td>
+              <td>
 
-                                        {{ number_format(
+                {{ number_format(
                                             (float) $detail
                                                 ->unit_price,
                                             0,
@@ -436,23 +430,23 @@
                                             '.'
                                         ) }}đ
 
-                                    </td>
+              </td>
 
 
-                                    <td>
+              <td>
 
-                                        <strong>
-                                            {{ $detail->quantity }}
-                                        </strong>
+                <strong>
+                  {{ $detail->quantity }}
+                </strong>
 
-                                    </td>
+              </td>
 
 
-                                    <td>
+              <td>
 
-                                        <strong class="admin-money">
+                <strong class="admin-money">
 
-                                            {{ number_format(
+                  {{ number_format(
                                                 (float) $detail
                                                     ->subtotal,
                                                 0,
@@ -460,522 +454,496 @@
                                                 '.'
                                             ) }}đ
 
-                                        </strong>
+                </strong>
 
-                                    </td>
+              </td>
 
 
-                                    <td>
+              <td>
 
-                                        @if(
-                                            $order->order_status
-                                            === 'completed'
-                                        )
+                @if(
+                $order->order_status
+                === 'completed'
+                )
 
-                                            @if($detail->warranty)
+                @if($detail->warranty)
 
-                                                <a
-                                                    href="{{ route(
+                <a href="{{ route(
                                                         'admin.warranties.show',
                                                         $detail->warranty
-                                                    ) }}"
-                                                    class="admin-table-action"
-                                                >
-                                                    Xem bảo hành
-                                                </a>
+                                                    ) }}" class="admin-table-action">
+                  Xem bảo hành
+                </a>
 
-                                            @else
+                @else
 
-                                                <a
-                                                    href="{{ route(
+                <a href="{{ route(
                                                         'admin.warranties.create',
                                                         $detail
-                                                    ) }}"
-                                                    class="admin-table-action"
-                                                >
-                                                    Cấp bảo hành
-                                                </a>
+                                                    ) }}" class="admin-table-action">
+                  Cấp bảo hành
+                </a>
 
-                                            @endif
+                @endif
 
-                                        @else
+                @else
 
-                                            <span class="admin-table-muted">
-                                                Sau hoàn thành
-                                            </span>
+                <span class="admin-table-muted">
+                  Sau hoàn thành
+                </span>
 
-                                        @endif
+                @endif
 
-                                    </td>
+              </td>
 
-                                </tr>
+            </tr>
 
-                            @endforeach
+            @endforeach
 
-                        </tbody>
+          </tbody>
 
-                    </table>
+        </table>
 
-                </div>
+      </div>
 
-            @endif
+      @endif
 
-        </section>
+    </section>
 
 
 
-        {{-- TIMELINE --}}
+    {{-- TIMELINE --}}
 
-        <section class="admin-panel">
+    <section class="admin-panel">
 
-            <div class="admin-panel-header">
+      <div class="admin-panel-header">
 
-                <div>
+        <div>
 
-                    <h2>
-                        Hành trình đơn hàng
-                    </h2>
+          <h2>
+            Hành trình đơn hàng
+          </h2>
 
-                    <p>
-                        Lịch sử thay đổi trạng thái
-                    </p>
+          <p>
+            Lịch sử thay đổi trạng thái
+          </p>
 
-                </div>
+        </div>
 
-            </div>
-
-
-            @if(
-                $order
-                    ->statusHistories
-                    ->isEmpty()
-            )
-
-                <div class="admin-empty-state">
-                    Chưa có lịch sử trạng thái.
-                </div>
-
-            @else
-
-                <div class="admin-order-timeline">
-
-                    @foreach(
-                        $order->statusHistories
-                        as $history
-                    )
-
-                        <div class="admin-order-timeline-item">
-
-                            <div class="admin-order-timeline-marker">
-
-                                <i class="bi bi-check"></i>
-
-                            </div>
+      </div>
 
 
-                            <div class="admin-order-timeline-content">
+      @if(
+      $order
+      ->statusHistories
+      ->isEmpty()
+      )
 
-                                <div class="admin-order-timeline-head">
+      <div class="admin-empty-state">
+        Chưa có lịch sử trạng thái.
+      </div>
 
-                                    <strong>
+      @else
 
-                                        {{ $orderStatusService
+      <div class="admin-order-timeline">
+
+        @foreach(
+        $order->statusHistories
+        as $history
+        )
+
+        <div class="admin-order-timeline-item">
+
+          <div class="admin-order-timeline-marker">
+
+            <i class="bi bi-check"></i>
+
+          </div>
+
+
+          <div class="admin-order-timeline-content">
+
+            <div class="admin-order-timeline-head">
+
+              <strong>
+
+                {{ $orderStatusService
                                             ->statusLabel(
                                                 $history->status
                                             ) }}
 
-                                    </strong>
+              </strong>
 
 
-                                    <span>
+              <span>
 
-                                        {{ $history
+                {{ $history
                                             ->created_at
                                             ->format(
                                                 'H:i d/m/Y'
                                             ) }}
 
-                                    </span>
+              </span>
 
-                                </div>
-
-
-                                @if($history->description)
-
-                                    <p>
-                                        {{ $history->description }}
-                                    </p>
-
-                                @endif
+            </div>
 
 
-                                <small>
+            @if($history->description)
 
-                                    Cập nhật bởi:
+            <p>
+              {{ $history->description }}
+            </p>
 
-                                    <strong>
+            @endif
 
-                                        {{ $history
+
+            <small>
+
+              Cập nhật bởi:
+
+              <strong>
+
+                {{ $history
                                             ->updater
                                             ?->name
                                             ?? 'Hệ thống' }}
 
-                                    </strong>
+              </strong>
 
-                                </small>
+            </small>
 
-                            </div>
+          </div>
 
-                        </div>
+        </div>
 
-                    @endforeach
+        @endforeach
 
-                </div>
+      </div>
 
-            @endif
+      @endif
 
-        </section>
+    </section>
 
-    </div>
+  </div>
 
 
 
-    {{-- =====================================================
+  {{-- =====================================================
         SIDEBAR
     ====================================================== --}}
 
-    <aside class="admin-order-detail-sidebar">
+  <aside class="admin-order-detail-sidebar">
 
 
-        {{-- UPDATE STATUS --}}
+    {{-- UPDATE STATUS --}}
 
-        <section class="admin-panel">
+    <section class="admin-panel">
 
-            <div class="admin-panel-header">
+      <div class="admin-panel-header">
 
-                <div>
-                    <h2>Xử lý đơn hàng</h2>
-                </div>
+        <div>
+          <h2>Xử lý đơn hàng</h2>
+        </div>
 
-            </div>
+      </div>
 
 
-            <div class="admin-order-process">
+      <div class="admin-order-process">
 
-                <div class="admin-order-current-status">
+        <div class="admin-order-current-status">
 
-                    <span>
-                        Trạng thái hiện tại
-                    </span>
+          <span>
+            Trạng thái hiện tại
+          </span>
 
-                    <strong>
+          <strong>
 
-                        {{ $orderStatusService
+            {{ $orderStatusService
                             ->statusLabel(
                                 $order->order_status
                             ) }}
 
-                    </strong>
+          </strong>
 
-                </div>
+        </div>
 
 
-                @if(!empty($nextStatuses))
+        @if(
+        !empty($nextStatuses)
+        && $order->payment_method !== 'cod'
+        && $order->payment_status !== 'paid'
+        )
 
-                    <form
-                        action="{{ route(
+        <div class="admin-order-warning">
+
+          <i class="bi bi-exclamation-triangle"></i>
+
+          <span>
+            Đơn hàng đang chờ khách thanh toán.
+            Chưa thể xác nhận hoặc xử lý.
+          </span>
+
+        </div>
+
+        @elseif(!empty($nextStatuses))
+
+        <form action="{{ route(
                             'admin.orders.update-status',
                             $order
-                        ) }}"
-                        method="POST"
-                    >
+                        ) }}" method="POST">
 
-                        @csrf
-                        @method('PATCH')
+          @csrf
+          @method('PATCH')
 
 
-                        <div class="admin-form-group">
+          <div class="admin-form-group">
 
-                            <label for="order_status">
-                                Trạng thái tiếp theo
-                            </label>
-
-
-                            <select
-                                name="order_status"
-                                id="order_status"
-                                class="admin-form-control"
-                                required
-                            >
-
-                                <option value="">
-                                    Chọn trạng thái
-                                </option>
+            <label for="order_status">
+              Trạng thái tiếp theo
+            </label>
 
 
-                                @foreach(
-                                    $nextStatuses
-                                    as $status
-                                )
+            <select name="order_status" id="order_status" class="admin-form-control" required>
 
-                                    <option
-                                        value="{{ $status }}"
-                                    >
+              <option value="">
+                Chọn trạng thái
+              </option>
 
-                                        {{ $orderStatusService
+
+              @foreach(
+              $nextStatuses
+              as $status
+              )
+
+              <option value="{{ $status }}">
+
+                {{ $orderStatusService
                                             ->statusLabel(
                                                 $status
                                             ) }}
 
-                                    </option>
+              </option>
 
-                                @endforeach
+              @endforeach
 
-                            </select>
+            </select>
 
-                        </div>
+          </div>
 
+          <button type="submit" class="admin-btn admin-btn-primary admin-btn-full">
+            <i class="bi bi-arrow-right-circle"></i>
 
-                        @if(
-                            $order->order_status
-                            === 'shipping'
+            Cập nhật trạng thái
+          </button>
 
-                            && $order->payment_method
-                                !== 'cod'
+        </form>
 
-                            && $order->payment_status
-                                !== 'paid'
-                        )
+        @else
 
-                            <div class="admin-order-warning">
+        <div class="admin-order-final-state">
 
-                                <i class="bi bi-exclamation-triangle"></i>
+          @if(
+          $order->order_status
+          === 'delivered'
+          )
 
-                                <span>
-                                    Đơn thanh toán online chưa Paid nên chưa thể hoàn thành.
-                                </span>
+          <i class="bi bi-truck"></i>
 
-                            </div>
+          <strong>
+            Đã giao hàng, đang chờ khách xác nhận
+          </strong>
 
-                        @endif
+          @elseif(
+          $order->order_status
+          === 'completed'
+          )
 
+          <i class="bi bi-check-circle"></i>
 
-                        <button
-                            type="submit"
-                            class="admin-btn admin-btn-primary admin-btn-full"
-                        >
-                            <i class="bi bi-arrow-right-circle"></i>
+          <strong>
+            Đơn hàng đã hoàn thành
+          </strong>
 
-                            Cập nhật trạng thái
-                        </button>
+          @elseif(
+          $order->order_status
+          === 'cancelled'
+          )
 
-                    </form>
+          <i class="bi bi-x-circle"></i>
 
-                @else
+          <strong>
+            Đơn hàng đã bị hủy
+          </strong>
 
-                    <div class="admin-order-final-state">
+          @else
 
-                        @if(
-                            $order->order_status
-                            === 'completed'
-                        )
+          <strong>
+            Không còn trạng thái tiếp theo
+          </strong>
 
-                            <i class="bi bi-check-circle"></i>
+          @endif
 
-                            <strong>
-                                Đơn hàng đã hoàn thành
-                            </strong>
-
-                        @elseif(
-                            $order->order_status
-                            === 'cancelled'
-                        )
-
-                            <i class="bi bi-x-circle"></i>
-
-                            <strong>
-                                Đơn hàng đã bị hủy
-                            </strong>
-
-                        @else
-
-                            <strong>
-                                Không còn trạng thái tiếp theo
-                            </strong>
-
-                        @endif
-
-                    </div>
-
-                @endif
-
-            </div>
-
-        </section>
-
-
-
-        {{-- CANCEL / REFUND --}}
-
-        @if(
-            $order->order_status
-            === 'pending'
-        )
-
-            <section class="admin-panel">
-
-                <div class="admin-panel-header">
-
-                    <div>
-                        <h2>Hủy đơn hàng</h2>
-                    </div>
-
-                </div>
-
-
-                <div class="admin-order-cancel">
-
-                    @if(
-                        $order->payment_status
-                        === 'paid'
-                    )
-
-                        <div class="admin-order-cancel-paid">
-
-                            <i class="bi bi-credit-card"></i>
-
-                            <p>
-                                Đơn đã thanh toán.
-                                Không được hủy trực tiếp.
-                            </p>
-
-                        </div>
-
-
-                        @if($order->payment)
-
-                            <a
-                                href="{{ route(
-                                    'admin.payments.show',
-                                    $order->payment
-                                ) }}"
-                                class="admin-btn admin-btn-secondary admin-btn-full"
-                            >
-                                Xử lý hoàn tiền
-                            </a>
-
-                        @endif
-
-                    @else
-
-                        <p>
-                            Đơn Pending có thể hủy.
-                            Tồn kho sẽ được hoàn lại tự động.
-                        </p>
-
-
-                        <form
-                            action="{{ route(
-                                'admin.orders.cancel',
-                                $order
-                            ) }}"
-                            method="POST"
-                            onsubmit="
-                                return confirm(
-                                    'Bạn có chắc muốn hủy đơn hàng này?'
-                                );
-                            "
-                        >
-
-                            @csrf
-                            @method('PATCH')
-
-
-                            <button
-                                type="submit"
-                                class="admin-btn admin-btn-danger admin-btn-full"
-                            >
-                                <i class="bi bi-x-circle"></i>
-
-                                Hủy đơn hàng
-                            </button>
-
-                        </form>
-
-                    @endif
-
-                </div>
-
-            </section>
+        </div>
 
         @endif
 
+      </div>
+
+    </section>
 
 
-        {{-- PAYMENT --}}
 
-        <section class="admin-panel">
+    {{-- CANCEL / REFUND --}}
 
-            <div class="admin-panel-header">
+    @if(
+    $order->order_status
+    === 'pending'
+    )
 
-                <div>
-                    <h2>Thanh toán</h2>
-                </div>
+    <section class="admin-panel">
 
-            </div>
+      <div class="admin-panel-header">
+
+        <div>
+          <h2>Hủy đơn hàng</h2>
+        </div>
+
+      </div>
 
 
-            <div class="admin-order-sidebar-info">
+      <div class="admin-order-cancel">
 
-                <span>
-                    Phương thức
-                </span>
+        @if(
+        $order->payment_status
+        === 'paid'
+        )
 
-                <strong>
+        <div class="admin-order-cancel-paid">
 
-                    {{ $paymentMethodLabels[
+          <i class="bi bi-credit-card"></i>
+
+          <p>
+            Đơn đã thanh toán.
+            Không được hủy trực tiếp.
+          </p>
+
+        </div>
+
+
+        @if($order->payment)
+
+        <a href="{{ route(
+                                    'admin.payments.show',
+                                    $order->payment
+                                ) }}" class="admin-btn admin-btn-secondary admin-btn-full">
+          Xử lý hoàn tiền
+        </a>
+
+        @endif
+
+        @else
+
+        <p>
+          Đơn Pending có thể hủy.
+          Tồn kho sẽ được hoàn lại tự động.
+        </p>
+
+
+        <form action="{{ route(
+                                'admin.orders.cancel',
+                                $order
+                            ) }}" method="POST" onsubmit="
+                                return confirm(
+                                    'Bạn có chắc muốn hủy đơn hàng này?'
+                                );
+                            ">
+
+          @csrf
+          @method('PATCH')
+
+
+          <button type="submit" class="admin-btn admin-btn-danger admin-btn-full">
+            <i class="bi bi-x-circle"></i>
+
+            Hủy đơn hàng
+          </button>
+
+        </form>
+
+        @endif
+
+      </div>
+
+    </section>
+
+    @endif
+
+
+
+    {{-- PAYMENT --}}
+
+    <section class="admin-panel">
+
+      <div class="admin-panel-header">
+
+        <div>
+          <h2>Thanh toán</h2>
+        </div>
+
+      </div>
+
+
+      <div class="admin-order-sidebar-info">
+
+        <span>
+          Phương thức
+        </span>
+
+        <strong>
+
+          {{ $paymentMethodLabels[
                         $order->payment_method
                     ] ?? strtoupper(
                         $order->payment_method
                     ) }}
 
-                </strong>
+        </strong>
 
 
-                <span>
-                    Trạng thái
-                </span>
+        <span>
+          Trạng thái
+        </span>
 
-                <strong>
+        <strong>
 
-                    {{ $paymentStatusLabels[
+          {{ $paymentStatusLabels[
                         $order->payment_status
                     ] ?? $order->payment_status }}
 
-                </strong>
+        </strong>
 
 
-                @if($order->payment)
+        @if($order->payment)
 
-                    <span>
-                        Mã giao dịch
-                    </span>
+        <span>
+          Mã giao dịch
+        </span>
 
-                    <strong>
-                        {{ $order
+        <strong>
+          {{ $order
                             ->payment
                             ->transaction_code
                             ?: '—' }}
-                    </strong>
+        </strong>
 
 
-                    <span>
-                        Số tiền
-                    </span>
+        <span>
+          Số tiền
+        </span>
 
-                    <strong>
+        <strong>
 
-                        {{ number_format(
+          {{ number_format(
                             (float) $order
                                 ->payment
                                 ->amount,
@@ -984,80 +952,80 @@
                             '.'
                         ) }}đ
 
-                    </strong>
+        </strong>
 
 
-                    @if(
-                        $order
-                            ->payment
-                            ->paid_at
-                    )
+        @if(
+        $order
+        ->payment
+        ->paid_at
+        )
 
-                        <span>
-                            Thanh toán lúc
-                        </span>
+        <span>
+          Thanh toán lúc
+        </span>
 
-                        <strong>
+        <strong>
 
-                            {{ $order
+          {{ $order
                                 ->payment
                                 ->paid_at
                                 ->format(
                                     'H:i d/m/Y'
                                 ) }}
 
-                        </strong>
+        </strong>
 
-                    @endif
+        @endif
 
-                @endif
+        @endif
 
-            </div>
+      </div>
 
-        </section>
+    </section>
 
 
 
-        {{-- TOTAL --}}
+    {{-- TOTAL --}}
 
-        <section class="admin-panel">
+    <section class="admin-panel">
 
-            <div class="admin-order-money">
+      <div class="admin-order-money">
 
-                <div>
+        <div>
 
-                    <span>
-                        Tạm tính
-                    </span>
+          <span>
+            Tạm tính
+          </span>
 
-                    <strong>
+          <strong>
 
-                        {{ number_format(
+            {{ number_format(
                             (float) $order->subtotal,
                             0,
                             ',',
                             '.'
                         ) }}đ
 
-                    </strong>
+          </strong>
 
-                </div>
+        </div>
 
 
-                @if(
-                    (float) $order
-                        ->discount_amount > 0
-                )
+        @if(
+        (float) $order
+        ->discount_amount > 0
+        )
 
-                    <div class="discount">
+        <div class="discount">
 
-                        <span>
-                            Giảm giá
-                        </span>
+          <span>
+            Giảm giá
+          </span>
 
-                        <strong>
+          <strong>
 
-                            -{{ number_format(
+            -{{ number_format(
                                 (float) $order
                                     ->discount_amount,
                                 0,
@@ -1065,22 +1033,22 @@
                                 '.'
                             ) }}đ
 
-                        </strong>
+          </strong>
 
-                    </div>
+        </div>
 
-                @endif
+        @endif
 
 
-                <div>
+        <div>
 
-                    <span>
-                        Phí vận chuyển
-                    </span>
+          <span>
+            Phí vận chuyển
+          </span>
 
-                    <strong>
+          <strong>
 
-                        {{ number_format(
+            {{ number_format(
                             (float) $order
                                 ->shipping_fee,
                             0,
@@ -1088,35 +1056,35 @@
                             '.'
                         ) }}đ
 
-                    </strong>
+          </strong>
 
-                </div>
+        </div>
 
 
-                <div class="total">
+        <div class="total">
 
-                    <span>
-                        Tổng thanh toán
-                    </span>
+          <span>
+            Tổng thanh toán
+          </span>
 
-                    <strong>
+          <strong>
 
-                        {{ number_format(
+            {{ number_format(
                             (float) $order->total,
                             0,
                             ',',
                             '.'
                         ) }}đ
 
-                    </strong>
+          </strong>
 
-                </div>
+        </div>
 
-            </div>
+      </div>
 
-        </section>
+    </section>
 
-    </aside>
+  </aside>
 
 </div>
 

@@ -502,8 +502,13 @@ true
 
             <div class="product-purchase-actions">
 
-              <button type="submit" class="btn btn-primary product-add-cart-button">
+              <button type="submit" name="checkout_action" value="add_to_cart"
+                class="btn btn-primary product-add-cart-button">
                 Thêm vào giỏ hàng
+              </button>
+
+              <button type="submit" name="checkout_action" value="buy_now" class="btn product-buy-now-button">
+                Mua ngay
               </button>
 
             </div>

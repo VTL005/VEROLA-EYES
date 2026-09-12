@@ -24,24 +24,20 @@ class OrderController extends Controller
             )
         );
 
-
         $orderStatus =
             $request->query(
                 'order_status'
             );
-
 
         $paymentStatus =
             $request->query(
                 'payment_status'
             );
 
-
         $paymentMethod =
             $request->query(
                 'payment_method'
             );
-
 
         $validOrderStatuses = [
             Order::STATUS_PENDING,
@@ -53,7 +49,6 @@ class OrderController extends Controller
             Order::STATUS_CANCELLED,
         ];
 
-
         $validPaymentStatuses = [
             Order::PAYMENT_UNPAID,
             Order::PAYMENT_PENDING,
@@ -62,10 +57,9 @@ class OrderController extends Controller
             Order::PAYMENT_REFUNDED,
         ];
 
-
         if (
             $orderStatus
-            && !in_array(
+            && ! in_array(
                 $orderStatus,
                 $validOrderStatuses,
                 true
@@ -74,10 +68,9 @@ class OrderController extends Controller
             $orderStatus = null;
         }
 
-
         if (
             $paymentStatus
-            && !in_array(
+            && ! in_array(
                 $paymentStatus,
                 $validPaymentStatuses,
                 true
@@ -86,10 +79,9 @@ class OrderController extends Controller
             $paymentStatus = null;
         }
 
-
         if (
             $paymentMethod
-            && !in_array(
+            && ! in_array(
                 $paymentMethod,
                 [
                     'cod',
@@ -101,7 +93,6 @@ class OrderController extends Controller
         ) {
             $paymentMethod = null;
         }
-
 
         /*
         |--------------------------------------------------------------------------
@@ -154,29 +145,26 @@ class OrderController extends Controller
 
                 ->when(
                     $orderStatus,
-                    fn ($query) =>
-                        $query->where(
-                            'order_status',
-                            $orderStatus
-                        )
+                    fn ($query) => $query->where(
+                        'order_status',
+                        $orderStatus
+                    )
                 )
 
                 ->when(
                     $paymentStatus,
-                    fn ($query) =>
-                        $query->where(
-                            'payment_status',
-                            $paymentStatus
-                        )
+                    fn ($query) => $query->where(
+                        'payment_status',
+                        $paymentStatus
+                    )
                 )
 
                 ->when(
                     $paymentMethod,
-                    fn ($query) =>
-                        $query->where(
-                            'payment_method',
-                            $paymentMethod
-                        )
+                    fn ($query) => $query->where(
+                        'payment_method',
+                        $paymentMethod
+                    )
                 )
 
                 ->latest()
@@ -184,7 +172,6 @@ class OrderController extends Controller
                 ->paginate(15)
 
                 ->withQueryString();
-
 
         /*
         |--------------------------------------------------------------------------
@@ -196,7 +183,6 @@ class OrderController extends Controller
             Order::query()
                 ->count();
 
-
         $pendingOrders =
             Order::query()
                 ->where(
@@ -204,7 +190,6 @@ class OrderController extends Controller
                     Order::STATUS_PENDING
                 )
                 ->count();
-
 
         $shippingOrders =
             Order::query()
@@ -214,7 +199,6 @@ class OrderController extends Controller
                 )
                 ->count();
 
-
         $completedOrders =
             Order::query()
                 ->where(
@@ -222,7 +206,6 @@ class OrderController extends Controller
                     Order::STATUS_COMPLETED
                 )
                 ->count();
-
 
         return view(
             'admin.orders.index',
@@ -240,7 +223,6 @@ class OrderController extends Controller
         );
     }
 
-
     /**
      * Chi tiết đơn hàng.
      */
@@ -252,24 +234,21 @@ class OrderController extends Controller
             'details',
             'payment',
 
-            'statusHistories' =>
-                function ($query) {
+            'statusHistories' => function ($query) {
 
-                    $query->oldest();
-                },
+                $query->oldest();
+            },
 
             'statusHistories.updater',
 
             'details.warranty',
         ]);
 
-
         $nextStatuses =
             $orderStatusService
                 ->nextStatuses(
                     $order
                 );
-
 
         return view(
             'admin.orders.show',
@@ -280,7 +259,6 @@ class OrderController extends Controller
             )
         );
     }
-
 
     /**
      * Cập nhật trạng thái.
@@ -302,19 +280,16 @@ class OrderController extends Controller
                             Order::STATUS_PREPARING,
                             Order::STATUS_PACKED,
                             Order::STATUS_SHIPPING,
-                            Order::STATUS_COMPLETED,
+                            Order::STATUS_DELIVERED,
                         ]),
                     ],
                 ],
                 [
-                    'order_status.required' =>
-                        'Vui lòng chọn trạng thái đơn hàng.',
+                    'order_status.required' => 'Vui lòng chọn trạng thái đơn hàng.',
 
-                    'order_status.in' =>
-                        'Trạng thái đơn hàng không hợp lệ.',
+                    'order_status.in' => 'Trạng thái đơn hàng không hợp lệ.',
                 ]
             );
-
 
         $orderStatusService
             ->updateStatus(
@@ -322,7 +297,6 @@ class OrderController extends Controller
                 $validated['order_status'],
                 auth()->user()
             );
-
 
         return redirect()
             ->route(
@@ -334,7 +308,6 @@ class OrderController extends Controller
                 'Cập nhật trạng thái đơn hàng thành công.'
             );
     }
-
 
     /**
      * Admin hủy đơn Pending.
@@ -348,7 +321,6 @@ class OrderController extends Controller
                 auth()->user(),
                 $order
             );
-
 
         return redirect()
             ->route(

@@ -104,27 +104,84 @@ class CartController extends Controller
     }
 
     /**
-     * Thêm Variant vào giỏ hàng.
+     * Thêm Variant vào giỏ hàng
+     * hoặc chuyển thẳng tới Checkout.
      */
     public function store(
         AddToCartRequest $request,
         CartService $cartService
     ) {
         $variant = ProductVariant::findOrFail(
-            $request->variant_id
+            $request->integer('variant_id')
         );
+
+        /*
+         * Khách bấm "Mua ngay".
+         */
+        if (
+            $request->input('checkout_action')
+            === 'buy_now'
+        ) {
+            /*
+             * Không thêm vào Cart.
+             * Dữ liệu Mua ngay được lưu riêng trong Session.
+             */
+            $variant->loadMissing('product');
+
+            $quantity = $request->integer('quantity');
+
+            if (
+                ! $variant->product
+                || ! $variant->product->is_active
+                || ! $variant->is_active
+            ) {
+                throw ValidationException::withMessages([
+                    'variant_id' => 'Sản phẩm hoặc phiên bản hiện không khả dụng.',
+                ]);
+            }
+
+            if (
+                $quantity < 1
+                || $quantity > $variant->stock_quantity
+            ) {
+                throw ValidationException::withMessages([
+                    'quantity' => 'Số lượng yêu cầu không hợp lệ. Chỉ còn '
+                        .$variant->stock_quantity
+                        .' sản phẩm.',
+                ]);
+            }
+
+            session()->put(
+                'checkout_buy_now',
+                [
+                    'variant_id' => $variant->id,
+                    'quantity' => $quantity,
+                ]
+            );
+
+            session()->forget([
+                'checkout_cart_item_ids',
+                'checkout_amount_after_discount',
+            ]);
+
+            return redirect()
+                ->route('checkout.index');
+        }
 
         $cartService->add(
             auth()->user(),
             $variant,
-            (int) $request->quantity
+            $request->integer('quantity')
         );
 
         /*
          * Khi thêm sản phẩm mới, cho phép trang giỏ hàng
          * khởi tạo lại danh sách sản phẩm có thể chọn.
          */
-        session()->forget('cart_selected_item_ids');
+        session()->forget([
+            'cart_selected_item_ids',
+            'checkout_buy_now',
+        ]);
 
         return redirect()
             ->route('cart.index')
@@ -188,6 +245,7 @@ class CartController extends Controller
             'cart_voucher_code',
             'cart_selected_item_ids',
             'checkout_cart_item_ids',
+            'checkout_buy_now',
             'checkout_amount_after_discount',
         ]);
 
