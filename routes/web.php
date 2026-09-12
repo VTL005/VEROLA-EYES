@@ -110,7 +110,10 @@ Route::middleware('auth')->group(function () {
         '/chat',
         [CustomerChatController::class, 'store']
     )->name('customer.chat.store');
-
+    Route::post(
+        '/chat/products/{product}',
+        [CustomerChatController::class, 'storeProduct']
+    )->name('customer.chat.products.store');
     Route::patch(
         '/chat/{conversation}/read',
         [CustomerChatController::class, 'markRead']
@@ -494,7 +497,20 @@ Route::middleware([
         '/orders/{order}',
         [OrderController::class, 'show']
     )->name('orders.show');
+    Route::get(
+        '/orders/{order}',
+        [OrderController::class, 'show']
+    )->name('orders.show');
 
+    Route::patch(
+        '/orders/{order}/confirm-received',
+        [OrderController::class, 'confirmReceived']
+    )->name('orders.confirm-received');
+
+    Route::patch(
+        '/orders/{order}/cancel',
+        [OrderController::class, 'cancel']
+    )->name('orders.cancel');
     Route::patch(
         '/orders/{order}/cancel',
         [OrderController::class, 'cancel']
@@ -522,20 +538,18 @@ Route::middleware([
     )->name('payments.payos.cancel');
 
     /*
-    |--------------------------------------------------------------------------
-    | PAYMENT VNPAY
-    |--------------------------------------------------------------------------
-    */
+   /*
+|--------------------------------------------------------------------------
+| PAYMENT ONEPAY
+|--------------------------------------------------------------------------
+*/
 
     Route::get(
-        '/payments/vnpay/{order}',
-        [PaymentController::class, 'showVnpay']
-    )->name('payments.vnpay.show');
-
-    Route::post(
-        '/payments/vnpay/{order}/confirm',
-        [PaymentController::class, 'confirmVnpay']
-    )->name('payments.vnpay.confirm');
+        '/payments/onepay/{order}',
+        [PaymentController::class, 'showOnePay']
+    )
+        ->whereNumber('order')
+        ->name('payments.onepay.show');
     /*
     |--------------------------------------------------------------------------
     | CUSTOMER PROFILE
@@ -574,6 +588,22 @@ Route::post(
     [PaymentController::class, 'payOSWebhook']
 )->name('payments.payos.webhook');
 
+/*
+|--------------------------------------------------------------------------
+| ONEPAY RETURN & IPN
+|--------------------------------------------------------------------------
+*/
+
+Route::get(
+    '/payment-callbacks/onepay/return',
+    [PaymentController::class, 'onePayReturn']
+)->name('payments.onepay.return');
+
+Route::match(
+    ['get', 'post'],
+    '/payment-callbacks/onepay/ipn',
+    [PaymentController::class, 'onePayIpn']
+)->name('payments.onepay.ipn');
 /*
 |--------------------------------------------------------------------------
 | STAFF

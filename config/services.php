@@ -2,18 +2,6 @@
 
 return [
 
-    /*
-    |--------------------------------------------------------------------------
-    | Third Party Services
-    |--------------------------------------------------------------------------
-    |
-    | This file is for storing the credentials for third party services such
-    | as Mailgun, Postmark, AWS and more. This file provides the de facto
-    | location for this type of information, allowing packages to have
-    | a conventional file to locate the various service credentials.
-    |
-    */
-
     'postmark' => [
         'key' => env('POSTMARK_API_KEY'),
     ],
@@ -25,91 +13,56 @@ return [
     'ses' => [
         'key' => env('AWS_ACCESS_KEY_ID'),
         'secret' => env('AWS_SECRET_ACCESS_KEY'),
-        'region' => env(
-            'AWS_DEFAULT_REGION',
-            'us-east-1'
-        ),
+        'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
     'slack' => [
-
         'notifications' => [
-
-            'bot_user_oauth_token' => env(
-                'SLACK_BOT_USER_OAUTH_TOKEN'
-            ),
-
-            'channel' => env(
-                'SLACK_BOT_USER_DEFAULT_CHANNEL'
-            ),
+            'bot_user_oauth_token' => env('SLACK_BOT_USER_OAUTH_TOKEN'),
+            'channel' => env('SLACK_BOT_USER_DEFAULT_CHANNEL'),
         ],
     ],
 
-    /*
-    |--------------------------------------------------------------------------
-    | GOOGLE OAUTH
-    |--------------------------------------------------------------------------
-    |
-    | Cấu hình đăng nhập nhanh bằng tài khoản Google.
-    |
-    | Client ID và Client Secret được lưu trong file .env.
-    | Không lưu thông tin bí mật trực tiếp trong source code.
-    |
-    */
-
     'google' => [
-
         'client_id' => env('GOOGLE_CLIENT_ID'),
-
         'client_secret' => env('GOOGLE_CLIENT_SECRET'),
-
         'redirect' => env(
             'GOOGLE_REDIRECT_URI',
             'http://127.0.0.1:8000/auth/google/callback'
         ),
     ],
-    /*
-    |--------------------------------------------------------------------------
-    | GHN SHIPPING
-    |--------------------------------------------------------------------------
-    |
-    | Cấu hình kết nối API Giao Hàng Nhanh.
-    |
-    | Token và Shop ID được lưu trong file .env.
-    | Không lưu Token trực tiếp trong source code.
-    |
-    */
 
     'ghn' => [
-
         'token' => env('GHN_TOKEN'),
-
         'shop_id' => env('GHN_SHOP_ID'),
-
         'base_url' => env(
             'GHN_BASE_URL',
             'https://dev-online-gateway.ghn.vn'
         ),
     ],
-    /*
-    |--------------------------------------------------------------------------
-    | PAYOS PAYMENT
-    |--------------------------------------------------------------------------
-    |
-    | Cấu hình cổng thanh toán payOS.
-    |
-    | Các khóa bí mật được lưu trong file .env
-    | và không được ghi trực tiếp vào source code.
-    |
-    */
 
     'payos' => [
-
         'client_id' => env('PAYOS_CLIENT_ID'),
-
         'api_key' => env('PAYOS_API_KEY'),
-
         'checksum_key' => env('PAYOS_CHECKSUM_KEY'),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | ONEPAY SANDBOX
+    |--------------------------------------------------------------------------
+    |
+    | Không ghi khóa môi trường thật trực tiếp vào source code.
+    |
+    */
+    'onepay' => [
+        'payment_url' => env(
+            'ONEPAY_PAYMENT_URL',
+            'https://mtf.onepay.vn/paygate/vpcpay.op'
+        ),
+        'merchant_id' => env('ONEPAY_MERCHANT_ID'),
+        'access_code' => env('ONEPAY_ACCESS_CODE'),
+        'secure_secret' => env('ONEPAY_SECURE_SECRET'),
     ],
 
 ];

@@ -17,6 +17,7 @@ $statusSteps = [
 'preparing',
 'packed',
 'shipping',
+'delivered',
 'completed',
 ];
 
@@ -36,6 +37,9 @@ $statusLabels = [
 
 'shipping' =>
 'Đang giao hàng',
+
+'delivered' =>
+'Đã giao - chờ xác nhận',
 
 'completed' =>
 'Hoàn thành',
@@ -138,6 +142,15 @@ true
 
         <span class="order-status status-shipping">
           Đang giao hàng
+        </span>
+
+        @break
+
+
+        @case('delivered')
+
+        <span class="order-status status-delivered">
+          Đã giao - chờ bạn xác nhận
         </span>
 
         @break
@@ -698,7 +711,11 @@ true
                 @break
 
                 @case('qr')
-                QR
+                QR qua payOS
+                @break
+
+                @case('onepay')
+                OnePAY
                 @break
 
                 @case('vnpay')
@@ -818,10 +835,56 @@ true
 
 
 
-        {{-- RETRY PAYOS PAYMENT --}}
+        {{-- CUSTOMER CONFIRM RECEIVED --}}
+
+        @if($order->isDelivered())
+
+        <div class="order-detail-card">
+
+          <h2>
+            Xác nhận nhận hàng
+          </h2>
+
+          <p class="text-muted">
+            Đơn vị vận chuyển đã xác nhận giao hàng.
+            Vui lòng kiểm tra đơn trước khi hoàn thành.
+          </p>
+
+          <form action="{{ route(
+                'orders.confirm-received',
+                $order
+            ) }}" method="POST" onsubmit="
+              return confirm(
+                'Bạn xác nhận đã nhận đầy đủ và kiểm tra đơn hàng?'
+              );
+            ">
+
+            @csrf
+            @method('PATCH')
+
+            <button type="submit" class="btn btn-primary" style="width:100%;">
+              Đã nhận được hàng
+            </button>
+
+          </form>
+
+        </div>
+
+        @endif
+
+
+
+        {{-- RETRY ONLINE PAYMENT --}}
 
         @if(
-        $order->payment_method === 'qr'
+        in_array(
+        $order->payment_method,
+        [
+        'qr',
+        'onepay',
+        ],
+        true
+        )
         && in_array(
         $order->payment_status,
         [
@@ -833,11 +896,23 @@ true
         && ! $order->isCancelled()
         )
 
+        @php
+        $retryPaymentRoute =
+        $order->payment_method === 'onepay'
+        ? 'payments.onepay.show'
+        : 'payments.qr.show';
+
+        $retryPaymentLabel =
+        $order->payment_method === 'onepay'
+        ? 'Thanh toán lại qua OnePAY'
+        : 'Thanh toán lại qua payOS';
+        @endphp
+
         <a href="{{ route(
-                            'payments.qr.show',
+                            $retryPaymentRoute,
                             $order
                         ) }}" class="btn btn-primary">
-          Thanh toán lại
+          {{ $retryPaymentLabel }}
         </a>
 
         @endif

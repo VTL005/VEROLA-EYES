@@ -16,11 +16,12 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         /*
-         * payOS gọi webhook trực tiếp từ máy chủ của họ,
-         * vì vậy request sẽ không có CSRF token của Laravel.
+         * payOS và OnePAY gọi webhook/IPN trực tiếp từ máy chủ của họ,
+         * vì vậy request không có CSRF token của Laravel.
          */
         $middleware->validateCsrfTokens(except: [
             'payments/payos/webhook',
+            'payment-callbacks/onepay/ipn',
         ]);
 
         $middleware->alias([

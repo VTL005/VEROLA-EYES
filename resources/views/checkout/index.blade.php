@@ -174,8 +174,12 @@
                 </h2>
 
                 <p>
+                  @if($isBuyNow ?? false)
+                  Sản phẩm bạn đang chọn Mua ngay.
+                  @else
                   Chỉ những sản phẩm bạn
                   đã chọn từ giỏ hàng.
+                  @endif
                 </p>
 
               </div>
@@ -278,9 +282,19 @@
             </div>
 
 
+            @if($isBuyNow ?? false)
+
+            <a href="{{ route('products.index') }}" class="checkout-edit-cart">
+              ← Tiếp tục xem sản phẩm
+            </a>
+
+            @else
+
             <a href="{{ route('cart.index') }}" class="checkout-edit-cart">
               ← Thay đổi sản phẩm đã chọn
             </a>
+
+            @endif
 
           </div>
 
@@ -373,8 +387,8 @@
                   </strong>
 
                   <span>
-                    Thanh toán bằng mã QR
-                    mô phỏng của VELORA.
+                    Thanh toán an toàn bằng
+                    mã QR qua payOS.
                   </span>
 
                 </div>
@@ -383,31 +397,31 @@
 
 
 
-              {{-- VNPAY --}}
+              {{-- ONEPAY --}}
 
               <label class="payment-method-card">
 
-                <input type="radio" name="payment_method" value="vnpay" {{
+                <input type="radio" name="payment_method" value="onepay" {{
                                         old('payment_method')
-                                        === 'vnpay'
+                                        === 'onepay'
                                             ? 'checked'
                                             : ''
                                     }}>
 
                 <div class="payment-method-icon">
-                  VNP
+                  ONE
                 </div>
 
 
                 <div>
 
                   <strong>
-                    VNPay
+                    OnePAY Sandbox
                   </strong>
 
                   <span>
                     Thanh toán qua
-                    cổng VNPay mô phỏng.
+                    cổng thẻ quốc tế OnePAY.
                   </span>
 
                 </div>

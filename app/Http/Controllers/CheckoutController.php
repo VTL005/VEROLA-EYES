@@ -6,7 +6,10 @@ use App\Http\Requests\CheckoutRequest;
 use App\Http\Requests\PrepareCheckoutRequest;
 use App\Mail\OrderConfirmationMail;
 use App\Models\Address;
+use App\Models\CartItem;
 use App\Models\Order;
+use App\Models\Payment;
+use App\Models\ProductVariant;
 use App\Services\CartService;
 use App\Services\CheckoutService;
 use App\Services\ShippingFeeService;
@@ -89,6 +92,12 @@ class CheckoutController extends Controller
             $selectedIds->all()
         );
 
+        /*
+         * Customer đã chọn thanh toán từ giỏ hàng,
+         * vì vậy hủy dữ liệu Mua ngay cũ nếu có.
+         */
+        session()->forget('checkout_buy_now');
+
         return redirect()
             ->route('checkout.index');
     }
@@ -119,58 +128,104 @@ class CheckoutController extends Controller
 |--------------------------------------------------------------------------
 */
 
-        $selectedIds = collect(
-            session(
-                'checkout_cart_item_ids',
-                []
-            )
-        )
-            ->map(
-                fn ($id) => (int) $id
-            )
-            ->filter(
-                fn ($id) => $id > 0
-            )
-            ->unique()
-            ->values();
+        $buyNow = session('checkout_buy_now');
 
-        if ($selectedIds->isEmpty()) {
+        $isBuyNow = is_array($buyNow)
+            && (int) ($buyNow['variant_id'] ?? 0) > 0
+            && (int) ($buyNow['quantity'] ?? 0) > 0;
 
-            return redirect()
-                ->route('cart.index')
-                ->with(
-                    'error',
-                    'Vui lòng chọn sản phẩm cần thanh toán.'
-                );
-        }
+        if ($isBuyNow) {
+            /*
+             * Mua ngay không sử dụng CartItem trong database.
+             * Tạo CartItem trong bộ nhớ để tái sử dụng checkout view.
+             */
+            $variant = ProductVariant::query()
+                ->with('product.primaryImage')
+                ->find((int) $buyNow['variant_id']);
 
-        $selectedItems = $cart->items
-            ->whereIn(
-                'id',
-                $selectedIds->all()
-            )
-            ->values();
+            $quantity = (int) $buyNow['quantity'];
 
-        /*
-         * Selection không còn hợp lệ.
-         *
-         * Ví dụ CartItem đã bị xóa ở tab khác.
-         */
-        if (
-            $selectedItems->count()
-            !== $selectedIds->count()
-        ) {
+            if (
+                ! $variant
+                || ! $variant->product
+                || ! $variant->product->is_active
+                || ! $variant->is_active
+                || $quantity > $variant->stock_quantity
+            ) {
+                session()->forget('checkout_buy_now');
 
-            session()->forget(
-                'checkout_cart_item_ids'
+                return redirect()
+                    ->route('products.index')
+                    ->with(
+                        'error',
+                        'Sản phẩm Mua ngay không còn khả dụng hoặc không đủ tồn kho.'
+                    );
+            }
+
+            $buyNowItem = new CartItem([
+                'variant_id' => $variant->id,
+                'quantity' => $quantity,
+            ]);
+
+            $buyNowItem->setRelation(
+                'variant',
+                $variant
             );
 
-            return redirect()
-                ->route('cart.index')
-                ->with(
-                    'error',
-                    'Giỏ hàng đã thay đổi. Vui lòng chọn lại sản phẩm.'
+            $selectedItems = collect([
+                $buyNowItem,
+            ]);
+        } else {
+            $selectedIds = collect(
+                session(
+                    'checkout_cart_item_ids',
+                    []
+                )
+            )
+                ->map(
+                    fn ($id) => (int) $id
+                )
+                ->filter(
+                    fn ($id) => $id > 0
+                )
+                ->unique()
+                ->values();
+
+            if ($selectedIds->isEmpty()) {
+                return redirect()
+                    ->route('cart.index')
+                    ->with(
+                        'error',
+                        'Vui lòng chọn sản phẩm cần thanh toán.'
+                    );
+            }
+
+            $selectedItems = $cart->items
+                ->whereIn(
+                    'id',
+                    $selectedIds->all()
+                )
+                ->values();
+
+            /*
+             * Selection không còn hợp lệ.
+             * Ví dụ CartItem đã bị xóa ở tab khác.
+             */
+            if (
+                $selectedItems->count()
+                !== $selectedIds->count()
+            ) {
+                session()->forget(
+                    'checkout_cart_item_ids'
                 );
+
+                return redirect()
+                    ->route('cart.index')
+                    ->with(
+                        'error',
+                        'Giỏ hàng đã thay đổi. Vui lòng chọn lại sản phẩm.'
+                    );
+            }
         }
 
         /*
@@ -272,11 +327,17 @@ class CheckoutController extends Controller
                     'cart_voucher_code'
                 );
 
-                return redirect()
-                    ->route('cart.index')
-                    ->withErrors(
-                        $exception->errors()
-                    );
+                if ($isBuyNow) {
+                    $appliedVoucher = null;
+                    $discountAmount = 0;
+                    $finalAmount = $subtotal;
+                } else {
+                    return redirect()
+                        ->route('cart.index')
+                        ->withErrors(
+                            $exception->errors()
+                        );
+                }
             }
         }
 
@@ -358,7 +419,8 @@ class CheckoutController extends Controller
                 'isFreeShipping',
                 'selectedAddressId',
                 'total',
-                'appliedVoucher'
+                'appliedVoucher',
+                'isBuyNow'
             )
         );
     }
@@ -459,6 +521,12 @@ class CheckoutController extends Controller
     ) {
         $user = auth()->user();
 
+        $buyNow = session('checkout_buy_now');
+
+        $isBuyNow = is_array($buyNow)
+            && (int) ($buyNow['variant_id'] ?? 0) > 0
+            && (int) ($buyNow['quantity'] ?? 0) > 0;
+
         $selectedCartItemIds = collect(
             session(
                 'checkout_cart_item_ids',
@@ -475,7 +543,10 @@ class CheckoutController extends Controller
             ->values()
             ->all();
 
-        if (empty($selectedCartItemIds)) {
+        if (
+            ! $isBuyNow
+            && empty($selectedCartItemIds)
+        ) {
 
             return redirect()
                 ->route('cart.index')
@@ -546,7 +617,8 @@ class CheckoutController extends Controller
                 $validated['payment_method'],
                 $validated['note'] ?? null,
                 $voucherCode,
-                $selectedCartItemIds
+                $selectedCartItemIds,
+                $isBuyNow ? $buyNow : null
             );
 
         /*
@@ -613,6 +685,7 @@ class CheckoutController extends Controller
             'cart_voucher_code',
             'cart_selected_item_ids',
             'checkout_cart_item_ids',
+            'checkout_buy_now',
             'checkout_amount_after_discount',
         ]);
 
@@ -622,7 +695,7 @@ class CheckoutController extends Controller
          */
         if (
             $order->payment_method
-            === 'qr'
+            === Payment::METHOD_QR
         ) {
 
             return redirect()
@@ -633,17 +706,17 @@ class CheckoutController extends Controller
         }
 
         /*
-         * VNPay:
-         * chuyển sang cổng VNPay mô phỏng.
+         * OnePAY:
+         * chuyển sang cổng thanh toán OnePAY Sandbox.
          */
         if (
             $order->payment_method
-            === 'vnpay'
+            === Payment::METHOD_ONEPAY
         ) {
 
             return redirect()
                 ->route(
-                    'payments.vnpay.show',
+                    'payments.onepay.show',
                     $order
                 );
         }

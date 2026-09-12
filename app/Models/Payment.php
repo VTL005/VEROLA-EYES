@@ -14,6 +14,9 @@ class Payment extends Model
 
     public const METHOD_QR = 'qr';
 
+    public const METHOD_ONEPAY = 'onepay';
+
+    /* Giữ tạm để các đơn VNPay cũ không bị lỗi khi hiển thị. */
     public const METHOD_VNPAY = 'vnpay';
 
     public const STATUS_UNPAID = 'unpaid';
@@ -50,44 +53,26 @@ class Payment extends Model
         ];
     }
 
-    /**
-     * Payment thuộc Order.
-     */
     public function order(): BelongsTo
     {
-        return $this->belongsTo(
-            Order::class,
-            'order_id'
-        );
+        return $this->belongsTo(Order::class, 'order_id');
     }
 
-    /**
-     * Giao dịch đã thanh toán thành công?
-     */
     public function isPaid(): bool
     {
         return $this->status === self::STATUS_PAID;
     }
 
-    /**
-     * Giao dịch đang chờ?
-     */
     public function isPending(): bool
     {
         return $this->status === self::STATUS_PENDING;
     }
 
-    /**
-     * Giao dịch thất bại?
-     */
     public function isFailed(): bool
     {
         return $this->status === self::STATUS_FAILED;
     }
 
-    /**
-     * Đã hoàn tiền?
-     */
     public function isRefunded(): bool
     {
         return $this->status === self::STATUS_REFUNDED;
