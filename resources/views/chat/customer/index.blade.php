@@ -123,7 +123,7 @@ $complaintOrderCode !== ''
                 PRODUCT WAITING TO SEND
             ========================================================== --}}
 
-      @if ($consultingProduct)
+      @if ($consultingProduct ?? null)
 
       @php
 
