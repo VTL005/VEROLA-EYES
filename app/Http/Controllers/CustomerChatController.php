@@ -7,6 +7,7 @@ use App\Events\ChatMessagesRead;
 use App\Events\StaffChatInboxUpdated;
 use App\Models\ChatConversation;
 use App\Models\ChatMessage;
+use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -21,6 +22,25 @@ class CustomerChatController extends Controller
             $user && $user->isCustomer(),
             403
         );
+
+        $validated = $request->validate([
+            'product' => [
+                'nullable',
+                'integer',
+                'min:1',
+            ],
+        ]);
+
+        $consultingProduct = null;
+
+        if (! empty($validated['product'])) {
+            $consultingProduct = Product::query()
+                ->active()
+                ->with('primaryImage')
+                ->findOrFail(
+                    (int) $validated['product']
+                );
+        }
 
         $conversation = ChatConversation::query()
             ->where('customer_id', $user->id)
@@ -56,13 +76,11 @@ class CustomerChatController extends Controller
             'chat.customer.index',
             [
                 'conversation' => $conversation,
+                'consultingProduct' => $consultingProduct,
             ]
         );
     }
 
-    /**
-     * Customer gửi tin nhắn.
-     */
     /**
      * Customer gửi tin nhắn.
      *
@@ -159,11 +177,9 @@ class CustomerChatController extends Controller
             );
 
         if (! is_array($uploadedImages)) {
-
             $uploadedImages = [
                 $uploadedImages,
             ];
-
         }
 
         /*
@@ -176,7 +192,6 @@ class CustomerChatController extends Controller
             $messageText === ''
             && count($uploadedImages) === 0
         ) {
-
             return back()
                 ->withErrors([
                     'message' => 'Vui lòng nhập tin nhắn hoặc chọn ít nhất một ảnh.',
@@ -197,13 +212,6 @@ class CustomerChatController extends Controller
         $storedPaths = [];
 
         try {
-
-            /*
-            |--------------------------------------------------------------------------
-            | TẠO / LẤY HỘI THOẠI + MESSAGE
-            |--------------------------------------------------------------------------
-            */
-
             $message = DB::transaction(
                 function () use (
                     $user,
@@ -211,166 +219,79 @@ class CustomerChatController extends Controller
                     $uploadedImages,
                     &$storedPaths
                 ) {
-
-                    /*
-                    |--------------------------------------------------------------------------
-                    | LẤY HỘI THOẠI OPEN
-                    |--------------------------------------------------------------------------
-                    */
-
-                    $conversation =
-                        ChatConversation::query()
-                            ->where(
-                                'customer_id',
-                                $user->id
-                            )
-                            ->where(
-                                'status',
-                                'open'
-                            )
-                            ->latest('id')
-                            ->lockForUpdate()
-                            ->first();
-
-                    /*
-                    |--------------------------------------------------------------------------
-                    | CHƯA CÓ HỘI THOẠI → TẠO MỚI
-                    |--------------------------------------------------------------------------
-                    */
+                    $conversation = ChatConversation::query()
+                        ->where(
+                            'customer_id',
+                            $user->id
+                        )
+                        ->where(
+                            'status',
+                            'open'
+                        )
+                        ->latest('id')
+                        ->lockForUpdate()
+                        ->first();
 
                     if (! $conversation) {
-
-                        $conversation =
-                            ChatConversation::create([
-                                'customer_id' => $user->id,
-
-                                'staff_id' => null,
-
-                                'status' => 'open',
-
-                                'last_message_at' => now(),
-
-                                'closed_at' => null,
-                            ]);
+                        $conversation = ChatConversation::create([
+                            'customer_id' => $user->id,
+                            'staff_id' => null,
+                            'status' => 'open',
+                            'last_message_at' => now(),
+                            'closed_at' => null,
+                        ]);
                     }
-
-                    /*
-                    |--------------------------------------------------------------------------
-                    | XÁC ĐỊNH MESSAGE TYPE
-                    |--------------------------------------------------------------------------
-                    */
 
                     $messageType =
                         count($uploadedImages) > 0
                             ? ChatMessage::TYPE_IMAGE
                             : ChatMessage::TYPE_TEXT;
 
-                    /*
-                    |--------------------------------------------------------------------------
-                    | NỘI DUNG MESSAGE
-                    |--------------------------------------------------------------------------
-                    |
-                    | Cột message hiện tại vẫn cần nội dung.
-                    |
-                    | Nếu Customer chỉ gửi ảnh:
-                    | dùng nội dung mô tả mặc định.
-                    |
-                    */
-
                     $storedMessageText =
                         $messageText !== ''
                             ? $messageText
                             : 'Đã gửi hình ảnh.';
 
-                    /*
-                    |--------------------------------------------------------------------------
-                    | TẠO MESSAGE
-                    |--------------------------------------------------------------------------
-                    */
-
-                    $message =
-                        ChatMessage::create([
-                            'chat_conversation_id' => $conversation->id,
-
-                            'sender_id' => $user->id,
-
-                            'message_type' => $messageType,
-
-                            'message' => $storedMessageText,
-
-                            'read_at' => null,
-                        ]);
-
-                    /*
-                    |--------------------------------------------------------------------------
-                    | LƯU ẢNH
-                    |--------------------------------------------------------------------------
-                    */
+                    $message = ChatMessage::create([
+                        'chat_conversation_id' => $conversation->id,
+                        'sender_id' => $user->id,
+                        'message_type' => $messageType,
+                        'message' => $storedMessageText,
+                        'read_at' => null,
+                    ]);
 
                     foreach (
                         $uploadedImages as $index => $file
                     ) {
-
-                        /*
-                         * Laravel tự sinh tên file hash.
-                         * Không sử dụng tên file gốc
-                         * làm tên file lưu trên server.
-                         */
-
                         $directory =
                             'chat/'
                             .$conversation->id
                             .'/'
                             .now()->format('Y/m');
 
-                        $path =
-                            $file->store(
-                                $directory,
-                                'public'
-                            );
+                        $path = $file->store(
+                            $directory,
+                            'public'
+                        );
 
-                        /*
-                         * Ghi nhớ để có thể xóa
-                         * nếu transaction gặp lỗi.
-                         */
-                        $storedPaths[] =
-                            $path;
+                        $storedPaths[] = $path;
 
-                        /*
-                         * Lưu metadata vào database.
-                         */
                         $message
                             ->attachments()
                             ->create([
                                 'attachment_type' => 'image',
-
                                 'disk' => 'public',
-
                                 'file_path' => $path,
-
-                                /*
-                                 * Chỉ lưu tên gốc làm metadata.
-                                 * Không dùng để tạo đường dẫn.
-                                 */
                                 'original_name' => mb_substr(
                                     (string) $file->getClientOriginalName(),
                                     0,
                                     250
                                 ),
-
                                 'mime_type' => $file->getMimeType(),
-
                                 'file_size' => $file->getSize(),
-
                                 'sort_order' => $index + 1,
                             ]);
                     }
-
-                    /*
-                    |--------------------------------------------------------------------------
-                    | CẬP NHẬT HỘI THOẠI
-                    |--------------------------------------------------------------------------
-                    */
 
                     $conversation->update([
                         'last_message_at' => $message->created_at,
@@ -379,17 +300,8 @@ class CustomerChatController extends Controller
                     return $message;
                 }
             );
-
         } catch (\Throwable $exception) {
-
-            /*
-            |--------------------------------------------------------------------------
-            | XÓA FILE NẾU DATABASE ROLLBACK
-            |--------------------------------------------------------------------------
-            */
-
             if (! empty($storedPaths)) {
-
                 Storage::disk(
                     'public'
                 )->delete(
@@ -400,46 +312,115 @@ class CustomerChatController extends Controller
             throw $exception;
         }
 
-        /*
-        |--------------------------------------------------------------------------
-        | LOAD QUAN HỆ
-        |--------------------------------------------------------------------------
-        */
-
         $message->load([
             'sender:id,name,role_id',
             'attachments',
         ]);
 
-        /*
-        |--------------------------------------------------------------------------
-        | BROADCAST REALTIME HỘI THOẠI
-        |--------------------------------------------------------------------------
-        */
-
         ChatMessageSent::dispatch(
             $message
         );
-
-        /*
-        |--------------------------------------------------------------------------
-        | BROADCAST STAFF INBOX
-        |--------------------------------------------------------------------------
-        */
 
         StaffChatInboxUpdated::dispatch(
             $message->conversation
         );
 
-        /*
-        |--------------------------------------------------------------------------
-        | REDIRECT
-        |--------------------------------------------------------------------------
-        */
+        return redirect()
+            ->route(
+                'customer.chat.index'
+            );
+    }
+
+    /**
+     * Customer gửi sản phẩm đang quan tâm cho Shop.
+     */
+    public function storeProduct(
+        Request $request,
+        Product $product
+    ) {
+        $user = $request->user();
+
+        abort_unless(
+            $user && $user->isCustomer(),
+            403
+        );
+
+        $product = Product::query()
+            ->active()
+            ->whereKey($product->id)
+            ->firstOrFail();
+
+        $message = DB::transaction(
+            function () use (
+                $user,
+                $product
+            ) {
+                $conversation = ChatConversation::query()
+                    ->where(
+                        'customer_id',
+                        $user->id
+                    )
+                    ->where(
+                        'status',
+                        'open'
+                    )
+                    ->latest('id')
+                    ->lockForUpdate()
+                    ->first();
+
+                if (! $conversation) {
+                    $conversation = ChatConversation::create([
+                        'customer_id' => $user->id,
+                        'staff_id' => null,
+                        'status' => 'open',
+                        'last_message_at' => now(),
+                        'closed_at' => null,
+                    ]);
+                }
+
+                $message = ChatMessage::create([
+                    'chat_conversation_id' => $conversation->id,
+                    'sender_id' => $user->id,
+                    'message_type' => ChatMessage::TYPE_PRODUCT_LIST,
+                    'message' => 'Tôi đang quan tâm sản phẩm này và cần được tư vấn:',
+                    'read_at' => null,
+                ]);
+
+                $message->products()->attach(
+                    $product->id,
+                    [
+                        'sort_order' => 1,
+                    ]
+                );
+
+                $conversation->update([
+                    'last_message_at' => $message->created_at,
+                ]);
+
+                return $message;
+            }
+        );
+
+        $message->load([
+            'sender:id,name,role_id',
+            'products.primaryImage',
+        ]);
+
+        ChatMessageSent::dispatch(
+            $message
+        );
+
+        StaffChatInboxUpdated::dispatch(
+            $message->conversation
+        );
 
         return redirect()
             ->route(
                 'customer.chat.index'
+            )
+            ->with(
+                'chat_success',
+                'Đã gửi sản phẩm bạn đang quan tâm cho VELORA Eyes.'
             );
     }
 
