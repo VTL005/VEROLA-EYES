@@ -2,10 +2,8 @@
 
 
 @push('styles')
-<link
-    rel="stylesheet"
-    href="{{ asset('css/customer-chat.css') }}?v={{ filemtime(public_path('css/customer-chat.css')) }}"
->
+<link rel="stylesheet"
+  href="{{ asset('css/customer-chat.css') }}?v={{ filemtime(public_path('css/customer-chat.css')) }}">
 @endpush
 
 
@@ -13,253 +11,379 @@
 
 
 @section(
-    'meta_description',
-    'Trao đổi trực tuyến với đội ngũ tư vấn VELORA Eyes.'
+'meta_description',
+'Trao đổi trực tuyến với đội ngũ tư vấn VELORA Eyes.'
 )
 
 
 @section('content')
 
+@php
+
+$complaintOrderCode = strtoupper(
+trim(
+(string) request()->query(
+'order_code',
+''
+)
+)
+);
+
+if (
+$complaintOrderCode !== ''
+&& ! preg_match(
+'/^[A-Z0-9-]{1,50}$/',
+$complaintOrderCode
+)
+) {
+$complaintOrderCode = '';
+}
+
+$complaintTemplate =
+$complaintOrderCode !== ''
+? "Tôi muốn khiếu nại đơn hàng {$complaintOrderCode}.\nLý do: \nNội dung: "
+: '';
+
+@endphp
+
 <section class="customer-chat-section">
 
-    <div class="velora-container">
+  <div class="velora-container">
 
-        <div class="customer-chat-shell">
+    <div class="customer-chat-shell">
 
 
-            {{-- =========================================================
+      {{-- =========================================================
                 HEADER
             ========================================================== --}}
 
-            <div class="customer-chat-header">
+      <div class="customer-chat-header">
 
-                <div class="customer-chat-header-info">
+        <div class="customer-chat-header-info">
 
-                    <div class="customer-chat-avatar">
-                        V
-                    </div>
-
-
-                    <div>
-
-                        <span class="customer-chat-kicker">
-                            VELORA EYES SUPPORT
-                        </span>
+          <div class="customer-chat-avatar">
+            V
+          </div>
 
 
-                        <h1>
-                            Tư vấn trực tuyến
-                        </h1>
+          <div>
+
+            <span class="customer-chat-kicker">
+              VELORA EYES SUPPORT
+            </span>
 
 
-                        <p>
-
-                            @if ($conversation?->staff)
-
-                                Bạn đang được hỗ trợ bởi
-
-                                <strong>
-                                    {{ $conversation->staff->name }}
-                                </strong>
-
-                            @else
-
-                                Hãy gửi câu hỏi.
-                                Nhân viên VELORA Eyes sẽ hỗ trợ bạn.
-
-                            @endif
-
-                        </p>
-
-                    </div>
-
-                </div>
+            <h1>
+              Tư vấn trực tuyến
+            </h1>
 
 
-                {{-- =====================================================
+            <p>
+
+              @if ($conversation?->staff)
+
+              Bạn đang được hỗ trợ bởi
+
+              <strong>
+                {{ $conversation->staff->name }}
+              </strong>
+
+              @else
+
+              Hãy gửi câu hỏi.
+              Nhân viên VELORA Eyes sẽ hỗ trợ bạn.
+
+              @endif
+
+            </p>
+
+          </div>
+
+        </div>
+
+
+        {{-- =====================================================
                     STATUS
                 ====================================================== --}}
 
-                <div class="customer-chat-status">
+        <div class="customer-chat-status">
 
-                    <span
-                        class="customer-chat-status-dot"
-                        id="customerChatStatusDot"
-                    ></span>
+          <span class="customer-chat-status-dot" id="customerChatStatusDot"></span>
 
-                    <span id="customerChatStatusText">
-                        Hỗ trợ trực tuyến
-                    </span>
+          <span id="customerChatStatusText">
+            Hỗ trợ trực tuyến
+          </span>
 
-                </div>
+        </div>
 
-            </div>
+      </div>
 
 
-            {{-- =========================================================
-                MESSAGE AREA
+      {{-- =========================================================
+                PRODUCT WAITING TO SEND
             ========================================================== --}}
 
-            <div
-                class="customer-chat-messages"
-                id="customerChatMessages"
-            >
+      @if ($consultingProduct)
 
-                @if (
-                    $conversation
-                    && $conversation->messages->isNotEmpty()
-                )
+      @php
 
-                    @foreach ($conversation->messages as $chatMessage)
+      $consultingImagePath =
+      $consultingProduct->primaryImage?->image_path
+      ?? 'images/no-image.png';
 
-                        @php
+      $consultingCurrentPrice =
+      (float) $consultingProduct->current_price;
 
-                            $isMine =
-                                $chatMessage->sender_id
-                                === auth()->id();
+      $consultingOriginalPrice =
+      (float) $consultingProduct->price;
 
-                        @endphp
+      $consultingHasSale =
+      $consultingProduct->sale_price !== null
+      && (float) $consultingProduct->sale_price > 0
+      && (float) $consultingProduct->sale_price
+      < $consultingOriginalPrice; @endphp <section class="customer-chat-consult-product"
+        aria-labelledby="customerChatConsultProductTitle">
 
+        <div class="customer-chat-consult-product-heading">
 
-                        <div
-                            class="customer-chat-message-row
-                            {{ $isMine
-                                ? 'is-customer'
-                                : 'is-staff'
-                            }}"
-                        >
+          <div>
 
-                            <div class="customer-chat-message">
+            <span>
+              Sản phẩm bạn đang quan tâm
+            </span>
 
+            <strong id="customerChatConsultProductTitle">
+              Gửi sản phẩm này cho VELORA Eyes
+            </strong>
 
-                                {{-- =====================================
-                                    SENDER
-                                ====================================== --}}
-
-                                @unless ($isMine)
-
-                                    <div class="customer-chat-message-sender">
-
-                                        {{ $chatMessage->sender?->name
-                                            ?? 'Nhân viên VELORA Eyes'
-                                        }}
-
-                                    </div>
-
-                                @endunless
+          </div>
 
 
-                                {{-- =====================================
-                                    MESSAGE
-                                ====================================== --}}
+          <a href="{{ route('customer.chat.index') }}" class="customer-chat-consult-remove">
+            Bỏ chọn
+          </a>
 
-                                <div class="customer-chat-message-content">{{ $chatMessage->message }}</div>
+        </div>
 
-                                {{-- =====================================
-    IMAGE ATTACHMENTS
-====================================== --}}
 
-@if ($chatMessage->attachments->isNotEmpty())
+        <div class="customer-chat-consult-product-body">
 
-    <div class="customer-chat-message-images">
+          <a href="{{ route(
+                                'products.show',
+                                $consultingProduct
+                            ) }}" class="customer-chat-consult-product-card" target="_blank" rel="noopener">
 
-        @foreach ($chatMessage->attachments as $attachment)
+            <span class="customer-chat-consult-product-image">
 
-            @if ($attachment->isImage())
+              <img src="{{ asset($consultingImagePath) }}" alt="{{ $consultingProduct->name }}" loading="lazy">
 
-                <a
-                    href="{{ $attachment->url }}"
-                    class="customer-chat-message-image"
-                    target="_blank"
-                    rel="noopener"
-                >
+            </span>
 
-                    <img
-                        src="{{ $attachment->url }}"
-                        alt="{{ $attachment->original_name ?? 'Ảnh trong cuộc trò chuyện' }}"
-                        loading="lazy"
-                    >
 
-                </a>
+            <span class="customer-chat-consult-product-info">
 
-            @endif
+              <strong>
+                {{ $consultingProduct->name }}
+              </strong>
 
-        @endforeach
 
-    </div>
+              @if ($consultingProduct->sku)
+
+              <small>
+                SKU: {{ $consultingProduct->sku }}
+              </small>
+
+              @endif
+
+
+              <span>
+
+                {{ number_format(
+                                        $consultingCurrentPrice,
+                                        0,
+                                        ',',
+                                        '.'
+                                    ) }}đ
+
+
+                @if ($consultingHasSale)
+
+                <del>
+                  {{ number_format(
+                                                $consultingOriginalPrice,
+                                                0,
+                                                ',',
+                                                '.'
+                                            ) }}đ
+                </del>
+
+                @endif
+
+              </span>
+
+            </span>
+
+          </a>
+
+
+          <form action="{{ route(
+                                'customer.chat.products.store',
+                                $consultingProduct
+                            ) }}" method="POST" class="customer-chat-consult-product-form">
+
+            @csrf
+
+
+            <button type="submit" class="btn btn-primary">
+              Gửi sản phẩm cho shop
+            </button>
+
+          </form>
+
+        </div>
+
+</section>
 
 @endif
 
 
-@if (
-    $chatMessage->isProductList()
-    && $chatMessage->products->isNotEmpty()
-)
+{{-- =========================================================
+                MESSAGE AREA
+            ========================================================== --}}
 
-    <div class="customer-chat-message-products">
+<div class="customer-chat-messages" id="customerChatMessages">
+
+  @if (
+  $conversation
+  && $conversation->messages->isNotEmpty()
+  )
+
+  @foreach ($conversation->messages as $chatMessage)
+
+  @php
+
+  $isMine =
+  $chatMessage->sender_id
+  === auth()->id();
+
+  @endphp
+
+
+  <div class="customer-chat-message-row
+                            {{ $isMine
+                                ? 'is-customer'
+                                : 'is-staff'
+                            }}">
+
+    <div class="customer-chat-message">
+
+
+      {{-- =====================================
+                                    SENDER
+                                ====================================== --}}
+
+      @unless ($isMine)
+
+      <div class="customer-chat-message-sender">
+
+        {{ $chatMessage->sender?->name
+                                            ?? 'Nhân viên VELORA Eyes'
+                                        }}
+
+      </div>
+
+      @endunless
+
+
+      {{-- =====================================
+                                    MESSAGE
+                                ====================================== --}}
+
+      <div class="customer-chat-message-content">{{ $chatMessage->message }}</div>
+
+      {{-- =====================================
+    IMAGE ATTACHMENTS
+====================================== --}}
+
+      @if ($chatMessage->attachments->isNotEmpty())
+
+      <div class="customer-chat-message-images">
+
+        @foreach ($chatMessage->attachments as $attachment)
+
+        @if ($attachment->isImage())
+
+        <a href="{{ $attachment->url }}" class="customer-chat-message-image" target="_blank" rel="noopener">
+
+          <img src="{{ $attachment->url }}" alt="{{ $attachment->original_name ?? 'Ảnh trong cuộc trò chuyện' }}"
+            loading="lazy">
+
+        </a>
+
+        @endif
+
+        @endforeach
+
+      </div>
+
+      @endif
+
+
+      @if (
+      $chatMessage->isProductList()
+      && $chatMessage->products->isNotEmpty()
+      )
+
+      <div class="customer-chat-message-products">
 
         @foreach ($chatMessage->products as $product)
 
-            @php
+        @php
 
-                $imagePath =
-                    $product->primaryImage?->image_path
-                    ?? 'images/no-image.png';
+        $imagePath =
+        $product->primaryImage?->image_path
+        ?? 'images/no-image.png';
 
-                $currentPrice =
-                    (float) $product->current_price;
+        $currentPrice =
+        (float) $product->current_price;
 
-                $originalPrice =
-                    (float) $product->price;
+        $originalPrice =
+        (float) $product->price;
 
-                $hasSale =
-                    $product->sale_price !== null
-                    && (float) $product->sale_price > 0
-                    && (float) $product->sale_price < $originalPrice;
-
-            @endphp
-
-
-            <a
-                href="{{ route(
+        $hasSale =
+        $product->sale_price !== null
+        && (float) $product->sale_price > 0
+        && (float) $product->sale_price < $originalPrice; @endphp <a href="{{ route(
                     'products.show',
                     $product
-                ) }}"
-                class="customer-chat-product-card"
-                target="_blank"
-                rel="noopener"
-            >
+                ) }}" class="customer-chat-product-card" target="_blank" rel="noopener">
 
-                <span class="customer-chat-product-image">
+          <span class="customer-chat-product-image">
 
-                    <img
-                        src="{{ asset($imagePath) }}"
-                        alt="{{ $product->name }}"
-                        loading="lazy"
-                    >
+            <img src="{{ asset($imagePath) }}" alt="{{ $product->name }}" loading="lazy">
 
-                </span>
+          </span>
 
 
-                <span class="customer-chat-product-info">
+          <span class="customer-chat-product-info">
 
-                    <strong>
-                        {{ $product->name }}
-                    </strong>
-
-
-                    @if ($product->sku)
-
-                        <small>
-                            {{ $product->sku }}
-                        </small>
-
-                    @endif
+            <strong>
+              {{ $product->name }}
+            </strong>
 
 
-                    <span class="customer-chat-product-price">
+            @if ($product->sku)
 
-                        {{ number_format(
+            <small>
+              {{ $product->sku }}
+            </small>
+
+            @endif
+
+
+            <span class="customer-chat-product-price">
+
+              {{ number_format(
                             $currentPrice,
                             0,
                             ',',
@@ -267,289 +391,372 @@
                         ) }}đ
 
 
-                        @if ($hasSale)
+              @if ($hasSale)
 
-                            <del>
-                                {{ number_format(
+              <del>
+                {{ number_format(
                                     $originalPrice,
                                     0,
                                     ',',
                                     '.'
                                 ) }}đ
-                            </del>
+              </del>
 
-                        @endif
+              @endif
 
-                    </span>
+            </span>
 
-                </span>
-
-
-                <span class="customer-chat-product-action">
-                    Xem sản phẩm →
-                </span>
-
-            </a>
-
-        @endforeach
-
-    </div>
-
-@endif
+          </span>
 
 
-                                {{-- =====================================
+          <span class="customer-chat-product-action">
+            Xem sản phẩm →
+          </span>
+
+          </a>
+
+          @endforeach
+
+      </div>
+
+      @endif
+
+
+      {{-- =====================================
                                     META
                                 ====================================== --}}
 
-                                <div class="customer-chat-message-meta">
+      <div class="customer-chat-message-meta">
 
-                                    <span>
-                                        {{ $chatMessage->created_at->format('H:i') }}
-                                    </span>
+        <span>
+          {{ $chatMessage->created_at->format('H:i') }}
+        </span>
 
 
-                                    @if ($isMine)
+        @if ($isMine)
 
-                                        <span
-                                            class="customer-chat-read-status"
-                                            data-message-id="{{ $chatMessage->id }}"
-                                        >
-                                            {{ $chatMessage->read_at
+        <span class="customer-chat-read-status" data-message-id="{{ $chatMessage->id }}">
+          {{ $chatMessage->read_at
                                                 ? 'Đã đọc'
                                                 : 'Đã gửi'
                                             }}
-                                        </span>
+        </span>
 
-                                    @endif
+        @endif
 
-                                </div>
+      </div>
 
-                            </div>
+    </div>
 
-                        </div>
+  </div>
 
-                    @endforeach
+  @endforeach
 
 
-                @else
+  @else
 
-                    {{-- =================================================
+  {{-- =================================================
                         EMPTY STATE
                     ================================================== --}}
 
-                    <div class="customer-chat-empty">
+  <div class="customer-chat-empty">
 
-                        <div class="customer-chat-empty-icon">
+    <div class="customer-chat-empty-icon">
 
-                            <svg
-                                viewBox="0 0 24 24"
-                                aria-hidden="true"
-                            >
+      <svg viewBox="0 0 24 24" aria-hidden="true">
 
-                                <path
-                                    d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4v8Z"
-                                ></path>
+        <path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4v8Z"></path>
 
-                                <path d="M8 9h8"></path>
+        <path d="M8 9h8"></path>
 
-                                <path d="M8 13h5"></path>
+        <path d="M8 13h5"></path>
 
-                            </svg>
+      </svg>
 
-                        </div>
+    </div>
 
 
-                        <h2>
-                            Xin chào!
-                        </h2>
+    <h2>
+      Xin chào!
+    </h2>
 
 
-                        <p>
-                            Bạn cần tư vấn về sản phẩm,
-                            đơn hàng hoặc dịch vụ của VELORA Eyes?
-                            Hãy gửi tin nhắn cho chúng tôi.
-                        </p>
+    <p>
+      Bạn cần tư vấn về sản phẩm,
+      đơn hàng hoặc dịch vụ của VELORA Eyes?
+      Hãy gửi tin nhắn cho chúng tôi.
+    </p>
 
-                    </div>
+  </div>
 
-                @endif
+  @endif
 
-            </div>
+</div>
 
 
-            {{-- =========================================================
+{{-- =========================================================
                 VALIDATION ERROR
             ========================================================== --}}
 
-            @error('message')
+@error('message')
 
-                <div class="customer-chat-error">
-                    {{ $message }}
-                </div>
+<div class="customer-chat-error">
+  {{ $message }}
+</div>
 
-            @enderror
-
-
-            <form
-    action="{{ route('customer.chat.store') }}"
-    method="POST"
-    enctype="multipart/form-data"
-    class="customer-chat-form"
-    id="customerChatForm"
->
-
-    @csrf
+@enderror
 
 
-    {{-- =====================================================
+{{-- =========================================================
+                FREQUENTLY ASKED QUESTIONS
+            ========================================================== --}}
+
+<section class="customer-chat-faq">
+
+  <div class="customer-chat-faq-heading">
+
+    <div>
+
+      <span>
+        Gợi ý nhanh
+      </span>
+
+      <strong>
+        Câu hỏi thường gặp
+      </strong>
+
+    </div>
+
+
+    <small>
+      Chọn câu hỏi để xem trả lời
+    </small>
+
+  </div>
+
+
+  <div class="customer-chat-faq-list">
+
+    <details class="customer-chat-faq-item">
+
+      <summary>
+        Sản phẩm này còn hàng không?
+      </summary>
+
+      <div class="customer-chat-faq-answer">
+
+        <p>
+          Tồn kho được hiển thị theo từng màu và kích thước.
+          Nhân viên sẽ kiểm tra lại đúng phiên bản bạn cần.
+        </p>
+
+        <button type="button" class="customer-chat-faq-use" data-chat-question="Sản phẩm này còn hàng không?">
+          Hỏi nhân viên
+        </button>
+
+      </div>
+
+    </details>
+
+
+    <details class="customer-chat-faq-item">
+
+      <summary>
+        Kính này có lắp được tròng cận không?
+      </summary>
+
+      <div class="customer-chat-faq-answer">
+
+        <p>
+          VELORA Eyes có hỗ trợ tư vấn tròng kính theo nhu cầu.
+          Bạn có thể gửi thông số kính để nhân viên kiểm tra.
+        </p>
+
+        <button type="button" class="customer-chat-faq-use" data-chat-question="Kính này có lắp được tròng cận không?">
+          Hỏi nhân viên
+        </button>
+
+      </div>
+
+    </details>
+
+
+    <details class="customer-chat-faq-item">
+
+      <summary>
+        Kính phù hợp với khuôn mặt nào?
+      </summary>
+
+      <div class="customer-chat-faq-answer">
+
+        <p>
+          Độ phù hợp phụ thuộc vào dáng mặt, kích thước gọng
+          và phong cách bạn mong muốn. Nhân viên có thể tư vấn
+          cụ thể hơn khi bạn cung cấp thêm thông tin.
+        </p>
+
+        <button type="button" class="customer-chat-faq-use" data-chat-question="Kính này phù hợp với khuôn mặt nào?">
+          Hỏi nhân viên
+        </button>
+
+      </div>
+
+    </details>
+
+
+    <details class="customer-chat-faq-item">
+
+      <summary>
+        Chính sách bảo hành và đổi trả thế nào?
+      </summary>
+
+      <div class="customer-chat-faq-answer">
+
+        <p>
+          Điều kiện bảo hành hoặc đổi trả phụ thuộc vào tình
+          trạng sản phẩm và chính sách áp dụng cho đơn hàng.
+          Nhân viên sẽ kiểm tra chi tiết trước khi xác nhận.
+        </p>
+
+        <button type="button" class="customer-chat-faq-use"
+          data-chat-question="Chính sách bảo hành và đổi trả của sản phẩm này thế nào?">
+          Hỏi nhân viên
+        </button>
+
+      </div>
+
+    </details>
+
+
+    <details class="customer-chat-faq-item">
+
+      <summary>
+        Bao lâu thì tôi nhận được hàng?
+      </summary>
+
+      <div class="customer-chat-faq-answer">
+
+        <p>
+          Thời gian giao hàng phụ thuộc vào địa chỉ nhận hàng
+          và đơn vị vận chuyển. Thời gian dự kiến sẽ được xác
+          định khi bạn chọn địa chỉ trong bước thanh toán.
+        </p>
+
+        <button type="button" class="customer-chat-faq-use"
+          data-chat-question="Đơn hàng của tôi dự kiến giao trong bao lâu?">
+          Hỏi nhân viên
+        </button>
+
+      </div>
+
+    </details>
+
+  </div>
+
+</section>
+
+
+<form action="{{ route('customer.chat.store') }}" method="POST" enctype="multipart/form-data" class="customer-chat-form"
+  id="customerChatForm">
+
+  @csrf
+
+
+  {{-- =====================================================
         IMAGE PREVIEW
     ====================================================== --}}
 
-    <div
-        class="customer-chat-image-preview"
-        id="customerChatImagePreview"
-        hidden
-    >
-        <div class="customer-chat-image-preview-header">
+  <div class="customer-chat-image-preview" id="customerChatImagePreview" hidden>
+    <div class="customer-chat-image-preview-header">
 
-            <span>
-                Ảnh đã chọn
-            </span>
+      <span>
+        Ảnh đã chọn
+      </span>
 
-            <small id="customerChatImageCount">
-                0/5 ảnh
-            </small>
-
-        </div>
-
-
-        <div
-            class="customer-chat-image-preview-list"
-            id="customerChatImagePreviewList"
-        ></div>
+      <small id="customerChatImageCount">
+        0/5 ảnh
+      </small>
 
     </div>
 
 
-    {{-- =====================================================
+    <div class="customer-chat-image-preview-list" id="customerChatImagePreviewList"></div>
+
+  </div>
+
+
+  {{-- =====================================================
         INPUT AREA
     ====================================================== --}}
 
-    <div class="customer-chat-input-wrap">
+  <div class="customer-chat-input-wrap">
 
 
-        {{-- IMAGE BUTTON --}}
+    {{-- IMAGE BUTTON --}}
 
-        <button
-            type="button"
-            class="customer-chat-image-button"
-            id="customerChatImageButton"
-            aria-label="Chọn ảnh"
-            title="Gửi hình ảnh"
-        >
+    <button type="button" class="customer-chat-image-button" id="customerChatImageButton" aria-label="Chọn ảnh"
+      title="Gửi hình ảnh">
 
-            <svg
-                viewBox="0 0 24 24"
-                aria-hidden="true"
-            >
-                <rect
-                    x="3"
-                    y="3"
-                    width="18"
-                    height="18"
-                    rx="2"
-                    ry="2"
-                ></rect>
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
 
-                <circle
-                    cx="8.5"
-                    cy="8.5"
-                    r="1.5"
-                ></circle>
+        <circle cx="8.5" cy="8.5" r="1.5"></circle>
 
-                <path
-                    d="m21 15-5-5L5 21"
-                ></path>
-            </svg>
+        <path d="m21 15-5-5L5 21"></path>
+      </svg>
 
-        </button>
+    </button>
 
 
-        {{-- HIDDEN FILE INPUT --}}
+    {{-- HIDDEN FILE INPUT --}}
 
-        <input
-            type="file"
-            name="images[]"
-            id="customerChatImages"
-            accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
-            multiple
-            hidden
-        >
+    <input type="file" name="images[]" id="customerChatImages"
+      accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp" multiple hidden>
 
 
-        {{-- TEXT MESSAGE --}}
+    {{-- TEXT MESSAGE --}}
 
-        <textarea
-            id="customerChatInput"
-            name="message"
-            class="customer-chat-input"
-            rows="1"
-            maxlength="2000"
-            placeholder="Nhập tin nhắn..."
-        >{{ old('message') }}</textarea>
+    <textarea id="customerChatInput" name="message" class="customer-chat-input" rows="1" maxlength="2000"
+      placeholder="Nhập tin nhắn...">{{ old('message', $complaintTemplate) }}</textarea>
 
 
-        {{-- SEND BUTTON --}}
+    {{-- SEND BUTTON --}}
 
-        <button
-            type="submit"
-            class="customer-chat-send"
-            id="customerChatSend"
-            aria-label="Gửi tin nhắn"
-            title="Gửi tin nhắn"
-        >
+    <button type="submit" class="customer-chat-send" id="customerChatSend" aria-label="Gửi tin nhắn"
+      title="Gửi tin nhắn">
 
-            <svg
-                viewBox="0 0 24 24"
-                aria-hidden="true"
-            >
+      <svg viewBox="0 0 24 24" aria-hidden="true">
 
-                <path d="M22 2 11 13"></path>
+        <path d="M22 2 11 13"></path>
 
-                <path
-                    d="m22 2-7 20-4-9-9-4 20-7Z"
-                ></path>
+        <path d="m22 2-7 20-4-9-9-4 20-7Z"></path>
 
-            </svg>
+      </svg>
 
 
-            <span>
-                Gửi
-            </span>
+      <span>
+        Gửi
+      </span>
 
-        </button>
+    </button>
 
-    </div>
+  </div>
 
 
-    {{-- =====================================================
+  {{-- =====================================================
         NOTE
     ====================================================== --}}
 
-    <div
-        class="customer-chat-form-note"
-        id="customerChatFormNote"
-    >
-        Enter để gửi • Shift + Enter để xuống dòng
-        • Tối đa 5 ảnh
-    </div>
+  <div class="customer-chat-form-note" id="customerChatFormNote">
+    Enter để gửi • Shift + Enter để xuống dòng
+    • Tối đa 5 ảnh
+  </div>
 
 </form>
 
-        </div>
+</div>
 
-    </div>
+</div>
 
 </section>
 
@@ -564,1065 +771,1114 @@
 
 <script>
 document.addEventListener(
-    'DOMContentLoaded',
-    function () {
+  'DOMContentLoaded',
+  function() {
 
-        /*
-        |--------------------------------------------------------------------------
-        | ELEMENTS
-        |--------------------------------------------------------------------------
-        */
+    /*
+    |--------------------------------------------------------------------------
+    | ELEMENTS
+    |--------------------------------------------------------------------------
+    */
 
-        const form =
-            document.getElementById(
-                'customerChatForm'
+    const form =
+      document.getElementById(
+        'customerChatForm'
+      );
+
+
+    const input =
+      document.getElementById(
+        'customerChatInput'
+      );
+
+
+    const messages =
+      document.getElementById(
+        'customerChatMessages'
+      );
+
+
+    const statusText =
+      document.getElementById(
+        'customerChatStatusText'
+      );
+
+
+    const statusDot =
+      document.getElementById(
+        'customerChatStatusDot'
+      );
+
+
+    const formNote =
+      document.getElementById(
+        'customerChatFormNote'
+      );
+
+
+    const quickQuestionButtons =
+      document.querySelectorAll(
+        '[data-chat-question]'
+      );
+
+
+    quickQuestionButtons.forEach(
+      function(button) {
+
+        button.addEventListener(
+          'click',
+          function() {
+
+            if (!input) {
+              return;
+            }
+
+
+            input.value =
+              button.dataset.chatQuestion ||
+              '';
+
+
+            input.dispatchEvent(
+              new Event('input')
             );
 
 
-        const input =
-            document.getElementById(
-                'customerChatInput'
-            );
+            input.focus();
 
 
-        const messages =
-            document.getElementById(
-                'customerChatMessages'
-            );
+            input.scrollIntoView({
+              behavior: 'smooth',
+              block: 'center',
+            });
 
 
-        const statusText =
-            document.getElementById(
-                'customerChatStatusText'
-            );
+            if (formNote) {
+              formNote.textContent =
+                'Bạn có thể chỉnh sửa câu hỏi trước khi gửi.';
+            }
 
+          }
+        );
 
-        const statusDot =
-            document.getElementById(
-                'customerChatStatusDot'
-            );
+      }
+    );
+    /*
+    |--------------------------------------------------------------------------
+    | IMAGE ELEMENTS
+    |--------------------------------------------------------------------------
+    */
 
-
-        const formNote =
-            document.getElementById(
-                'customerChatFormNote'
-            );
-/*
-|--------------------------------------------------------------------------
-| IMAGE ELEMENTS
-|--------------------------------------------------------------------------
-*/
-
-const imageButton =
-    document.getElementById(
+    const imageButton =
+      document.getElementById(
         'customerChatImageButton'
-    );
+      );
 
 
-const imageInput =
-    document.getElementById(
+    const imageInput =
+      document.getElementById(
         'customerChatImages'
-    );
+      );
 
 
-const imagePreview =
-    document.getElementById(
+    const imagePreview =
+      document.getElementById(
         'customerChatImagePreview'
-    );
+      );
 
 
-const imagePreviewList =
-    document.getElementById(
+    const imagePreviewList =
+      document.getElementById(
         'customerChatImagePreviewList'
-    );
+      );
 
 
-const imageCount =
-    document.getElementById(
+    const imageCount =
+      document.getElementById(
         'customerChatImageCount'
-    );
+      );
 
 
-let selectedImageFiles = [];
+    let selectedImageFiles = [];
 
-/*
-|--------------------------------------------------------------------------
-| IMAGE VALIDATION
-|--------------------------------------------------------------------------
-*/
+    /*
+    |--------------------------------------------------------------------------
+    | IMAGE VALIDATION
+    |--------------------------------------------------------------------------
+    */
 
-const allowedImageTypes = [
-    'image/jpeg',
-    'image/png',
-    'image/webp',
-];
-
-
-const maxImageSize =
-    5 * 1024 * 1024;
+    const allowedImageTypes = [
+      'image/jpeg',
+      'image/png',
+      'image/webp',
+    ];
 
 
-const maxImageCount =
-    5;
+    const maxImageSize =
+      5 * 1024 * 1024;
 
 
-/*
-|--------------------------------------------------------------------------
-| UPDATE FILE INPUT
-|--------------------------------------------------------------------------
-*/
+    const maxImageCount =
+      5;
 
-function updateImageInputFiles() {
 
-    if (!imageInput) {
+    /*
+    |--------------------------------------------------------------------------
+    | UPDATE FILE INPUT
+    |--------------------------------------------------------------------------
+    */
+
+    function updateImageInputFiles() {
+
+      if (!imageInput) {
         return;
-    }
+      }
 
 
-    const dataTransfer =
+      const dataTransfer =
         new DataTransfer();
 
 
-    selectedImageFiles.forEach(
-        function (file) {
+      selectedImageFiles.forEach(
+        function(file) {
 
-            dataTransfer.items.add(
-                file
-            );
+          dataTransfer.items.add(
+            file
+          );
 
         }
-    );
+      );
 
 
-    imageInput.files =
+      imageInput.files =
         dataTransfer.files;
 
-}
-
-
-/*
-|--------------------------------------------------------------------------
-| RENDER IMAGE PREVIEW
-|--------------------------------------------------------------------------
-*/
-
-function renderImagePreviews() {
-
-    if (
-        !imagePreview
-        || !imagePreviewList
-        || !imageCount
-    ) {
-        return;
     }
 
 
-    imagePreviewList.innerHTML =
+    /*
+    |--------------------------------------------------------------------------
+    | RENDER IMAGE PREVIEW
+    |--------------------------------------------------------------------------
+    */
+
+    function renderImagePreviews() {
+
+      if (
+        !imagePreview ||
+        !imagePreviewList ||
+        !imageCount
+      ) {
+        return;
+      }
+
+
+      imagePreviewList.innerHTML =
         '';
 
 
-    imageCount.textContent =
-        selectedImageFiles.length
-        + '/5 ảnh';
+      imageCount.textContent =
+        selectedImageFiles.length +
+        '/5 ảnh';
 
 
-    if (
+      if (
         selectedImageFiles.length === 0
-    ) {
+      ) {
 
         imagePreview.hidden =
-            true;
+          true;
 
         return;
-    }
+      }
 
 
-    imagePreview.hidden =
+      imagePreview.hidden =
         false;
 
 
-    selectedImageFiles.forEach(
-        function (file, index) {
+      selectedImageFiles.forEach(
+        function(file, index) {
 
-            /*
-            |--------------------------------------------------------------------------
-            | ITEM
-            |--------------------------------------------------------------------------
-            */
+          /*
+          |--------------------------------------------------------------------------
+          | ITEM
+          |--------------------------------------------------------------------------
+          */
 
-            const item =
-                document.createElement(
-                    'div'
-                );
-
-
-            item.className =
-                'customer-chat-image-preview-item';
-
-
-            /*
-            |--------------------------------------------------------------------------
-            | IMAGE
-            |--------------------------------------------------------------------------
-            */
-
-            const image =
-                document.createElement(
-                    'img'
-                );
-
-
-            const objectUrl =
-                URL.createObjectURL(
-                    file
-                );
-
-
-            image.src =
-                objectUrl;
-
-
-            image.alt =
-                'Ảnh đã chọn';
-
-
-            image.addEventListener(
-                'load',
-                function () {
-
-                    URL.revokeObjectURL(
-                        objectUrl
-                    );
-
-                },
-                {
-                    once: true,
-                }
+          const item =
+            document.createElement(
+              'div'
             );
 
 
-            /*
-            |--------------------------------------------------------------------------
-            | REMOVE BUTTON
-            |--------------------------------------------------------------------------
-            */
-
-            const removeButton =
-                document.createElement(
-                    'button'
-                );
+          item.className =
+            'customer-chat-image-preview-item';
 
 
-            removeButton.type =
-                'button';
+          /*
+          |--------------------------------------------------------------------------
+          | IMAGE
+          |--------------------------------------------------------------------------
+          */
 
-
-            removeButton.className =
-                'customer-chat-image-remove';
-
-
-            removeButton.textContent =
-                '×';
-
-
-            removeButton.setAttribute(
-                'aria-label',
-                'Bỏ ảnh'
+          const image =
+            document.createElement(
+              'img'
             );
 
 
-            removeButton.title =
-                'Bỏ ảnh';
-
-
-            removeButton.addEventListener(
-                'click',
-                function () {
-
-                    selectedImageFiles.splice(
-                        index,
-                        1
-                    );
-
-
-                    updateImageInputFiles();
-
-                    renderImagePreviews();
-
-                }
+          const objectUrl =
+            URL.createObjectURL(
+              file
             );
 
 
-            /*
-            |--------------------------------------------------------------------------
-            | APPEND
-            |--------------------------------------------------------------------------
-            */
+          image.src =
+            objectUrl;
 
-            item.appendChild(
-                image
+
+          image.alt =
+            'Ảnh đã chọn';
+
+
+          image.addEventListener(
+            'load',
+            function() {
+
+              URL.revokeObjectURL(
+                objectUrl
+              );
+
+            }, {
+              once: true,
+            }
+          );
+
+
+          /*
+          |--------------------------------------------------------------------------
+          | REMOVE BUTTON
+          |--------------------------------------------------------------------------
+          */
+
+          const removeButton =
+            document.createElement(
+              'button'
             );
 
 
-            item.appendChild(
-                removeButton
-            );
+          removeButton.type =
+            'button';
 
 
-            imagePreviewList.appendChild(
-                item
-            );
+          removeButton.className =
+            'customer-chat-image-remove';
+
+
+          removeButton.textContent =
+            '×';
+
+
+          removeButton.setAttribute(
+            'aria-label',
+            'Bỏ ảnh'
+          );
+
+
+          removeButton.title =
+            'Bỏ ảnh';
+
+
+          removeButton.addEventListener(
+            'click',
+            function() {
+
+              selectedImageFiles.splice(
+                index,
+                1
+              );
+
+
+              updateImageInputFiles();
+
+              renderImagePreviews();
+
+            }
+          );
+
+
+          /*
+          |--------------------------------------------------------------------------
+          | APPEND
+          |--------------------------------------------------------------------------
+          */
+
+          item.appendChild(
+            image
+          );
+
+
+          item.appendChild(
+            removeButton
+          );
+
+
+          imagePreviewList.appendChild(
+            item
+          );
 
         }
-    );
+      );
 
-}
+    }
 
 
-/*
-|--------------------------------------------------------------------------
-| OPEN FILE PICKER
-|--------------------------------------------------------------------------
-*/
+    /*
+    |--------------------------------------------------------------------------
+    | OPEN FILE PICKER
+    |--------------------------------------------------------------------------
+    */
 
-if (
-    imageButton
-    && imageInput
-) {
+    if (
+      imageButton &&
+      imageInput
+    ) {
 
-    imageButton.addEventListener(
+      imageButton.addEventListener(
         'click',
-        function () {
+        function() {
 
-            imageInput.click();
+          imageInput.click();
 
         }
-    );
+      );
 
-}
+    }
 
 
-/*
-|--------------------------------------------------------------------------
-| SELECT IMAGES
-|--------------------------------------------------------------------------
-*/
+    /*
+    |--------------------------------------------------------------------------
+    | SELECT IMAGES
+    |--------------------------------------------------------------------------
+    */
 
-if (imageInput) {
+    if (imageInput) {
 
-    imageInput.addEventListener(
+      imageInput.addEventListener(
         'change',
-        function () {
+        function() {
 
-            const newFiles =
-                Array.from(
-                    imageInput.files
-                    || []
-                );
-
-
-            /*
-             * Input được click lại nên cần
-             * xây lại danh sách từ selectedImageFiles.
-             */
-            const acceptedFiles = [];
-
-
-            newFiles.forEach(
-                function (file) {
-
-                    /*
-                    |--------------------------------------------------------------------------
-                    | FILE TYPE
-                    |--------------------------------------------------------------------------
-                    */
-
-                    if (
-                        !allowedImageTypes.includes(
-                            file.type
-                        )
-                    ) {
-
-                        alert(
-                            'Ảnh "'
-                            + file.name
-                            + '" không đúng định dạng. '
-                            + 'Chỉ chấp nhận JPG, JPEG, PNG hoặc WebP.'
-                        );
-
-                        return;
-                    }
-
-
-                    /*
-                    |--------------------------------------------------------------------------
-                    | FILE SIZE
-                    |--------------------------------------------------------------------------
-                    */
-
-                    if (
-                        file.size
-                        > maxImageSize
-                    ) {
-
-                        alert(
-                            'Ảnh "'
-                            + file.name
-                            + '" vượt quá 5MB.'
-                        );
-
-                        return;
-                    }
-
-
-                    /*
-                    |--------------------------------------------------------------------------
-                    | DUPLICATE
-                    |--------------------------------------------------------------------------
-                    */
-
-                    const duplicated =
-                        selectedImageFiles.some(
-                            function (
-                                selectedFile
-                            ) {
-
-                                return (
-                                    selectedFile.name
-                                        === file.name
-                                    && selectedFile.size
-                                        === file.size
-                                    && selectedFile.lastModified
-                                        === file.lastModified
-                                );
-
-                            }
-                        );
-
-
-                    if (duplicated) {
-                        return;
-                    }
-
-
-                    acceptedFiles.push(
-                        file
-                    );
-
-                }
+          const newFiles =
+            Array.from(
+              imageInput.files || []
             );
 
 
-            /*
-            |--------------------------------------------------------------------------
-            | MAXIMUM 5 IMAGES
-            |--------------------------------------------------------------------------
-            */
-
-            const remainingSlots =
-                maxImageCount
-                - selectedImageFiles.length;
+          /*
+           * Input được click lại nên cần
+           * xây lại danh sách từ selectedImageFiles.
+           */
+          const acceptedFiles = [];
 
 
-            if (
-                acceptedFiles.length
-                > remainingSlots
-            ) {
+          newFiles.forEach(
+            function(file) {
+
+              /*
+              |--------------------------------------------------------------------------
+              | FILE TYPE
+              |--------------------------------------------------------------------------
+              */
+
+              if (
+                !allowedImageTypes.includes(
+                  file.type
+                )
+              ) {
 
                 alert(
-                    'Mỗi lần chỉ được gửi tối đa 5 ảnh.'
+                  'Ảnh "' +
+                  file.name +
+                  '" không đúng định dạng. ' +
+                  'Chỉ chấp nhận JPG, JPEG, PNG hoặc WebP.'
                 );
+
+                return;
+              }
+
+
+              /*
+              |--------------------------------------------------------------------------
+              | FILE SIZE
+              |--------------------------------------------------------------------------
+              */
+
+              if (
+                file.size >
+                maxImageSize
+              ) {
+
+                alert(
+                  'Ảnh "' +
+                  file.name +
+                  '" vượt quá 5MB.'
+                );
+
+                return;
+              }
+
+
+              /*
+              |--------------------------------------------------------------------------
+              | DUPLICATE
+              |--------------------------------------------------------------------------
+              */
+
+              const duplicated =
+                selectedImageFiles.some(
+                  function(
+                    selectedFile
+                  ) {
+
+                    return (
+                      selectedFile.name ===
+                      file.name &&
+                      selectedFile.size ===
+                      file.size &&
+                      selectedFile.lastModified ===
+                      file.lastModified
+                    );
+
+                  }
+                );
+
+
+              if (duplicated) {
+                return;
+              }
+
+
+              acceptedFiles.push(
+                file
+              );
 
             }
+          );
 
 
-            selectedImageFiles =
-                selectedImageFiles.concat(
-                    acceptedFiles.slice(
-                        0,
-                        remainingSlots
-                    )
-                );
+          /*
+          |--------------------------------------------------------------------------
+          | MAXIMUM 5 IMAGES
+          |--------------------------------------------------------------------------
+          */
+
+          const remainingSlots =
+            maxImageCount -
+            selectedImageFiles.length;
 
 
-            updateImageInputFiles();
+          if (
+            acceptedFiles.length >
+            remainingSlots
+          ) {
 
-            renderImagePreviews();
+            alert(
+              'Mỗi lần chỉ được gửi tối đa 5 ảnh.'
+            );
 
-        }
-    );
-
-}
-
-
-/*
-|--------------------------------------------------------------------------
-| INITIAL IMAGE STATE
-|--------------------------------------------------------------------------
-*/
-
-renderImagePreviews();
-
-        /*
-        |--------------------------------------------------------------------------
-        | DATA
-        |--------------------------------------------------------------------------
-        */
-
-        const currentUserId =
-            {{ (int) auth()->id() }};
+          }
 
 
-        const conversationId =
-            {{ $conversation
-                ? (int) $conversation->id
-                : 'null'
-            }};
-
-
-        const markReadUrl =
-            @json(
-                $conversation
-                    ? route(
-                        'customer.chat.read',
-                        $conversation
-                    )
-                    : null
+          selectedImageFiles =
+            selectedImageFiles.concat(
+              acceptedFiles.slice(
+                0,
+                remainingSlots
+              )
             );
 
 
-        /*
-        |--------------------------------------------------------------------------
-        | CSRF
-        |--------------------------------------------------------------------------
-        */
+          updateImageInputFiles();
 
-        const csrfInput =
-            form
-                ? form.querySelector(
-                    'input[name="_token"]'
-                )
-                : null;
+          renderImagePreviews();
+
+        }
+      );
+
+    }
 
 
-        const csrfValue =
-            csrfInput
-                ? csrfInput.value
-                : null;
+    /*
+    |--------------------------------------------------------------------------
+    | INITIAL IMAGE STATE
+    |--------------------------------------------------------------------------
+    */
+
+    renderImagePreviews();
+
+    /*
+    |--------------------------------------------------------------------------
+    | DATA
+    |--------------------------------------------------------------------------
+    */
+
+    const currentUserId = {
+      {
+        (int) auth() - > id()
+      }
+    };
 
 
-        /*
-        |--------------------------------------------------------------------------
-        | SCROLL XUỐNG TIN MỚI NHẤT
-        |--------------------------------------------------------------------------
-        */
+    const conversationId = {
+      {
+        $conversation
+          ?
+          (int) $conversation - > id :
+          'null'
+      }
+    };
 
-        if (messages) {
 
-            messages.scrollTop =
-                messages.scrollHeight;
+    const markReadUrl =
+      @json(
+        $conversation ?
+        route(
+          'customer.chat.read',
+          $conversation
+        ) :
+        null
+      );
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | CSRF
+    |--------------------------------------------------------------------------
+    */
+
+    const csrfInput =
+      form ?
+      form.querySelector(
+        'input[name="_token"]'
+      ) :
+      null;
+
+
+    const csrfValue =
+      csrfInput ?
+      csrfInput.value :
+      null;
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | SCROLL XUỐNG TIN MỚI NHẤT
+    |--------------------------------------------------------------------------
+    */
+
+    if (messages) {
+
+      messages.scrollTop =
+        messages.scrollHeight;
+
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | CUSTOMER ĐÁNH DẤU TIN STAFF ĐÃ ĐỌC
+    |--------------------------------------------------------------------------
+    */
+
+    async function markStaffMessagesAsRead() {
+
+      if (
+        !markReadUrl ||
+        !csrfValue ||
+        !conversationId
+      ) {
+        return;
+      }
+
+
+      try {
+
+        const response =
+          await fetch(
+            markReadUrl, {
+              method: 'PATCH',
+
+              headers: {
+
+                'X-CSRF-TOKEN': csrfValue,
+
+                'X-Requested-With': 'XMLHttpRequest',
+
+                'Accept': 'application/json',
+              },
+            }
+          );
+
+
+        if (!response.ok) {
+
+          console.error(
+            'Đánh dấu tin Staff đã đọc thất bại:',
+            response.status
+          );
 
         }
 
+      } catch (error) {
 
-        /*
-        |--------------------------------------------------------------------------
-        | CUSTOMER ĐÁNH DẤU TIN STAFF ĐÃ ĐỌC
-        |--------------------------------------------------------------------------
-        */
+        console.error(
+          'Không thể đánh dấu tin Staff đã đọc.',
+          error
+        );
 
-        async function markStaffMessagesAsRead() {
+      }
 
-            if (
-                !markReadUrl
-                || !csrfValue
-                || !conversationId
-            ) {
-                return;
-            }
+    }
 
 
-            try {
+    /*
+    |--------------------------------------------------------------------------
+    | STAFF ĐÃ ĐỌC TIN CUSTOMER
+    |--------------------------------------------------------------------------
+    */
 
-                const response =
-                    await fetch(
-                        markReadUrl,
-                        {
-                            method: 'PATCH',
+    function markCustomerMessagesAsReadRealtime(
+      event
+    ) {
 
-                            headers: {
-
-                                'X-CSRF-TOKEN':
-                                    csrfValue,
-
-                                'X-Requested-With':
-                                    'XMLHttpRequest',
-
-                                'Accept':
-                                    'application/json',
-                            },
-                        }
-                    );
+      if (!event) {
+        return;
+      }
 
 
-                if (!response.ok) {
-
-                    console.error(
-                        'Đánh dấu tin Staff đã đọc thất bại:',
-                        response.status
-                    );
-
-                }
-
-            } catch (error) {
-
-                console.error(
-                    'Không thể đánh dấu tin Staff đã đọc.',
-                    error
-                );
-
-            }
-
-        }
+      /*
+       * Phải đúng conversation.
+       */
+      if (
+        Number(
+          event.conversation_id
+        ) !==
+        conversationId
+      ) {
+        return;
+      }
 
 
-        /*
-        |--------------------------------------------------------------------------
-        | STAFF ĐÃ ĐỌC TIN CUSTOMER
-        |--------------------------------------------------------------------------
-        */
-
-        function markCustomerMessagesAsReadRealtime(
-            event
-        ) {
-
-            if (!event) {
-                return;
-            }
-
-
-            /*
-             * Phải đúng conversation.
-             */
-            if (
-                Number(
-                    event.conversation_id
-                )
-                !== conversationId
-            ) {
-                return;
-            }
+      /*
+       * Nếu Customer hiện tại chính là
+       * người đọc thì không xử lý.
+       *
+       * Trường hợp cần xử lý:
+       * Staff là người đọc.
+       */
+      if (
+        Number(
+          event.reader_id
+        ) ===
+        currentUserId
+      ) {
+        return;
+      }
 
 
-            /*
-             * Nếu Customer hiện tại chính là
-             * người đọc thì không xử lý.
-             *
-             * Trường hợp cần xử lý:
-             * Staff là người đọc.
-             */
-            if (
-                Number(
-                    event.reader_id
-                )
-                === currentUserId
-            ) {
-                return;
-            }
+      const statuses =
+        document.querySelectorAll(
+          '.customer-chat-read-status'
+        );
 
 
-            const statuses =
-                document.querySelectorAll(
-                    '.customer-chat-read-status'
-                );
+      statuses.forEach(
+        function(status) {
 
-
-            statuses.forEach(
-                function (status) {
-
-                    status.textContent =
-                        'Đã đọc';
-
-                }
-            );
+          status.textContent =
+            'Đã đọc';
 
         }
+      );
+
+    }
 
 
-        /*
-        |--------------------------------------------------------------------------
-        | STAFF KẾT THÚC HỘI THOẠI
-        |--------------------------------------------------------------------------
-        */
+    /*
+    |--------------------------------------------------------------------------
+    | STAFF KẾT THÚC HỘI THOẠI
+    |--------------------------------------------------------------------------
+    */
 
-        /*
+    /*
 |--------------------------------------------------------------------------
 | STAFF KẾT THÚC HỘI THOẠI
 |--------------------------------------------------------------------------
 */
 
-function handleConversationClosed(
-    event
-) {
-
-    if (!event) {
-        return;
-    }
-
-
-    /*
-     * Chỉ xử lý đúng hội thoại
-     * Customer hiện tại đang mở.
-     */
-    if (
-        Number(
-            event.conversation_id
-        )
-        !== conversationId
+    function handleConversationClosed(
+      event
     ) {
+
+      if (!event) {
         return;
-    }
+      }
 
 
-    /*
-    |--------------------------------------------------------------------------
-    | CẬP NHẬT TRẠNG THÁI NGAY
-    |--------------------------------------------------------------------------
-    */
+      /*
+       * Chỉ xử lý đúng hội thoại
+       * Customer hiện tại đang mở.
+       */
+      if (
+        Number(
+          event.conversation_id
+        ) !==
+        conversationId
+      ) {
+        return;
+      }
 
-    if (statusText) {
+
+      /*
+      |--------------------------------------------------------------------------
+      | CẬP NHẬT TRẠNG THÁI NGAY
+      |--------------------------------------------------------------------------
+      */
+
+      if (statusText) {
 
         statusText.textContent =
-            'Cuộc trò chuyện đã kết thúc';
+          'Cuộc trò chuyện đã kết thúc';
 
-    }
+      }
 
 
-    if (statusDot) {
+      if (statusDot) {
 
         statusDot.style.opacity =
-            '0.35';
+          '0.35';
 
-    }
+      }
 
 
-    /*
-    |--------------------------------------------------------------------------
-    | TỰ ĐỒNG TẢI LẠI TRANG
-    |--------------------------------------------------------------------------
-    |
-    | Controller chỉ lấy conversation đang open.
-    |
-    | Vì conversation vừa được closed nên sau reload,
-    | giao diện sẽ trở về trạng thái bắt đầu chat mới.
-    |
-    */
+      /*
+      |--------------------------------------------------------------------------
+      | TỰ ĐỒNG TẢI LẠI TRANG
+      |--------------------------------------------------------------------------
+      |
+      | Controller chỉ lấy conversation đang open.
+      |
+      | Vì conversation vừa được closed nên sau reload,
+      | giao diện sẽ trở về trạng thái bắt đầu chat mới.
+      |
+      */
 
-    setTimeout(
-        function () {
+      setTimeout(
+        function() {
 
-            window.location.reload();
+          window.location.reload();
 
         },
         500
-    );
+      );
 
-}
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | THÊM TIN NHẮN STAFF REALTIME
-        |--------------------------------------------------------------------------
-        */
-
-        function appendRealtimeMessage(
-            chatMessage
-        ) {
-
-            if (!messages) {
-                return;
-            }
+    }
 
 
-            /*
-            |--------------------------------------------------------------------------
-            | ROW
-            |--------------------------------------------------------------------------
-            */
+    /*
+    |--------------------------------------------------------------------------
+    | THÊM TIN NHẮN STAFF REALTIME
+    |--------------------------------------------------------------------------
+    */
 
-            const row =
-                document.createElement(
-                    'div'
-                );
+    function appendRealtimeMessage(
+      chatMessage
+    ) {
 
-
-            row.className =
-                'customer-chat-message-row is-staff';
-
-
-            /*
-            |--------------------------------------------------------------------------
-            | MESSAGE BOX
-            |--------------------------------------------------------------------------
-            */
-
-            const messageBox =
-                document.createElement(
-                    'div'
-                );
+      if (!messages) {
+        return;
+      }
 
 
-            messageBox.className =
-                'customer-chat-message';
+      /*
+      |--------------------------------------------------------------------------
+      | ROW
+      |--------------------------------------------------------------------------
+      */
+
+      const row =
+        document.createElement(
+          'div'
+        );
 
 
-            /*
-            |--------------------------------------------------------------------------
-            | STAFF NAME
-            |--------------------------------------------------------------------------
-            */
-
-            const sender =
-                document.createElement(
-                    'div'
-                );
+      row.className =
+        'customer-chat-message-row is-staff';
 
 
-            sender.className =
-                'customer-chat-message-sender';
+      /*
+      |--------------------------------------------------------------------------
+      | MESSAGE BOX
+      |--------------------------------------------------------------------------
+      */
+
+      const messageBox =
+        document.createElement(
+          'div'
+        );
 
 
-            sender.textContent =
-                chatMessage.sender_name
-                || 'Nhân viên VELORA Eyes';
+      messageBox.className =
+        'customer-chat-message';
 
 
-            /*
-            |--------------------------------------------------------------------------
-            | CONTENT
-            |--------------------------------------------------------------------------
-            */
+      /*
+      |--------------------------------------------------------------------------
+      | STAFF NAME
+      |--------------------------------------------------------------------------
+      */
 
-            const content =
-                document.createElement(
-                    'div'
-                );
-
-
-            content.className =
-                'customer-chat-message-content';
+      const sender =
+        document.createElement(
+          'div'
+        );
 
 
-            /*
-             * Không dùng innerHTML.
-             *
-             * textContent giúp nội dung chat
-             * không thể chèn HTML/script.
-             */
-            content.textContent =
-                chatMessage.content
-                || '';
+      sender.className =
+        'customer-chat-message-sender';
 
 
-            /*
-            |--------------------------------------------------------------------------
-            | META
-            |--------------------------------------------------------------------------
-            */
-
-            const meta =
-                document.createElement(
-                    'div'
-                );
+      sender.textContent =
+        chatMessage.sender_name ||
+        'Nhân viên VELORA Eyes';
 
 
-            meta.className =
-                'customer-chat-message-meta';
+      /*
+      |--------------------------------------------------------------------------
+      | CONTENT
+      |--------------------------------------------------------------------------
+      */
+
+      const content =
+        document.createElement(
+          'div'
+        );
 
 
-            const time =
-                document.createElement(
-                    'span'
-                );
+      content.className =
+        'customer-chat-message-content';
 
 
-            time.textContent =
-                chatMessage.time
-                || '';
+      /*
+       * Không dùng innerHTML.
+       *
+       * textContent giúp nội dung chat
+       * không thể chèn HTML/script.
+       */
+      content.textContent =
+        chatMessage.content ||
+        '';
 
 
-            /*
-            |--------------------------------------------------------------------------
-            | APPEND
-            |--------------------------------------------------------------------------
-            */
+      /*
+      |--------------------------------------------------------------------------
+      | META
+      |--------------------------------------------------------------------------
+      */
 
-            meta.appendChild(
-                time
-            );
-
-
-            messageBox.appendChild(
-                sender
-            );
+      const meta =
+        document.createElement(
+          'div'
+        );
 
 
-            messageBox.appendChild(
-                content
-            );
+      meta.className =
+        'customer-chat-message-meta';
 
-            /*
+
+      const time =
+        document.createElement(
+          'span'
+        );
+
+
+      time.textContent =
+        chatMessage.time ||
+        '';
+
+
+      /*
+      |--------------------------------------------------------------------------
+      | APPEND
+      |--------------------------------------------------------------------------
+      */
+
+      meta.appendChild(
+        time
+      );
+
+
+      messageBox.appendChild(
+        sender
+      );
+
+
+      messageBox.appendChild(
+        content
+      );
+
+      /*
 |--------------------------------------------------------------------------
 | IMAGE ATTACHMENTS
 |--------------------------------------------------------------------------
 */
 
-if (
-    Array.isArray(
-        chatMessage.attachments
-    )
-    && chatMessage.attachments.length > 0
-) {
+      if (
+        Array.isArray(
+          chatMessage.attachments
+        ) &&
+        chatMessage.attachments.length > 0
+      ) {
 
-    const imageAttachments =
-        chatMessage.attachments.filter(
-            function (attachment) {
+        const imageAttachments =
+          chatMessage.attachments.filter(
+            function(attachment) {
 
-                return (
-                    attachment.type === 'image'
-                    && attachment.url
-                );
+              return (
+                attachment.type === 'image' &&
+                attachment.url
+              );
 
             }
-        );
+          );
 
 
-    if (imageAttachments.length > 0) {
+        if (imageAttachments.length > 0) {
 
-        const imagesContainer =
+          const imagesContainer =
             document.createElement(
-                'div'
+              'div'
             );
 
 
-        imagesContainer.className =
+          imagesContainer.className =
             'customer-chat-message-images';
 
 
-        imageAttachments.forEach(
-            function (attachment) {
+          imageAttachments.forEach(
+            function(attachment) {
 
-                const imageLink =
-                    document.createElement(
-                        'a'
-                    );
-
-
-                imageLink.className =
-                    'customer-chat-message-image';
-
-
-                imageLink.href =
-                    attachment.url;
-
-
-                imageLink.target =
-                    '_blank';
-
-
-                imageLink.rel =
-                    'noopener';
-
-
-                const image =
-                    document.createElement(
-                        'img'
-                    );
-
-
-                image.src =
-                    attachment.url;
-
-
-                image.alt =
-                    attachment.original_name
-                    || 'Ảnh trong cuộc trò chuyện';
-
-
-                image.loading =
-                    'lazy';
-
-
-                imageLink.appendChild(
-                    image
-                );
-
-
-                imagesContainer.appendChild(
-                    imageLink
-                );
-
-            }
-        );
-
-
-        messageBox.appendChild(
-            imagesContainer
-        );
-
-    }
-
-}
-/*
-|--------------------------------------------------------------------------
-| PRODUCT LIST
-|--------------------------------------------------------------------------
-*/
-
-if (
-    chatMessage.message_type
-    === 'product_list'
-    && Array.isArray(
-        chatMessage.products
-    )
-    && chatMessage.products.length > 0
-) {
-
-    const productsContainer =
-        document.createElement(
-            'div'
-        );
-
-
-    productsContainer.className =
-        'customer-chat-message-products';
-
-
-    chatMessage.products.forEach(
-        function (product) {
-
-            const card =
+              const imageLink =
                 document.createElement(
-                    'a'
+                  'a'
                 );
 
 
-            card.className =
-                'customer-chat-product-card';
+              imageLink.className =
+                'customer-chat-message-image';
 
 
-            card.href =
-                product.product_url
-                || '#';
+              imageLink.href =
+                attachment.url;
 
 
-            card.target =
+              imageLink.target =
                 '_blank';
 
 
-            card.rel =
+              imageLink.rel =
                 'noopener';
+
+
+              const image =
+                document.createElement(
+                  'img'
+                );
+
+
+              image.src =
+                attachment.url;
+
+
+              image.alt =
+                attachment.original_name ||
+                'Ảnh trong cuộc trò chuyện';
+
+
+              image.loading =
+                'lazy';
+
+
+              imageLink.appendChild(
+                image
+              );
+
+
+              imagesContainer.appendChild(
+                imageLink
+              );
+
+            }
+          );
+
+
+          messageBox.appendChild(
+            imagesContainer
+          );
+
+        }
+
+      }
+      /*
+      |--------------------------------------------------------------------------
+      | PRODUCT LIST
+      |--------------------------------------------------------------------------
+      */
+
+      if (
+        chatMessage.message_type ===
+        'product_list' &&
+        Array.isArray(
+          chatMessage.products
+        ) &&
+        chatMessage.products.length > 0
+      ) {
+
+        const productsContainer =
+          document.createElement(
+            'div'
+          );
+
+
+        productsContainer.className =
+          'customer-chat-message-products';
+
+
+        chatMessage.products.forEach(
+          function(product) {
+
+            const card =
+              document.createElement(
+                'a'
+              );
+
+
+            card.className =
+              'customer-chat-product-card';
+
+
+            card.href =
+              product.product_url ||
+              '#';
+
+
+            card.target =
+              '_blank';
+
+
+            card.rel =
+              'noopener';
 
 
             /*
@@ -1632,37 +1888,37 @@ if (
             */
 
             const imageWrap =
-                document.createElement(
-                    'span'
-                );
+              document.createElement(
+                'span'
+              );
 
 
             imageWrap.className =
-                'customer-chat-product-image';
+              'customer-chat-product-image';
 
 
             const image =
-                document.createElement(
-                    'img'
-                );
+              document.createElement(
+                'img'
+              );
 
 
             image.src =
-                product.image_url
-                || '';
+              product.image_url ||
+              '';
 
 
             image.alt =
-                product.name
-                || 'Sản phẩm VELORA Eyes';
+              product.name ||
+              'Sản phẩm VELORA Eyes';
 
 
             image.loading =
-                'lazy';
+              'lazy';
 
 
             imageWrap.appendChild(
-                image
+              image
             );
 
 
@@ -1673,46 +1929,46 @@ if (
             */
 
             const info =
-                document.createElement(
-                    'span'
-                );
+              document.createElement(
+                'span'
+              );
 
 
             info.className =
-                'customer-chat-product-info';
+              'customer-chat-product-info';
 
 
             const name =
-                document.createElement(
-                    'strong'
-                );
+              document.createElement(
+                'strong'
+              );
 
 
             name.textContent =
-                product.name
-                || 'Sản phẩm';
+              product.name ||
+              'Sản phẩm';
 
 
             info.appendChild(
-                name
+              name
             );
 
 
             if (product.sku) {
 
-                const sku =
-                    document.createElement(
-                        'small'
-                    );
-
-
-                sku.textContent =
-                    product.sku;
-
-
-                info.appendChild(
-                    sku
+              const sku =
+                document.createElement(
+                  'small'
                 );
+
+
+              sku.textContent =
+                product.sku;
+
+
+              info.appendChild(
+                sku
+              );
 
             }
 
@@ -1724,77 +1980,77 @@ if (
             */
 
             const price =
-                document.createElement(
-                    'span'
-                );
+              document.createElement(
+                'span'
+              );
 
 
             price.className =
-                'customer-chat-product-price';
+              'customer-chat-product-price';
 
 
             const currentPrice =
-                Number(
-                    product.current_price
-                    || 0
-                );
+              Number(
+                product.current_price ||
+                0
+              );
 
 
             price.appendChild(
-                document.createTextNode(
-                    currentPrice
-                        .toLocaleString(
-                            'vi-VN'
-                        )
-                    + 'đ'
-                )
+              document.createTextNode(
+                currentPrice
+                .toLocaleString(
+                  'vi-VN'
+                ) +
+                'đ'
+              )
             );
 
 
             const originalPrice =
-                Number(
-                    product.price
-                    || 0
-                );
+              Number(
+                product.price ||
+                0
+              );
 
 
             const salePrice =
-                product.sale_price !== null
-                    ? Number(
-                        product.sale_price
-                    )
-                    : null;
+              product.sale_price !== null ?
+              Number(
+                product.sale_price
+              ) :
+              null;
 
 
             if (
-                salePrice !== null
-                && salePrice > 0
-                && salePrice < originalPrice
+              salePrice !== null &&
+              salePrice > 0 &&
+              salePrice < originalPrice
             ) {
 
-                const oldPrice =
-                    document.createElement(
-                        'del'
-                    );
-
-
-                oldPrice.textContent =
-                    originalPrice
-                        .toLocaleString(
-                            'vi-VN'
-                        )
-                    + 'đ';
-
-
-                price.appendChild(
-                    oldPrice
+              const oldPrice =
+                document.createElement(
+                  'del'
                 );
+
+
+              oldPrice.textContent =
+                originalPrice
+                .toLocaleString(
+                  'vi-VN'
+                ) +
+                'đ';
+
+
+              price.appendChild(
+                oldPrice
+              );
 
             }
 
 
             info.appendChild(
-                price
+              price
             );
 
 
@@ -1805,17 +2061,17 @@ if (
             */
 
             const action =
-                document.createElement(
-                    'span'
-                );
+              document.createElement(
+                'span'
+              );
 
 
             action.className =
-                'customer-chat-product-action';
+              'customer-chat-product-action';
 
 
             action.textContent =
-                'Xem sản phẩm →';
+              'Xem sản phẩm →';
 
 
             /*
@@ -1825,306 +2081,338 @@ if (
             */
 
             card.appendChild(
-                imageWrap
+              imageWrap
             );
 
 
             card.appendChild(
-                info
+              info
             );
 
 
             card.appendChild(
-                action
+              action
             );
 
 
             productsContainer.appendChild(
-                card
+              card
             );
 
-        }
-    );
-
-
-    messageBox.appendChild(
-        productsContainer
-    );
-
-}
-
-            messageBox.appendChild(
-                meta
-            );
-
-
-            row.appendChild(
-                messageBox
-            );
-
-
-            messages.appendChild(
-                row
-            );
-
-
-            /*
-            |--------------------------------------------------------------------------
-            | SCROLL
-            |--------------------------------------------------------------------------
-            */
-
-            messages.scrollTop =
-                messages.scrollHeight;
-
-
-            /*
-            |--------------------------------------------------------------------------
-            | AUTO MARK READ
-            |--------------------------------------------------------------------------
-            |
-            | Customer đang mở trực tiếp chat,
-            | vì vậy tin Staff vừa tới được xem
-            | là đã đọc.
-            |
-            */
-
-            markStaffMessagesAsRead();
-
-        }
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | REALTIME
-        |--------------------------------------------------------------------------
-        */
-
-        if (
-            window.Echo
-            && conversationId
-            && messages
-        ) {
-
-            const channel =
-                window.Echo.private(
-                    'chat.conversation.'
-                    + conversationId
-                );
-
-
-            /*
-            |--------------------------------------------------------------------------
-            | MESSAGE SENT
-            |--------------------------------------------------------------------------
-            */
-
-            channel.listen(
-                '.chat.message.sent',
-                function (event) {
-
-                    if (
-                        !event
-                        || !event.message
-                    ) {
-                        return;
-                    }
-
-
-                    const chatMessage =
-                        event.message;
-
-
-                    /*
-                     * Tin do chính Customer gửi
-                     * không chèn thêm.
-                     *
-                     * Form hiện tại POST rồi redirect,
-                     * Laravel sẽ render message đó.
-                     */
-                    if (
-                        Number(
-                            chatMessage.sender_id
-                        )
-                        === currentUserId
-                    ) {
-                        return;
-                    }
-
-
-                    appendRealtimeMessage(
-                        chatMessage
-                    );
-
-                }
-            );
-
-
-            /*
-            |--------------------------------------------------------------------------
-            | READ RECEIPT
-            |--------------------------------------------------------------------------
-            */
-
-            channel.listen(
-                '.chat.messages.read',
-                function (event) {
-
-                    markCustomerMessagesAsReadRealtime(
-                        event
-                    );
-
-                }
-            );
-
-
-            /*
-            |--------------------------------------------------------------------------
-            | CONVERSATION CLOSED
-            |--------------------------------------------------------------------------
-            |
-            | Staff kết thúc hỗ trợ
-            | → Customer biết ngay mà không F5.
-            |
-            */
-
-            channel.listen(
-                '.chat.conversation.closed',
-                function (event) {
-
-                    handleConversationClosed(
-                        event
-                    );
-
-                }
-            );
-
-        }
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | FORM
-        |--------------------------------------------------------------------------
-        */
-
-        if (
-            !form
-            || !input
-        ) {
-            return;
-        }
-
-
-/*
-|--------------------------------------------------------------------------
-| VALIDATE CHAT FORM BEFORE SUBMIT
-|--------------------------------------------------------------------------
-*/
-
-if (form) {
-
-    form.addEventListener(
-        'submit',
-        function (event) {
-
-            const messageValue =
-                input
-                    ? input.value.trim()
-                    : '';
-
-
-            if (
-                messageValue === ''
-                && selectedImageFiles.length === 0
-            ) {
-
-                event.preventDefault();
-
-                if (formNote) {
-
-                    formNote.textContent =
-                        'Vui lòng nhập tin nhắn hoặc chọn ít nhất một ảnh.';
-
-                }
-
-                return;
-            }
-
-
-            /*
-             * Đồng bộ lần cuối trước khi POST.
-             */
-            updateImageInputFiles();
-
-        }
-    );
-
-}
-
-        /*
-        |--------------------------------------------------------------------------
-        | AUTO RESIZE TEXTAREA
-        |--------------------------------------------------------------------------
-        */
-
-        input.addEventListener(
-            'input',
-            function () {
-
-                input.style.height =
-                    'auto';
-
-
-                input.style.height =
-                    Math.min(
-                        input.scrollHeight,
-                        120
-                    ) + 'px';
-
-            }
+          }
         );
 
 
-        /*
-        |--------------------------------------------------------------------------
-        | ENTER = GỬI
-        | SHIFT + ENTER = XUỐNG DÒNG
-        |--------------------------------------------------------------------------
-        */
-
-        input.addEventListener(
-            'keydown',
-            function (event) {
-
-                if (
-                    event.key === 'Enter'
-                    && !event.shiftKey
-                ) {
-
-                    event.preventDefault();
-
-
-                    const value =
-                        input.value.trim();
-
-
-                    if (
-                            value === ''
-                        && selectedImageFiles.length === 0
-                ) {
-                        return;
-                        }
-
-
-                    form.requestSubmit();
-
-                }
-
-            }
+        messageBox.appendChild(
+          productsContainer
         );
+
+      }
+
+      messageBox.appendChild(
+        meta
+      );
+
+
+      row.appendChild(
+        messageBox
+      );
+
+
+      messages.appendChild(
+        row
+      );
+
+
+      /*
+      |--------------------------------------------------------------------------
+      | SCROLL
+      |--------------------------------------------------------------------------
+      */
+
+      messages.scrollTop =
+        messages.scrollHeight;
+
+
+      /*
+      |--------------------------------------------------------------------------
+      | AUTO MARK READ
+      |--------------------------------------------------------------------------
+      |
+      | Customer đang mở trực tiếp chat,
+      | vì vậy tin Staff vừa tới được xem
+      | là đã đọc.
+      |
+      */
+
+      markStaffMessagesAsRead();
 
     }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | REALTIME
+    |--------------------------------------------------------------------------
+    */
+
+    if (
+      window.Echo &&
+      conversationId &&
+      messages
+    ) {
+
+      const channel =
+        window.Echo.private(
+          'chat.conversation.' +
+          conversationId
+        );
+
+
+      /*
+      |--------------------------------------------------------------------------
+      | MESSAGE SENT
+      |--------------------------------------------------------------------------
+      */
+
+      channel.listen(
+        '.chat.message.sent',
+        function(event) {
+
+          if (
+            !event ||
+            !event.message
+          ) {
+            return;
+          }
+
+
+          const chatMessage =
+            event.message;
+
+
+          /*
+           * Tin do chính Customer gửi
+           * không chèn thêm.
+           *
+           * Form hiện tại POST rồi redirect,
+           * Laravel sẽ render message đó.
+           */
+          if (
+            Number(
+              chatMessage.sender_id
+            ) ===
+            currentUserId
+          ) {
+            return;
+          }
+
+
+          appendRealtimeMessage(
+            chatMessage
+          );
+
+        }
+      );
+
+
+      /*
+      |--------------------------------------------------------------------------
+      | READ RECEIPT
+      |--------------------------------------------------------------------------
+      */
+
+      channel.listen(
+        '.chat.messages.read',
+        function(event) {
+
+          markCustomerMessagesAsReadRealtime(
+            event
+          );
+
+        }
+      );
+
+
+      /*
+      |--------------------------------------------------------------------------
+      | CONVERSATION CLOSED
+      |--------------------------------------------------------------------------
+      |
+      | Staff kết thúc hỗ trợ
+      | → Customer biết ngay mà không F5.
+      |
+      */
+
+      channel.listen(
+        '.chat.conversation.closed',
+        function(event) {
+
+          handleConversationClosed(
+            event
+          );
+
+        }
+      );
+
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | FORM
+    |--------------------------------------------------------------------------
+    */
+
+    if (
+      !form ||
+      !input
+    ) {
+      return;
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | COMPLAINT MESSAGE FROM ORDER
+    |--------------------------------------------------------------------------
+    */
+
+    if (
+      input.value.trim() !== ''
+    ) {
+
+      input.style.height =
+        'auto';
+
+
+      input.style.height =
+        Math.min(
+          input.scrollHeight,
+          120
+        ) + 'px';
+
+
+      input.focus();
+
+
+      input.setSelectionRange(
+        input.value.length,
+        input.value.length
+      );
+
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | VALIDATE CHAT FORM BEFORE SUBMIT
+    |--------------------------------------------------------------------------
+    */
+
+    if (form) {
+
+      form.addEventListener(
+        'submit',
+        function(event) {
+
+          const messageValue =
+            input ?
+            input.value.trim() :
+            '';
+
+
+          if (
+            messageValue === '' &&
+            selectedImageFiles.length === 0
+          ) {
+
+            event.preventDefault();
+
+            if (formNote) {
+
+              formNote.textContent =
+                'Vui lòng nhập tin nhắn hoặc chọn ít nhất một ảnh.';
+
+            }
+
+            return;
+          }
+
+
+          /*
+           * Đồng bộ lần cuối trước khi POST.
+           */
+          updateImageInputFiles();
+
+        }
+      );
+
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | AUTO RESIZE TEXTAREA
+    |--------------------------------------------------------------------------
+    */
+
+    input.addEventListener(
+      'input',
+      function() {
+
+        input.style.height =
+          'auto';
+
+
+        input.style.height =
+          Math.min(
+            input.scrollHeight,
+            120
+          ) + 'px';
+
+      }
+    );
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | ENTER = GỬI
+    | SHIFT + ENTER = XUỐNG DÒNG
+    |--------------------------------------------------------------------------
+    */
+
+    input.addEventListener(
+      'keydown',
+      function(event) {
+
+        if (
+          event.key === 'Enter' &&
+          !event.shiftKey
+        ) {
+
+          event.preventDefault();
+
+
+          const value =
+            input.value.trim();
+
+
+          if (
+            value === '' &&
+            selectedImageFiles.length === 0
+          ) {
+            return;
+          }
+
+
+          form.requestSubmit();
+
+        }
+
+      }
+    );
+
+  }
 );
 </script>
 

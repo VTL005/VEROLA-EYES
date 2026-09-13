@@ -7,6 +7,13 @@
 )
 
 
+@push('styles')
+
+<link rel="stylesheet" href="{{ asset('css/order-review.css') }}">
+
+@endpush
+
+
 @section('content')
 
 @php
@@ -431,6 +438,46 @@ true
                       {{ $detail->sku }}
                     </small>
 
+
+                    @if(
+                    $order->order_status
+                    === \App\Models\Order::STATUS_COMPLETED
+                    && $detail->product
+                    )
+
+                    <div class="order-review-action">
+
+                      @if(
+                      $reviewedProductIds->contains(
+                      (int) $detail->product_id
+                      )
+                      )
+
+                      <span class="order-review-completed">
+                        ✓ Đã đánh giá
+                      </span>
+
+                      @elseif(Route::has('reviews.create'))
+
+                      <a href="{{ route(
+                                                'reviews.create',
+                                                $detail->product
+                                            ) }}" class="order-review-button">
+
+                        <span aria-hidden="true">
+                          ★
+                        </span>
+
+                        Đánh giá sản phẩm
+
+                      </a>
+
+                      @endif
+
+                    </div>
+
+                    @endif
+
                   </td>
 
 
@@ -832,47 +879,6 @@ true
           </div>
 
         </div>
-
-
-
-        {{-- CUSTOMER CONFIRM RECEIVED --}}
-
-        @if($order->isDelivered())
-
-        <div class="order-detail-card">
-
-          <h2>
-            Xác nhận nhận hàng
-          </h2>
-
-          <p class="text-muted">
-            Đơn vị vận chuyển đã xác nhận giao hàng.
-            Vui lòng kiểm tra đơn trước khi hoàn thành.
-          </p>
-
-          <form action="{{ route(
-                'orders.confirm-received',
-                $order
-            ) }}" method="POST" onsubmit="
-              return confirm(
-                'Bạn xác nhận đã nhận đầy đủ và kiểm tra đơn hàng?'
-              );
-            ">
-
-            @csrf
-            @method('PATCH')
-
-            <button type="submit" class="btn btn-primary" style="width:100%;">
-              Đã nhận được hàng
-            </button>
-
-          </form>
-
-        </div>
-
-        @endif
-
-
 
         {{-- RETRY ONLINE PAYMENT --}}
 

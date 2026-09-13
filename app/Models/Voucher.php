@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
@@ -55,7 +56,18 @@ class Voucher extends Model
     {
         return $this->hasMany(Order::class);
     }
-
+    /**
+     * Các Customer đã lưu Voucher này.
+     */
+    public function savedByUsers(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            User::class,
+            'user_vouchers',
+            'voucher_id',
+            'user_id'
+        )->withTimestamps();
+    }
     /**
      * Chỉ lấy Voucher đang được bật.
      */

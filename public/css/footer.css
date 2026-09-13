@@ -1,0 +1,38 @@
+/* =========================================================
+   VELORA FOOTER
+========================================================= */
+
+.footer-main {
+    grid-template-columns:
+        minmax(260px, 1.45fr)
+        repeat(3, minmax(150px, 1fr));
+    gap: clamp(32px, 4vw, 58px);
+}
+
+.footer-contact-links {
+    line-height: 1.6;
+}
+
+.footer-address {
+    max-width: 290px;
+    margin: 0;
+    color: #cbd5e1;
+    font-style: normal;
+}
+
+@media (max-width: 900px) {
+    .footer-main {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 640px) {
+    .footer-main {
+        grid-template-columns: 1fr;
+        gap: 26px;
+    }
+
+    .footer-address {
+        max-width: none;
+    }
+}

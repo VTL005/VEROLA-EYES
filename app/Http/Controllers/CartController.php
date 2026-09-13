@@ -54,7 +54,8 @@ class CartController extends Controller
 
         if ($voucherCode && $selectedItems->isNotEmpty()) {
             try {
-                $result = $voucherService->apply(
+                $result = $voucherService->applyForUser(
+                    auth()->user(),
                     $voucherCode,
                     $subtotal
                 );
@@ -81,7 +82,10 @@ class CartController extends Controller
 
         if ($selectedItems->isNotEmpty()) {
             $voucherOptions = $voucherService
-                ->getPublicVoucherOptions($subtotal);
+                ->getSavedVoucherOptions(
+                    auth()->user(),
+                    $subtotal
+                );
 
             $availableVouchers = $voucherOptions['available'];
             $lockedVouchers = $voucherOptions['locked'];
@@ -328,7 +332,8 @@ class CartController extends Controller
 
         if ($voucherCode && $selectedItems->isNotEmpty()) {
             try {
-                $result = $voucherService->apply(
+                $result = $voucherService->applyForUser(
+                    auth()->user(),
                     $voucherCode,
                     $subtotal
                 );
@@ -408,7 +413,8 @@ class CartController extends Controller
         $previousVoucherCode =
             session('cart_voucher_code');
 
-        $result = $voucherService->apply(
+        $result = $voucherService->applyForUser(
+            auth()->user(),
             $request->voucher_code,
             $subtotal
         );

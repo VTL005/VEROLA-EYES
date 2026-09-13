@@ -289,6 +289,8 @@ class CheckoutController extends Controller
 
         $appliedVoucher = null;
 
+        $voucherError = null;
+
         /*
          * Lấy Voucher đang áp trong Session.
          */
@@ -301,7 +303,8 @@ class CheckoutController extends Controller
             try {
 
                 $result =
-                    $voucherService->apply(
+                    $voucherService->applyForUser(
+                        $user,
                         $voucherCode,
                         $subtotal
                     );
@@ -327,19 +330,34 @@ class CheckoutController extends Controller
                     'cart_voucher_code'
                 );
 
-                if ($isBuyNow) {
-                    $appliedVoucher = null;
-                    $discountAmount = 0;
-                    $finalAmount = $subtotal;
-                } else {
-                    return redirect()
-                        ->route('cart.index')
-                        ->withErrors(
-                            $exception->errors()
-                        );
-                }
+                $voucherError = collect(
+                    $exception->errors()
+                )
+                    ->flatten()
+                    ->first();
+
+                $appliedVoucher = null;
+                $discountAmount = 0;
+                $finalAmount = $subtotal;
             }
         }
+
+        /*
+         * Chỉ hiển thị Voucher Customer đã lưu.
+         * Voucher đủ điều kiện và chưa đủ giá trị đơn
+         * được tách riêng để giao diện hiển thị rõ ràng.
+         */
+        $voucherOptions = $voucherService
+            ->getSavedVoucherOptions(
+                $user,
+                $subtotal
+            );
+
+        $availableVouchers =
+            $voucherOptions['available'];
+
+        $lockedVouchers =
+            $voucherOptions['locked'];
 
         /*
          * Xác định địa chỉ đang được chọn.
@@ -420,9 +438,86 @@ class CheckoutController extends Controller
                 'selectedAddressId',
                 'total',
                 'appliedVoucher',
+                'voucherError',
+                'availableVouchers',
+                'lockedVouchers',
                 'isBuyNow'
             )
         );
+    }
+
+    /**
+     * Chọn hoặc đổi Voucher ngay tại Checkout.
+     */
+    public function applyVoucher(
+        Request $request,
+        VoucherService $voucherService
+    ) {
+        $validated = $request->validate([
+            'voucher_code' => [
+                'required',
+                'string',
+                'max:50',
+            ],
+        ]);
+
+        $user = auth()->user();
+
+        $voucher = $voucherService->findByCode(
+            $validated['voucher_code']
+        );
+
+        if (! $voucher) {
+            throw ValidationException::withMessages([
+                'voucher_code' => 'Mã giảm giá không tồn tại.',
+            ]);
+        }
+
+        /*
+         * Voucher công khai phải nằm trong kho của Customer.
+         * Việc kiểm tra thời hạn và giá trị đơn được thực hiện
+         * lại trong index() bằng dữ liệu sản phẩm thực tế.
+         */
+        $voucherService->validateVoucherForUser(
+            $user,
+            $voucher
+        );
+
+        session()->put(
+            'cart_voucher_code',
+            $voucher->code
+        );
+
+        session()->forget(
+            'checkout_amount_after_discount'
+        );
+
+        return redirect()
+            ->route('checkout.index');
+    }
+
+    /**
+     * Bỏ Voucher đang áp tại Checkout.
+     */
+    public function removeVoucher()
+    {
+        $voucherCode = session(
+            'cart_voucher_code'
+        );
+
+        session()->forget([
+            'cart_voucher_code',
+            'checkout_amount_after_discount',
+        ]);
+
+        return redirect()
+            ->route('checkout.index')
+            ->with(
+                'voucher_success',
+                $voucherCode
+                    ? 'Đã bỏ voucher '.$voucherCode.'.'
+                    : 'Đã bỏ voucher.'
+            );
     }
 
     /**

@@ -34,6 +34,7 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\SocialAuthController;
+use App\Http\Controllers\VoucherController;
 use App\Http\Controllers\Staff\AppointmentController as StaffAppointmentController;
 use App\Http\Controllers\Staff\CategoryController as StaffCategoryController;
 use App\Http\Controllers\Staff\ChatController as StaffChatController;
@@ -60,7 +61,10 @@ Route::get(
     '/',
     [HomeController::class, 'index']
 )->name('home');
-
+Route::view(
+    '/about',
+    'pages.about'
+)->name('about');
 /*
 |--------------------------------------------------------------------------
 | PRODUCT
@@ -399,6 +403,29 @@ Route::middleware([
 
     /*
     |--------------------------------------------------------------------------
+    | CUSTOMER VOUCHER WALLET
+    |--------------------------------------------------------------------------
+    */
+
+    Route::get(
+        '/vouchers',
+        [VoucherController::class, 'index']
+    )->name('vouchers.index');
+
+    Route::post(
+        '/vouchers/{voucher}/claim',
+        [VoucherController::class, 'claim']
+    )
+        ->whereNumber('voucher')
+        ->name('vouchers.claim');
+    Route::post(
+        '/vouchers/{voucher}/use',
+        [VoucherController::class, 'useNow']
+    )
+        ->whereNumber('voucher')
+        ->name('vouchers.use');
+    /*
+    |--------------------------------------------------------------------------
     | CART VOUCHER
     |--------------------------------------------------------------------------
     */
@@ -466,7 +493,15 @@ Route::middleware([
         '/checkout/shipping-fee',
         [CheckoutController::class, 'shippingFee']
     )->name('checkout.shipping-fee');
+Route::post(
+    '/checkout/voucher/apply',
+    [CheckoutController::class, 'applyVoucher']
+)->name('checkout.voucher.apply');
 
+Route::delete(
+    '/checkout/voucher/remove',
+    [CheckoutController::class, 'removeVoucher']
+)->name('checkout.voucher.remove');
     Route::get(
         '/checkout',
         [CheckoutController::class, 'index']

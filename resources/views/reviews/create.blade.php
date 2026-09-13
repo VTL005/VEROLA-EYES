@@ -1,190 +1,223 @@
-<!DOCTYPE html>
-<html lang="vi">
-
-<head>
-    <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
-
-    <title>
-        Đánh giá sản phẩm - VELORA Eyes
-    </title>
-</head>
-
-<body>
-
-    <h1>
-        Đánh giá sản phẩm
-    </h1>
+@extends('layouts.app')
 
 
-    <p>
-
-        <a
-            href="{{ route(
-                'products.show',
-                $product
-            ) }}"
-        >
-            ← Quay lại sản phẩm
-        </a>
-
-    </p>
+@section(
+'title',
+'Đánh giá sản phẩm - VELORA Eyes'
+)
 
 
-    @if($errors->any())
+@push('styles')
 
-        <div style="color:red;">
+<link rel="stylesheet" href="{{ asset('css/product-review-form.css') }}">
 
-            <ul>
-
-                @foreach($errors->all() as $error)
-
-                    <li>
-                        {{ $error }}
-                    </li>
-
-                @endforeach
-
-            </ul>
-
-        </div>
-
-    @endif
+@endpush
 
 
-    <hr>
+@section('content')
+
+<section class="section review-create-page">
+
+  <div class="velora-container">
+
+    <div class="review-create-shell">
+
+      <a href="{{ route(
+                    'orders.index',
+                    ['status' => 'completed']
+                ) }}" class="review-create-back">
+        ← Quay lại đơn hàng
+      </a>
 
 
-    <h2>
-        {{ $product->name }}
-    </h2>
+      @if(session('success'))
+
+      <div class="alert alert-success">
+        {{ session('success') }}
+      </div>
+
+      @endif
 
 
-    <p>
-        SKU:
-        {{ $product->sku }}
-    </p>
+      <div class="review-form-card">
+
+        <span class="hero-kicker">
+          PRODUCT REVIEW
+        </span>
+
+        <h1>
+          Đánh giá sản phẩm
+        </h1>
+
+        <p class="text-muted review-create-intro">
+          Chia sẻ trải nghiệm của bạn để giúp
+          những khách hàng khác lựa chọn dễ dàng hơn.
+        </p>
 
 
-    <form
-        action="{{ route(
-            'reviews.store',
-            $product
-        ) }}"
-        method="POST"
-    >
+        <div class="review-create-product">
 
-        @csrf
+          <div class="review-create-product-mark">
+            V
+          </div>
 
+          <div>
 
-        <div>
+            <strong>
+              {{ $product->name }}
+            </strong>
 
-            <label>
-                Số sao
-            </label>
+            <span>
+              SKU: {{ $product->sku }}
+            </span>
 
-            <br>
-
-            <select
-                name="rating"
-                required
-            >
-
-                <option value="">
-                    -- Chọn số sao --
-                </option>
-
-
-                <option
-                    value="5"
-                    {{ old('rating') == '5'
-                        ? 'selected'
-                        : '' }}
-                >
-                    5 sao - Rất tốt
-                </option>
-
-
-                <option
-                    value="4"
-                    {{ old('rating') == '4'
-                        ? 'selected'
-                        : '' }}
-                >
-                    4 sao - Tốt
-                </option>
-
-
-                <option
-                    value="3"
-                    {{ old('rating') == '3'
-                        ? 'selected'
-                        : '' }}
-                >
-                    3 sao - Bình thường
-                </option>
-
-
-                <option
-                    value="2"
-                    {{ old('rating') == '2'
-                        ? 'selected'
-                        : '' }}
-                >
-                    2 sao - Chưa tốt
-                </option>
-
-
-                <option
-                    value="1"
-                    {{ old('rating') == '1'
-                        ? 'selected'
-                        : '' }}
-                >
-                    1 sao - Không hài lòng
-                </option>
-
-            </select>
+          </div>
 
         </div>
 
 
-        <br>
+        <form class="product-review-form js-product-review-form" action="{{ route(
+                            'reviews.store',
+                            $product
+                        ) }}" method="POST">
+
+          @csrf
 
 
-        <div>
+          <fieldset class="product-review-rating">
 
-            <label>
-                Nội dung đánh giá
-            </label>
+            <legend class="form-label" id="review-rating-label">
+              Bạn cảm thấy sản phẩm thế nào?
+            </legend>
 
-            <br>
+            <div class="product-review-stars" role="radiogroup" aria-labelledby="review-rating-label">
 
-            <textarea
-                name="comment"
-                rows="6"
-                cols="60"
-                maxlength="500"
-                placeholder="Chia sẻ trải nghiệm của bạn về sản phẩm..."
-            >{{ old('comment') }}</textarea>
+              @for($rating = 5; $rating >= 1; $rating--)
 
-            <p>
-                Tối đa 500 ký tự.
+              <input class="product-review-star-input" type="radio" name="rating" id="review-rating-{{ $rating }}"
+                value="{{ $rating }}" {{ (int) old('rating') === $rating ? 'checked' : '' }} required>
+
+              <label class="product-review-star" for="review-rating-{{ $rating }}" title="{{ $rating }} sao"
+                aria-label="{{ $rating }} sao">
+                <span aria-hidden="true">★</span>
+              </label>
+
+              @endfor
+
+            </div>
+
+            <p class="product-review-rating-text" id="reviewRatingText" aria-live="polite">
+              Chạm vào một ngôi sao để đánh giá
             </p>
 
-        </div>
+            @error('rating')
+
+            <p class="product-review-error">
+              {{ $message }}
+            </p>
+
+            @enderror
+
+          </fieldset>
 
 
-        <button type="submit">
-            Gửi đánh giá
-        </button>
+          <div class="form-group product-review-comment-group">
 
-    </form>
+            <div class="product-review-comment-heading">
 
-</body>
+              <label for="reviewComment" class="form-label">
+                Nhận xét
+              </label>
 
-</html>
+              <span class="product-review-counter" id="reviewCommentCount">
+                0/500
+              </span>
+
+            </div>
+
+            <textarea id="reviewComment" name="comment" class="form-control product-review-comment" maxlength="500"
+              rows="5"
+              placeholder="Chia sẻ trải nghiệm của bạn về chất lượng, kiểu dáng hoặc độ thoải mái...">{{ old('comment') }}</textarea>
+
+            @error('comment')
+
+            <p class="product-review-error">
+              {{ $message }}
+            </p>
+
+            @enderror
+
+          </div>
+
+
+          <div class="review-create-actions">
+
+            <button type="submit" class="btn btn-primary product-review-submit">
+              Gửi đánh giá
+            </button>
+
+            <a href="{{ route(
+                            'orders.index',
+                            ['status' => 'completed']
+                        ) }}" class="btn btn-outline">
+              Để sau
+            </a>
+
+          </div>
+
+        </form>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const reviewForm = document.querySelector('.js-product-review-form');
+
+  if (!reviewForm) {
+    return;
+  }
+
+  const ratingLabels = {
+    1: 'Không hài lòng',
+    2: 'Chưa tốt',
+    3: 'Bình thường',
+    4: 'Tốt',
+    5: 'Rất tốt'
+  };
+
+  const ratingInputs = reviewForm.querySelectorAll('input[name="rating"]');
+  const ratingText = reviewForm.querySelector('#reviewRatingText');
+  const comment = reviewForm.querySelector('#reviewComment');
+  const commentCount = reviewForm.querySelector('#reviewCommentCount');
+
+  function updateRatingText() {
+    const selectedRating = reviewForm.querySelector('input[name="rating"]:checked');
+
+    ratingText.textContent = selectedRating ?
+      ratingLabels[selectedRating.value] + ' · ' + selectedRating.value + '/5 sao' :
+      'Chạm vào một ngôi sao để đánh giá';
+  }
+
+  function updateCommentCount() {
+    commentCount.textContent = comment.value.length + '/500';
+  }
+
+  ratingInputs.forEach(function(input) {
+    input.addEventListener('change', updateRatingText);
+  });
+
+  comment.addEventListener('input', updateCommentCount);
+
+  updateRatingText();
+  updateCommentCount();
+});
+</script>
+
+@endsection

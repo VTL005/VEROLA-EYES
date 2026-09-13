@@ -1,0 +1,133 @@
+.order-review-action {
+    margin-top: 12px;
+}
+
+.order-review-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 13px;
+    border: 1px solid #1c6fd1;
+    border-radius: 9px;
+    background: #ffffff;
+    color: #155eae;
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1;
+    text-decoration: none;
+    transition:
+        color 160ms ease,
+        background-color 160ms ease,
+        border-color 160ms ease,
+        transform 160ms ease;
+}
+
+.order-review-button span {
+    color: #ffb800;
+    font-size: 16px;
+}
+
+.order-review-button:hover {
+    border-color: #155eae;
+    background: #155eae;
+    color: #ffffff;
+    transform: translateY(-1px);
+}
+
+.order-review-button:hover span {
+    color: #ffffff;
+}
+
+.order-review-completed {
+    display: inline-flex;
+    align-items: center;
+    padding: 7px 11px;
+    border: 1px solid #b9e4cb;
+    border-radius: 999px;
+    background: #edf9f2;
+    color: #18794e;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.customer-order-body-link {
+    color: inherit;
+    text-decoration: none;
+    cursor: pointer;
+    transition:
+        background-color 160ms ease,
+        box-shadow 160ms ease,
+        transform 160ms ease;
+}
+
+.customer-order-body-link:hover {
+    background: #f7faff;
+    box-shadow: inset 4px 0 0 #1c6fd1;
+    transform: translateY(-1px);
+}
+
+.customer-order-body-link:focus-visible {
+    border-radius: 12px;
+    outline: 3px solid rgba(28, 111, 209, 0.25);
+    outline-offset: 2px;
+}
+
+.order-card-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 10px;
+}
+
+.order-card-actions form {
+    margin: 0;
+}
+
+.order-complaint-button {
+    border-color: #d9a441;
+    color: #8a5b00;
+}
+
+.order-complaint-button:hover {
+    border-color: #b97800;
+    background: #fff8e7;
+    color: #704900;
+}
+
+.orders-pagination {
+    margin-top: 28px;
+}
+
+.orders-pagination nav svg {
+    display: block;
+    width: 18px !important;
+    height: 18px !important;
+    max-width: 18px;
+    max-height: 18px;
+}
+
+.orders-pagination nav a,
+.orders-pagination nav span {
+    font-size: 14px;
+}
+
+@media (max-width: 640px) {
+    .order-review-button,
+    .order-review-completed {
+        font-size: 12px;
+    }
+
+    .order-card-actions {
+        justify-content: stretch;
+    }
+
+    .order-card-actions form,
+    .order-card-actions .btn {
+        flex: 1 1 145px;
+    }
+
+    .order-card-actions form .btn {
+        width: 100%;
+    }
+}

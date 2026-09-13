@@ -342,6 +342,17 @@ class CheckoutService
                             $subtotal
                         );
 
+                    /*
+                     * Voucher công khai phải nằm trong kho
+                     * của Customer và chưa từng được sử dụng.
+                     * Voucher riêng tư vẫn có thể dùng bằng mã chính xác.
+                     */
+                    $this->voucherService
+                        ->validateVoucherForUser(
+                            $user,
+                            $voucher
+                        );
+
                     $discountAmount =
                         $this->voucherService
                             ->calculateDiscount(

@@ -17,7 +17,10 @@
   </title>
 
   <link rel="stylesheet" href="{{ asset('css/style.css') }}">
+  <link rel="stylesheet" href="{{ asset('css/style.css') }}">
+  <link rel="stylesheet" href="{{ asset('css/footer.css') }}">
 
+  @stack('styles')
   @stack('styles')
 
 </head>
@@ -27,18 +30,18 @@
 
   @include('components.header')
 
-  {{-- =========================================================
-    WISHLIST TOAST
-========================================================= --}}
 
-  @if(session('wishlist_success'))
+  {{-- =========================================================
+        WISHLIST TOAST
+    ========================================================== --}}
+
+  @if (session('wishlist_success'))
 
   <div class="wishlist-toast" role="status" aria-live="polite">
 
     <span class="wishlist-toast-icon">
       ✓
     </span>
-
 
     <span class="wishlist-toast-message">
       {{ session('wishlist_success') }}
@@ -47,16 +50,16 @@
   </div>
 
   @endif
+
+
   <main>
 
-    @if(session('success'))
+    @if (session('success'))
 
     <div class="velora-container" style="padding-top:20px;">
 
       <div class="alert alert-success">
-
         {{ session('success') }}
-
       </div>
 
     </div>
@@ -64,14 +67,12 @@
     @endif
 
 
-    @if(session('error'))
+    @if (session('error'))
 
     <div class="velora-container" style="padding-top:20px;">
 
       <div class="alert alert-danger">
-
         {{ session('error') }}
-
       </div>
 
     </div>
@@ -79,7 +80,7 @@
     @endif
 
 
-    @if($errors->any())
+    @if ($errors->any())
 
     <div class="velora-container" style="padding-top:20px;">
 
@@ -91,7 +92,7 @@
 
         <ul>
 
-          @foreach($errors->all() as $error)
+          @foreach ($errors->all() as $error)
 
           <li>
             {{ $error }}
@@ -114,53 +115,89 @@
 
 
   @include('components.footer')
+
+
   {{-- =========================================================
-    CUSTOMER FLOATING CHAT
-========================================================= --}}
+        CUSTOMER FLOATING CHAT
+    ========================================================== --}}
 
-@auth
+  @auth
 
-    @if (
-        auth()->user()->isCustomer()
-        && Route::has('customer.chat.index')
-        && !request()->routeIs('customer.chat.*')
-    )
+  @if (
+  auth()->user()->isCustomer()
+  && Route::has('customer.chat.index')
+  && ! request()->routeIs('customer.chat.*')
+  )
 
-        <a
-            href="{{ route('customer.chat.index') }}"
-            class="customer-floating-chat"
-            aria-label="Tư vấn trực tuyến"
-            title="Tư vấn trực tuyến"
-        >
+  @php
 
-            <span class="customer-floating-chat-icon">
+  /*
+  * Khi đang xem chi tiết sản phẩm,
+  * lấy sản phẩm hiện tại từ route.
+  */
+  $floatingChatProduct =
+  request()->routeIs('products.show')
+  ? request()->route('product')
+  : null;
 
-                <svg
-                    viewBox="0 0 24 24"
-                    aria-hidden="true"
-                >
-                    <path
-                        d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4v8Z"
-                    ></path>
 
-                    <path d="M8 9h8"></path>
-                    <path d="M8 13h5"></path>
-                </svg>
+  /*
+  * Route Model Binding thường trả về
+  * đối tượng Product.
+  *
+  * Trường hợp route chỉ trả về ID,
+  * hệ thống vẫn xử lý được.
+  */
+  $floatingChatProductId =
+  $floatingChatProduct instanceof \App\Models\Product
+  ? $floatingChatProduct->getKey()
+  : (
+  is_numeric($floatingChatProduct)
+  ? (int) $floatingChatProduct
+  : null
+  );
 
-            </span>
+  @endphp
 
-            <span class="customer-floating-chat-text">
-                Tư vấn
-            </span>
 
-        </a>
+  <a href="{{ route(
+                    'customer.chat.index',
+                    $floatingChatProductId
+                        ? [
+                            'product' => $floatingChatProductId,
+                        ]
+                        : []
+                ) }}" class="customer-floating-chat" aria-label="Tư vấn trực tuyến" title="Tư vấn trực tuyến">
 
-    @endif
+    <span class="customer-floating-chat-icon">
 
-@endauth
+      <svg viewBox="0 0 24 24" aria-hidden="true">
 
-@vite('resources/js/app.js')
-@stack('scripts')
+        <path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4v8Z"></path>
+
+        <path d="M8 9h8"></path>
+
+        <path d="M8 13h5"></path>
+
+      </svg>
+
+    </span>
+
+
+    <span class="customer-floating-chat-text">
+      Tư vấn
+    </span>
+
+  </a>
+
+  @endif
+
+  @endauth
+
+
+  @vite('resources/js/app.js')
+
+  @stack('scripts')
 
 </body>
 

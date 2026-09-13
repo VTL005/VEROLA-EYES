@@ -1,0 +1,224 @@
+.review-form-card {
+    margin-top: 32px;
+    padding: 30px;
+    border: 1px solid #dce5f0;
+    border-radius: 20px;
+    background: linear-gradient(145deg, #ffffff 0%, #f7faff 100%);
+    box-shadow: 0 18px 42px rgba(10, 43, 78, 0.08);
+}
+
+.review-create-page {
+    min-height: calc(100vh - 180px);
+    background: #f4f7fb;
+}
+
+.review-create-shell {
+    max-width: 760px;
+    margin: 0 auto;
+}
+
+.review-create-back {
+    display: inline-flex;
+    margin-bottom: 18px;
+    color: #31516f;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.review-create-back:hover {
+    color: #155eae;
+}
+
+.review-create-intro {
+    max-width: 570px;
+}
+
+.review-create-product {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-top: 22px;
+    padding: 15px;
+    border: 1px solid #dce5f0;
+    border-radius: 14px;
+    background: #ffffff;
+}
+
+.review-create-product-mark {
+    display: inline-flex;
+    flex: 0 0 48px;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 13px;
+    background: #102a4c;
+    color: #ffffff;
+    font-size: 22px;
+    font-weight: 800;
+}
+
+.review-create-product strong,
+.review-create-product span {
+    display: block;
+}
+
+.review-create-product strong {
+    color: #102a4c;
+}
+
+.review-create-product span {
+    margin-top: 4px;
+    color: #718096;
+    font-size: 13px;
+}
+
+.review-form-card h3 {
+    margin-bottom: 8px;
+    color: #102a4c;
+}
+
+.product-review-form {
+    max-width: 680px;
+    margin-top: 24px;
+}
+
+.product-review-rating {
+    min-width: 0;
+    margin: 0 0 24px;
+    padding: 0;
+    border: 0;
+}
+
+.product-review-rating .form-label {
+    margin-bottom: 10px;
+}
+
+.product-review-stars {
+    display: inline-flex;
+    flex-direction: row-reverse;
+    justify-content: flex-end;
+    gap: 7px;
+}
+
+.product-review-star-input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.product-review-star {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 46px;
+    height: 46px;
+    color: #d6dfeb;
+    font-size: 42px;
+    line-height: 1;
+    cursor: pointer;
+    transition:
+        color 160ms ease,
+        transform 160ms ease,
+        filter 160ms ease;
+}
+
+.product-review-star:hover,
+.product-review-star:hover ~ .product-review-star,
+.product-review-star-input:checked ~ .product-review-star {
+    color: #ffb800;
+    filter: drop-shadow(0 5px 7px rgba(255, 184, 0, 0.22));
+}
+
+.product-review-star:hover {
+    transform: translateY(-2px) scale(1.08);
+}
+
+.product-review-star-input:focus-visible + .product-review-star {
+    border-radius: 8px;
+    outline: 3px solid rgba(36, 128, 255, 0.28);
+    outline-offset: 2px;
+}
+
+.product-review-rating-text {
+    min-height: 22px;
+    margin: 8px 0 0;
+    color: #47617e;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.product-review-comment-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 8px;
+}
+
+.product-review-comment-heading .form-label {
+    margin: 0;
+}
+
+.product-review-counter {
+    color: #718096;
+    font-size: 13px;
+    font-variant-numeric: tabular-nums;
+}
+
+.product-review-comment {
+    min-height: 132px;
+    resize: vertical;
+    line-height: 1.6;
+}
+
+.product-review-comment:focus {
+    border-color: #2480ff;
+    box-shadow: 0 0 0 4px rgba(36, 128, 255, 0.1);
+}
+
+.product-review-error {
+    margin: 8px 0 0;
+    color: #d9363e;
+    font-size: 14px;
+}
+
+.product-review-submit {
+    min-width: 168px;
+    margin-top: 6px;
+}
+
+.review-create-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 6px;
+}
+
+.review-create-actions .product-review-submit {
+    margin-top: 0;
+}
+
+@media (max-width: 640px) {
+    .review-form-card {
+        padding: 22px 18px;
+        border-radius: 16px;
+    }
+
+    .product-review-star {
+        width: 40px;
+        height: 40px;
+        font-size: 37px;
+    }
+
+    .product-review-submit {
+        width: 100%;
+    }
+
+    .review-create-actions .btn {
+        width: 100%;
+    }
+}

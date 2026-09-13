@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Voucher;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Validation\ValidationException;
 
@@ -273,7 +274,164 @@ class VoucherService
                 $finalAmount,
         ];
     }
+    /**
+     * Kiểm tra Customer có quyền
+     * sử dụng Voucher hay không.
+     */
+    public function validateVoucherForUser(
+        User $user,
+        Voucher $voucher
+    ): void {
+        /*
+         * Mỗi Customer chỉ sử dụng
+         * một Voucher một lần.
+         */
+        $hasUsed = $user
+            ->voucherUsages()
+            ->where(
+                'voucher_id',
+                $voucher->id
+            )
+            ->exists();
 
+        if ($hasUsed) {
+            throw ValidationException::withMessages([
+                'voucher_code' =>
+                    'Bạn đã sử dụng mã giảm giá này.',
+            ]);
+        }
+
+        /*
+         * Voucher công khai phải được
+         * Customer lưu vào Kho trước.
+         *
+         * Voucher private vẫn được nhập
+         * trực tiếp nếu Customer biết mã.
+         */
+        if ($voucher->is_public) {
+            $hasSaved = $user
+                ->savedVouchers()
+                ->where(
+                    'vouchers.id',
+                    $voucher->id
+                )
+                ->exists();
+
+            if (! $hasSaved) {
+                throw ValidationException::withMessages([
+                    'voucher_code' =>
+                        'Vui lòng lưu Voucher vào Kho trước khi sử dụng.',
+                ]);
+            }
+        }
+    }
+
+
+    /**
+     * Áp Voucher cho một Customer cụ thể.
+     */
+    public function applyForUser(
+        User $user,
+        string $code,
+        float $orderAmount
+    ): array {
+        $voucher = $this->findByCode(
+            $code
+        );
+
+        $this->validateVoucher(
+            $voucher,
+            $orderAmount
+        );
+
+        $this->validateVoucherForUser(
+            $user,
+            $voucher
+        );
+
+        $discountAmount =
+            $this->calculateDiscount(
+                $voucher,
+                $orderAmount
+            );
+
+        return [
+            'voucher' => $voucher,
+
+            'discount_amount' =>
+                $discountAmount,
+
+            'final_amount' => max(
+                0,
+                $orderAmount
+                - $discountAmount
+            ),
+        ];
+    }
+
+
+    /**
+     * Lấy Voucher Customer đã lưu
+     * để hiển thị tại Cart và Checkout.
+     */
+    public function getSavedVoucherOptions(
+        User $user,
+        float $orderAmount
+    ): array {
+        /*
+         * Tận dụng cách phân loại Voucher
+         * hiện có của hệ thống.
+         */
+        $options = $this
+            ->getPublicVoucherOptions(
+                $orderAmount
+            );
+
+        $savedVoucherIds = $user
+            ->savedVouchers()
+            ->pluck('vouchers.id')
+            ->map(
+                fn ($id): int => (int) $id
+            );
+
+        $usedVoucherIds = $user
+            ->voucherUsages()
+            ->pluck('voucher_id')
+            ->map(
+                fn ($id): int => (int) $id
+            );
+
+        $usableVoucherIds =
+            $savedVoucherIds->diff(
+                $usedVoucherIds
+            );
+
+        $belongsToWallet =
+            function (array $option) use (
+                $usableVoucherIds
+            ): bool {
+                return $usableVoucherIds
+                    ->contains(
+                        (int) $option['voucher']->id
+                    );
+            };
+
+        return [
+            'available' => array_values(
+                array_filter(
+                    $options['available'],
+                    $belongsToWallet
+                )
+            ),
+
+            'locked' => array_values(
+                array_filter(
+                    $options['locked'],
+                    $belongsToWallet
+                )
+            ),
+        ];
+    }
 
     /**
      * Lấy danh sách Voucher công khai

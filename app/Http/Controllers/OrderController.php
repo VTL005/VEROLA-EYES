@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Order;
+use App\Models\Review;
 use App\Services\OrderCancellationService;
 use App\Services\OrderStatusService;
 use Illuminate\Http\Request;
@@ -14,19 +15,7 @@ class OrderController extends Controller
      */
     public function index(Request $request)
     {
-        /*
-        |--------------------------------------------------------------------------
-        | LẤY TRẠNG THÁI TỪ URL
-        |--------------------------------------------------------------------------
-        */
-
         $status = $request->query('status');
-
-        /*
-        |--------------------------------------------------------------------------
-        | DANH SÁCH TRẠNG THÁI HỢP LỆ
-        |--------------------------------------------------------------------------
-        */
 
         $allowedStatuses = [
             Order::STATUS_PENDING,
@@ -39,12 +28,6 @@ class OrderController extends Controller
             Order::STATUS_CANCELLED,
         ];
 
-        /*
-        |--------------------------------------------------------------------------
-        | KIỂM TRA STATUS
-        |--------------------------------------------------------------------------
-        */
-
         if (
             $status
             && ! in_array(
@@ -55,12 +38,6 @@ class OrderController extends Controller
         ) {
             $status = null;
         }
-
-        /*
-        |--------------------------------------------------------------------------
-        | LẤY ĐƠN HÀNG
-        |--------------------------------------------------------------------------
-        */
 
         $orders = Order::query()
             ->where(
@@ -80,18 +57,40 @@ class OrderController extends Controller
                 'payment',
 
                 'details' => function ($query) {
-                    $query->orderBy('id');
+                    $query
+                        ->with('product')
+                        ->orderBy('id');
                 },
             ])
             ->latest()
             ->paginate(10)
             ->withQueryString();
 
+        $productIds = $orders
+            ->getCollection()
+            ->flatMap(function (Order $order) {
+                return $order->details->pluck('product_id');
+            })
+            ->filter()
+            ->unique();
+
+        $reviewedProductIds = Review::query()
+            ->where(
+                'user_id',
+                auth()->id()
+            )
+            ->whereIn(
+                'product_id',
+                $productIds
+            )
+            ->pluck('product_id');
+
         return view(
             'orders.index',
             compact(
                 'orders',
-                'status'
+                'status',
+                'reviewedProductIds'
             )
         );
     }
@@ -107,7 +106,7 @@ class OrderController extends Controller
         );
 
         $order->load([
-            'details',
+            'details.product',
 
             'payment',
 
@@ -118,9 +117,26 @@ class OrderController extends Controller
             'statusHistories.updater',
         ]);
 
+        $reviewedProductIds = Review::query()
+            ->where(
+                'user_id',
+                auth()->id()
+            )
+            ->whereIn(
+                'product_id',
+                $order->details
+                    ->pluck('product_id')
+                    ->filter()
+                    ->unique()
+            )
+            ->pluck('product_id');
+
         return view(
             'orders.show',
-            compact('order')
+            compact(
+                'order',
+                'reviewedProductIds'
+            )
         );
     }
 
@@ -139,6 +155,43 @@ class OrderController extends Controller
             $order,
             auth()->user()
         );
+
+        $order->loadMissing('details.product');
+
+        $reviewedProductIds = Review::query()
+            ->where(
+                'user_id',
+                auth()->id()
+            )
+            ->whereIn(
+                'product_id',
+                $order->details
+                    ->pluck('product_id')
+                    ->filter()
+                    ->unique()
+            )
+            ->pluck('product_id');
+
+        $firstReviewableDetail = $order->details->first(
+            function ($detail) use ($reviewedProductIds) {
+                return $detail->product
+                    && ! $reviewedProductIds->contains(
+                        (int) $detail->product_id
+                    );
+            }
+        );
+
+        if ($firstReviewableDetail) {
+            return redirect()
+                ->route(
+                    'reviews.create',
+                    $firstReviewableDetail->product
+                )
+                ->with(
+                    'success',
+                    'Đã xác nhận nhận hàng. Bạn có thể đánh giá sản phẩm ngay hoặc để sau.'
+                );
+        }
 
         return redirect()
             ->route(

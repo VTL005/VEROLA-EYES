@@ -4,6 +4,13 @@
 @section('title', 'Thanh toán - VELORA Eyes')
 
 
+@push('styles')
+
+<link rel="stylesheet" href="{{ asset('css/checkout-voucher.css') }}">
+
+@endpush
+
+
 @section('content')
 
 <section class="checkout-hero">
@@ -499,29 +506,328 @@
           </div>
 
 
-          @if($appliedVoucher)
+          <section id="checkout-voucher" class="checkout-voucher-selector">
 
-          <div class="checkout-voucher-box">
+            <div class="checkout-voucher-heading">
 
-            <div>
+              <div>
 
-              <span>
-                Voucher
-              </span>
+                <span class="checkout-voucher-eyebrow">
+                  VELORA VOUCHER
+                </span>
 
-              <strong>
-                {{ $appliedVoucher->code }}
-              </strong>
+                <h3>
+                  Voucher
+                </h3>
+
+              </div>
+
+              <a href="{{ route('vouchers.index') }}">
+                Xem kho
+              </a>
 
             </div>
 
 
-            <span class="badge badge-success">
-              Đã áp dụng
-            </span>
+            @if(session('voucher_success'))
 
-          </div>
+            <div class="checkout-voucher-message is-success">
+              {{ session('voucher_success') }}
+            </div>
 
+            @endif
+
+
+            @if($voucherError)
+
+            <div class="checkout-voucher-message is-error">
+              {{ $voucherError }}
+            </div>
+
+            @endif
+
+
+            @error('voucher_code')
+
+            <div class="checkout-voucher-message is-error">
+              {{ $message }}
+            </div>
+
+            @enderror
+
+
+            <button type="button" id="checkoutVoucherOpen" class="checkout-voucher-trigger" aria-haspopup="dialog"
+              aria-controls="checkoutVoucherModal">
+
+              <span class="checkout-voucher-trigger-label">
+                <span class="checkout-voucher-trigger-icon">
+                  ◆
+                </span>
+
+                Chọn voucher
+              </span>
+
+              <span class="checkout-voucher-trigger-meta">
+
+                <span>
+                  {{ count($availableVouchers) }} mã
+                </span>
+
+                <strong>
+                  ›
+                </strong>
+
+              </span>
+
+            </button>
+
+
+            @if($appliedVoucher)
+
+            <div class="checkout-voucher-applied">
+
+              <div>
+
+                <span>
+                  Đang áp dụng
+                </span>
+
+                <strong>
+                  {{ $appliedVoucher->code }}
+                </strong>
+
+                <small>
+                  Tiết kiệm
+                  {{ number_format(
+                                            (float) $discountAmount,
+                                            0,
+                                            ',',
+                                            '.'
+                                        ) }}đ
+                </small>
+
+              </div>
+
+              <button type="submit" class="checkout-voucher-remove" formaction="{{ route('checkout.voucher.remove') }}"
+                formmethod="POST" name="_method" value="DELETE" formnovalidate>
+                Bỏ
+              </button>
+
+            </div>
+
+            @endif
+
+
+            <div id="checkoutVoucherModal" class="checkout-voucher-modal" data-open-on-error="{{
+                $voucherError
+                || $errors->has('voucher_code')
+                    ? '1'
+                    : '0'
+              }}" hidden>
+
+              <button type="button" class="checkout-voucher-modal-backdrop" data-voucher-close
+                aria-label="Đóng cửa sổ chọn voucher"></button>
+
+              <div class="checkout-voucher-dialog" role="dialog" aria-modal="true"
+                aria-labelledby="checkoutVoucherDialogTitle">
+
+                <div class="checkout-voucher-dialog-header">
+
+                  <div>
+
+                    <span class="checkout-voucher-eyebrow">
+                      KHO VOUCHER CỦA BẠN
+                    </span>
+
+                    <h3 id="checkoutVoucherDialogTitle">
+                      Chọn voucher
+                    </h3>
+
+                  </div>
+
+                  <button type="button" class="checkout-voucher-dialog-close" data-voucher-close aria-label="Đóng">
+                    ×
+                  </button>
+
+                </div>
+
+                <div class="checkout-voucher-dialog-body">
+
+                  <div class="checkout-voucher-code-form">
+
+                    <input id="checkoutVoucherCode" type="text" name="voucher_code" value="{{ old('voucher_code') }}"
+                      maxlength="50" placeholder="Nhập mã voucher" autocomplete="off">
+
+                    <button type="submit" class="btn btn-outline" formaction="{{ route('checkout.voucher.apply') }}"
+                      formmethod="POST" formnovalidate>
+                      Áp dụng
+                    </button>
+
+                  </div>
+
+
+                  @if(! empty($availableVouchers))
+
+                  <div class="checkout-voucher-list">
+
+                    @foreach($availableVouchers as $option)
+
+                    @php
+
+                    $voucher = $option['voucher'];
+
+                    $isApplied = $appliedVoucher
+                    && $appliedVoucher->id === $voucher->id;
+
+                    @endphp
+
+                    <div class="checkout-voucher-option {{ $isApplied ? 'is-selected' : '' }}">
+
+                      <div class="checkout-voucher-option-icon">
+                        %
+                      </div>
+
+                      <div class="checkout-voucher-option-content">
+
+                        <strong>
+                          {{ $voucher->code }}
+                        </strong>
+
+                        <span>
+                          @if($voucher->discount_type === 'percentage')
+
+                          Giảm
+                          {{ number_format(
+                                                (float) $voucher->discount_value,
+                                                0,
+                                                ',',
+                                                '.'
+                                            ) }}%
+
+                          @else
+
+                          Giảm
+                          {{ number_format(
+                                                (float) $voucher->discount_value,
+                                                0,
+                                                ',',
+                                                '.'
+                                            ) }}đ
+
+                          @endif
+                        </span>
+
+                        <small>
+                          Đơn tối thiểu
+                          {{ number_format(
+                                            (float) $voucher->minimum_order_amount,
+                                            0,
+                                            ',',
+                                            '.'
+                                        ) }}đ
+                        </small>
+
+                      </div>
+
+                      <button type="submit" class="checkout-voucher-use"
+                        formaction="{{ route('checkout.voucher.apply') }}" formmethod="POST" name="voucher_code"
+                        value="{{ $voucher->code }}" formnovalidate {{ $isApplied ? 'disabled' : '' }}>
+                        {{ $isApplied ? 'Đang dùng' : 'Chọn' }}
+                      </button>
+
+                    </div>
+
+                    @endforeach
+
+                  </div>
+
+                  @endif
+
+
+                  @if(! empty($lockedVouchers))
+
+                  <details class="checkout-voucher-locked">
+
+                    <summary>
+                      Voucher chưa đủ điều kiện
+                      ({{ count($lockedVouchers) }})
+                    </summary>
+
+                    <div class="checkout-voucher-list">
+
+                      @foreach($lockedVouchers as $option)
+
+                      @php
+
+                      $voucher = $option['voucher'];
+
+                      @endphp
+
+                      <div class="checkout-voucher-option is-locked">
+
+                        <div class="checkout-voucher-option-icon">
+                          %
+                        </div>
+
+                        <div class="checkout-voucher-option-content">
+
+                          <strong>
+                            {{ $voucher->code }}
+                          </strong>
+
+                          <small>
+                            Mua thêm
+                            {{ number_format(
+                                                (float) $option['amount_missing'],
+                                                0,
+                                                ',',
+                                                '.'
+                                            ) }}đ
+                            để sử dụng
+                          </small>
+
+                        </div>
+
+                        <button type="button" disabled>
+                          Chưa đủ
+                        </button>
+
+                      </div>
+
+                      @endforeach
+
+                    </div>
+
+                  </details>
+
+                  @endif
+
+
+                  @if(
+                  empty($availableVouchers)
+                  && empty($lockedVouchers)
+                  )
+
+                  <p class="checkout-voucher-empty">
+                    Bạn chưa có voucher nào trong kho.
+                    <a href="{{ route('vouchers.index') }}">
+                      Đến kho voucher
+                    </a>
+                  </p>
+
+                  @endif
+
+
+                </div>
+
+              </div>
+
+            </div>
+
+          </section>
+
+
+          @if($appliedVoucher)
 
           <div class="checkout-summary-row">
 
@@ -813,6 +1119,75 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     });
   });
+});
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const modal = document.getElementById(
+    'checkoutVoucherModal'
+  );
+
+  const openButton = document.getElementById(
+    'checkoutVoucherOpen'
+  );
+
+  if (!modal || !openButton) {
+    return;
+  }
+
+  const closeButtons = modal.querySelectorAll(
+    '[data-voucher-close]'
+  );
+
+  function openVoucherModal() {
+    modal.hidden = false;
+    document.body.classList.add(
+      'checkout-voucher-modal-open'
+    );
+
+    const closeButton = modal.querySelector(
+      '.checkout-voucher-dialog-close'
+    );
+
+    closeButton?.focus();
+  }
+
+  function closeVoucherModal() {
+    modal.hidden = true;
+    document.body.classList.remove(
+      'checkout-voucher-modal-open'
+    );
+    openButton.focus();
+  }
+
+  openButton.addEventListener(
+    'click',
+    openVoucherModal
+  );
+
+  closeButtons.forEach(button => {
+    button.addEventListener(
+      'click',
+      closeVoucherModal
+    );
+  });
+
+  document.addEventListener('keydown', function(event) {
+    if (
+      event.key === 'Escape' &&
+      !modal.hidden
+    ) {
+      closeVoucherModal();
+    }
+  });
+
+  const shouldOpenAfterError =
+    modal.dataset.openOnError === '1';
+
+  if (shouldOpenAfterError) {
+    openVoucherModal();
+  }
 });
 </script>
 

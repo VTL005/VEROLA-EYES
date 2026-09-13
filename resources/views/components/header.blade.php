@@ -1,205 +1,182 @@
 <header class="site-header">
 
-    <div class="velora-container header-inner">
+  <div class="velora-container header-inner">
 
-        {{-- =====================================================
+    {{-- =====================================================
             LOGO
         ====================================================== --}}
 
-        <a
-            href="{{ route('home') }}"
-            class="brand"
-        >
+    <a href="{{ route('home') }}" class="brand">
 
-            <div class="brand-name">
-                VELORA <span>EYES</span>
-            </div>
+      <div class="brand-name">
+        VELORA <span>EYES</span>
+      </div>
 
-        </a>
+    </a>
 
 
 
-        {{-- =====================================================
+    {{-- =====================================================
             MAIN NAVIGATION
         ====================================================== --}}
 
-        <nav class="main-nav">
+    <nav class="main-nav">
 
-            <a
-                href="{{ route('home') }}"
-                class="{{ request()->routeIs('home') ? 'active' : '' }}"
-            >
-                Trang chủ
-            </a>
+      <a href="{{ route('home') }}" class="{{ request()->routeIs('home') ? 'active' : '' }}">
+        Trang chủ
+      </a>
 
 
-            <a
-                href="{{ route('products.index') }}"
-                class="{{ request()->routeIs('products.*') ? 'active' : '' }}"
-            >
-                Sản phẩm
-            </a>
+      <a href="{{ route('products.index') }}" class="{{ request()->routeIs('products.*') ? 'active' : '' }}">
+        Sản phẩm
+      </a>
 
 
-            @if(Route::has('warranties.lookup-form'))
+      @if(Route::has('warranties.lookup-form'))
 
-                <a
-                    href="{{ route('warranties.lookup-form') }}"
-                    class="{{ request()->routeIs('warranties.lookup*') ? 'active' : '' }}"
-                >
-                    Tra cứu bảo hành
-                </a>
+      <a href="{{ route('warranties.lookup-form') }}"
+        class="{{ request()->routeIs('warranties.lookup*') ? 'active' : '' }}">
+        Tra cứu bảo hành
+      </a>
 
-            @endif
+      @endif
 
 
 
-            @auth
+      @auth
 
-                @if(auth()->user()->isCustomer())
+      @if(auth()->user()->isCustomer())
 
-                    @if(Route::has('appointments.index'))
+      @if(Route::has('appointments.index'))
 
-                        <a
-                            href="{{ route('appointments.index') }}"
-                            class="{{ request()->routeIs('appointments.*') ? 'active' : '' }}"
-                        >
-                            Lịch đo mắt
-                        </a>
+      <a href="{{ route('appointments.index') }}" class="{{ request()->routeIs('appointments.*') ? 'active' : '' }}">
+        Lịch đo mắt
+      </a>
 
-                    @endif
+      @endif
+      @if(Route::has('vouchers.index'))
+
+      <a href="{{ route('vouchers.index') }}" class="{{ request()->routeIs('vouchers.*') ? 'active' : '' }}">
+        Kho voucher
+      </a>
+
+      @endif
+
+      @if(Route::has('orders.index'))
+
+      <a href="{{ route('orders.index') }}" class="{{ request()->routeIs('orders.*') ? 'active' : '' }}">
+        Đơn hàng
+      </a>
+
+      @endif
+
+      @endif
+
+      @endauth
+
+    </nav>
 
 
-                    @if(Route::has('orders.index'))
 
-                        <a
-                            href="{{ route('orders.index') }}"
-                            class="{{ request()->routeIs('orders.*') ? 'active' : '' }}"
-                        >
-                            Đơn hàng
-                        </a>
-
-                    @endif
-
-                @endif
-
-            @endauth
-
-        </nav>
-
-
-
-        {{-- =====================================================
+    {{-- =====================================================
             HEADER ACTIONS
         ====================================================== --}}
 
-        <div class="header-actions">
+    <div class="header-actions">
 
 
-            {{-- =================================================
+      {{-- =================================================
                 GUEST
             ================================================== --}}
 
-            @guest
+      @guest
 
-                <a
-                    href="{{ route('login') }}"
-                    class="btn btn-outline btn-sm"
-                >
-                    Đăng nhập
-                </a>
+      <a href="{{ route('login') }}" class="btn btn-outline btn-sm">
+        Đăng nhập
+      </a>
 
 
-                <a
-                    href="{{ route('register') }}"
-                    class="btn btn-primary btn-sm"
-                >
-                    Đăng ký
-                </a>
+      <a href="{{ route('register') }}" class="btn btn-primary btn-sm">
+        Đăng ký
+      </a>
 
 
 
-            {{-- =================================================
+      {{-- =================================================
                 AUTHENTICATED
             ================================================== --}}
 
-            @else
+      @else
 
 
-                {{-- =============================================
+      {{-- =============================================
                     CUSTOMER
                 ============================================== --}}
 
-                @if(auth()->user()->isCustomer())
+      @if(auth()->user()->isCustomer())
 
-                    @php
+      @php
 
-                        $headerCart =
-                            auth()->user()
-                                ->cart()
-                                ->first();
-
-
-                        $headerCartQuantity =
-                            $headerCart
-                                ? $headerCart->total_quantity
-                                : 0;
-
-                    @endphp
+      $headerCart =
+      auth()->user()
+      ->cart()
+      ->first();
 
 
+      $headerCartQuantity =
+      $headerCart
+      ? $headerCart->total_quantity
+      : 0;
 
-                    {{-- WISHLIST --}}
-
-                    @if(Route::has('wishlist.index'))
-
-                        <a
-                            href="{{ route('wishlist.index') }}"
-                            class="btn btn-outline btn-sm"
-                        >
-                            ♡ Yêu thích
-                        </a>
-
-                    @endif
+      @endphp
 
 
 
-                    {{-- CART --}}
+      {{-- WISHLIST --}}
 
-                    @if(Route::has('cart.index'))
+      @if(Route::has('wishlist.index'))
 
-                        <a
-                            href="{{ route('cart.index') }}"
-                            class="btn btn-outline btn-sm"
-                        >
+      <a href="{{ route('wishlist.index') }}" class="btn btn-outline btn-sm">
+        ♡ Yêu thích
+      </a>
 
-                            Giỏ hàng
-
-                            @if($headerCartQuantity > 0)
-
-                                <span class="header-cart-count">
-                                    {{ $headerCartQuantity }}
-                                </span>
-
-                            @endif
-
-                        </a>
-
-                    @endif
+      @endif
 
 
 
-                    {{-- =========================================
+      {{-- CART --}}
+
+      @if(Route::has('cart.index'))
+
+      <a href="{{ route('cart.index') }}" class="btn btn-outline btn-sm">
+
+        Giỏ hàng
+
+        @if($headerCartQuantity > 0)
+
+        <span class="header-cart-count">
+          {{ $headerCartQuantity }}
+        </span>
+
+        @endif
+
+      </a>
+
+      @endif
+
+
+
+      {{-- =========================================
                         CUSTOMER ACCOUNT DROPDOWN
                     ========================================== --}}
 
-                    <details class="header-account">
+      <details class="header-account">
 
-                        <summary class="header-account-toggle">
+        <summary class="header-account-toggle">
 
-                            <span class="header-account-avatar">
+          <span class="header-account-avatar">
 
-                                {{ strtoupper(
+            {{ strtoupper(
                                     mb_substr(
                                         auth()->user()->name,
                                         0,
@@ -207,353 +184,309 @@
                                     )
                                 ) }}
 
-                            </span>
+          </span>
 
 
-                            <span class="header-account-name">
+          <span class="header-account-name">
 
-                                <small>
-                                    Xin chào
-                                </small>
+            <small>
+              Xin chào
+            </small>
 
-                                <strong>
-                                    {{ auth()->user()->name }}
-                                </strong>
+            <strong>
+              {{ auth()->user()->name }}
+            </strong>
 
-                            </span>
+          </span>
 
 
-                            <span class="header-account-arrow">
-                                ▾
-                            </span>
+          <span class="header-account-arrow">
+            ▾
+          </span>
 
-                        </summary>
+        </summary>
 
 
 
-                        <div class="header-account-menu">
+        <div class="header-account-menu">
 
 
-                            {{-- ACCOUNT --}}
+          {{-- ACCOUNT --}}
 
-                            @if(Route::has('profile.show'))
+          @if(Route::has('profile.show'))
 
-                                <a
-                                    href="{{ route('profile.show') }}"
-                                    class="{{ request()->routeIs('profile.show') ? 'active' : '' }}"
-                                >
+          <a href="{{ route('profile.show') }}" class="{{ request()->routeIs('profile.show') ? 'active' : '' }}">
 
-                                    <span class="account-menu-icon">
-                                        ◉
-                                    </span>
+            <span class="account-menu-icon">
+              ◉
+            </span>
 
-                                    <span>
+            <span>
 
-                                        <strong>
-                                            Tài khoản của tôi
-                                        </strong>
+              <strong>
+                Tài khoản của tôi
+              </strong>
 
-                                        <small>
-                                            Thông tin cá nhân
-                                        </small>
+              <small>
+                Thông tin cá nhân
+              </small>
 
-                                    </span>
+            </span>
 
-                                </a>
+          </a>
 
-                            @endif
+          @endif
 
 
 
-                            {{-- EDIT PROFILE --}}
+          {{-- EDIT PROFILE --}}
 
-                            @if(Route::has('profile.edit'))
+          @if(Route::has('profile.edit'))
 
-                                <a
-                                    href="{{ route('profile.edit') }}"
-                                >
+          <a href="{{ route('profile.edit') }}">
 
-                                    <span class="account-menu-icon">
-                                        ✎
-                                    </span>
+            <span class="account-menu-icon">
+              ✎
+            </span>
 
-                                    <span>
-                                        Chỉnh sửa hồ sơ
-                                    </span>
+            <span>
+              Chỉnh sửa hồ sơ
+            </span>
 
-                                </a>
+          </a>
 
-                            @endif
+          @endif
 
 
 
-                            {{-- ADDRESS --}}
+          {{-- ADDRESS --}}
 
-                            @if(Route::has('addresses.index'))
+          @if(Route::has('addresses.index'))
 
-                                <a
-                                    href="{{ route('addresses.index') }}"
-                                >
+          <a href="{{ route('addresses.index') }}">
 
-                                    <span class="account-menu-icon">
-                                        ⌂
-                                    </span>
+            <span class="account-menu-icon">
+              ⌂
+            </span>
 
-                                    <span>
-                                        Địa chỉ của tôi
-                                    </span>
+            <span>
+              Địa chỉ của tôi
+            </span>
 
-                                </a>
+          </a>
 
-                            @endif
+          @endif
 
 
 
-                            <div class="account-menu-divider">
-                            </div>
+          <div class="account-menu-divider">
+          </div>
 
 
 
-                            {{-- ORDERS --}}
+          {{-- ORDERS --}}
 
-                            @if(Route::has('orders.index'))
+          @if(Route::has('orders.index'))
 
-                                <a
-                                    href="{{ route('orders.index') }}"
-                                >
+          <a href="{{ route('orders.index') }}">
 
-                                    <span class="account-menu-icon">
-                                        □
-                                    </span>
+            <span class="account-menu-icon">
+              □
+            </span>
 
-                                    <span>
-                                        Đơn hàng của tôi
-                                    </span>
+            <span>
+              Đơn hàng của tôi
+            </span>
 
-                                </a>
+          </a>
 
-                            @endif
+          @endif
 
 
 
-                            {{-- APPOINTMENTS --}}
+          {{-- APPOINTMENTS --}}
 
-                            @if(Route::has('appointments.index'))
+          @if(Route::has('appointments.index'))
 
-                                <a
-                                    href="{{ route('appointments.index') }}"
-                                >
+          <a href="{{ route('appointments.index') }}">
 
-                                    <span class="account-menu-icon">
-                                        ◷
-                                    </span>
+            <span class="account-menu-icon">
+              ◷
+            </span>
 
-                                    <span>
-                                        Lịch đo mắt
-                                    </span>
+            <span>
+              Lịch đo mắt
+            </span>
 
-                                </a>
+          </a>
 
-                            @endif
+          @endif
 
 
 
-                            {{-- EYE PRESCRIPTION --}}
+          {{-- EYE PRESCRIPTION --}}
 
-                            @if(Route::has('eye-prescriptions.index'))
+          @if(Route::has('eye-prescriptions.index'))
 
-                                <a
-                                    href="{{ route('eye-prescriptions.index') }}"
-                                >
+          <a href="{{ route('eye-prescriptions.index') }}">
 
-                                    <span class="account-menu-icon">
-                                        ◉
-                                    </span>
+            <span class="account-menu-icon">
+              ◉
+            </span>
 
-                                    <span>
-                                        Hồ sơ thị lực
-                                    </span>
+            <span>
+              Hồ sơ thị lực
+            </span>
 
-                                </a>
+          </a>
 
-                            @endif
+          @endif
 
 
 
-                            {{-- WARRANTIES --}}
+          {{-- WARRANTIES --}}
 
-                            @if(Route::has('warranties.index'))
+          @if(Route::has('warranties.index'))
 
-                                <a
-                                    href="{{ route('warranties.index') }}"
-                                >
+          <a href="{{ route('warranties.index') }}">
 
-                                    <span class="account-menu-icon">
-                                        ◇
-                                    </span>
+            <span class="account-menu-icon">
+              ◇
+            </span>
 
-                                    <span>
-                                        Bảo hành của tôi
-                                    </span>
+            <span>
+              Bảo hành của tôi
+            </span>
 
-                                </a>
+          </a>
 
-                            @endif
+          @endif
 
-{{-- CUSTOMER CHAT --}}
+          {{-- CUSTOMER CHAT --}}
 
-@if(Route::has('customer.chat.index'))
+          @if(Route::has('customer.chat.index'))
 
-    <a
-        href="{{ route('customer.chat.index') }}"
-        class="{{ request()->routeIs('customer.chat.*') ? 'active' : '' }}"
-    >
+          <a href="{{ route('customer.chat.index') }}"
+            class="{{ request()->routeIs('customer.chat.*') ? 'active' : '' }}">
 
-        <span class="account-menu-icon">
-            ✉
-        </span>
+            <span class="account-menu-icon">
+              ✉
+            </span>
 
-        <span>
-            Tư vấn trực tuyến
-        </span>
+            <span>
+              Tư vấn trực tuyến
+            </span>
 
-    </a>
+          </a>
 
-@endif
+          @endif
 
-                            <div class="account-menu-divider">
-                            </div>
+          <div class="account-menu-divider">
+          </div>
 
 
 
-                            {{-- CHANGE PASSWORD --}}
+          {{-- CHANGE PASSWORD --}}
 
-                            @if(Route::has('profile.password.edit'))
+          @if(Route::has('profile.password.edit'))
 
-                                <a
-                                    href="{{ route(
+          <a href="{{ route(
                                         'profile.password.edit'
-                                    ) }}"
-                                >
+                                    ) }}">
 
-                                    <span class="account-menu-icon">
-                                        🔒
-                                    </span>
+            <span class="account-menu-icon">
+              🔒
+            </span>
 
-                                    <span>
-                                        Đổi mật khẩu
-                                    </span>
+            <span>
+              Đổi mật khẩu
+            </span>
 
-                                </a>
+          </a>
 
-                            @endif
-
-
-
-                            {{-- LOGOUT --}}
-
-                            <form
-                                action="{{ route('logout') }}"
-                                method="POST"
-                                class="header-logout-form"
-                            >
-
-                                @csrf
-
-
-                                <button
-                                    type="submit"
-                                    class="header-logout-button"
-                                >
-
-                                    <span class="account-menu-icon">
-                                        ↪
-                                    </span>
-
-                                    <span>
-                                        Đăng xuất
-                                    </span>
-
-                                </button>
-
-                            </form>
-
-                        </div>
-
-                    </details>
+          @endif
 
 
 
-                {{-- =============================================
-                    ADMIN
-                ============================================== --}}
+          {{-- LOGOUT --}}
 
-                @elseif(auth()->user()->isAdmin())
+          <form action="{{ route('logout') }}" method="POST" class="header-logout-form">
 
-                    <a
-                        href="{{ route('admin.dashboard') }}"
-                        class="btn btn-primary btn-sm"
-                    >
-                        Admin Dashboard
-                    </a>
+            @csrf
 
 
-                    <form
-                        action="{{ route('logout') }}"
-                        method="POST"
-                    >
+            <button type="submit" class="header-logout-button">
 
-                        @csrf
+              <span class="account-menu-icon">
+                ↪
+              </span>
 
+              <span>
+                Đăng xuất
+              </span>
 
-                        <button
-                            type="submit"
-                            class="btn btn-outline btn-sm"
-                        >
-                            Đăng xuất
-                        </button>
+            </button>
 
-                    </form>
-
-
-
-                {{-- =============================================
-                    STAFF
-                ============================================== --}}
-
-                @elseif(auth()->user()->isStaff())
-
-                    <a
-                        href="{{ route('staff.dashboard') }}"
-                        class="btn btn-primary btn-sm"
-                    >
-                        Staff Dashboard
-                    </a>
-
-
-                    <form
-                        action="{{ route('logout') }}"
-                        method="POST"
-                    >
-
-                        @csrf
-
-
-                        <button
-                            type="submit"
-                            class="btn btn-outline btn-sm"
-                        >
-                            Đăng xuất
-                        </button>
-
-                    </form>
-
-                @endif
-
-            @endguest
+          </form>
 
         </div>
 
+      </details>
+
+
+
+      {{-- =============================================
+                    ADMIN
+                ============================================== --}}
+
+      @elseif(auth()->user()->isAdmin())
+
+      <a href="{{ route('admin.dashboard') }}" class="btn btn-primary btn-sm">
+        Admin Dashboard
+      </a>
+
+
+      <form action="{{ route('logout') }}" method="POST">
+
+        @csrf
+
+
+        <button type="submit" class="btn btn-outline btn-sm">
+          Đăng xuất
+        </button>
+
+      </form>
+
+
+
+      {{-- =============================================
+                    STAFF
+                ============================================== --}}
+
+      @elseif(auth()->user()->isStaff())
+
+      <a href="{{ route('staff.dashboard') }}" class="btn btn-primary btn-sm">
+        Staff Dashboard
+      </a>
+
+
+      <form action="{{ route('logout') }}" method="POST">
+
+        @csrf
+
+
+        <button type="submit" class="btn btn-outline btn-sm">
+          Đăng xuất
+        </button>
+
+      </form>
+
+      @endif
+
+      @endguest
+
     </div>
+
+  </div>
 
 </header>

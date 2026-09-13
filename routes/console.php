@@ -41,3 +41,21 @@ Schedule::command(
 )
     ->hourly()
     ->withoutOverlapping();
+
+
+/*
+|--------------------------------------------------------------------------
+| VELORA - AUTO COMPLETE DELIVERED ORDERS
+|--------------------------------------------------------------------------
+|
+| Mỗi giờ kiểm tra các đơn đã giao.
+| Sau 4 ngày nếu khách chưa xác nhận nhận hàng,
+| hệ thống tự động chuyển đơn sang hoàn thành.
+|
+*/
+
+Schedule::command(
+    'orders:auto-complete-delivered'
+)
+    ->hourly()
+    ->withoutOverlapping();

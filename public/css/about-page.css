@@ -1,0 +1,325 @@
+/* =========================================================
+   VELORA ABOUT PAGE
+========================================================= */
+
+.about-page {
+    color: var(--velora-navy-dark);
+    background: #f5f8fc;
+}
+
+.about-hero {
+    position: relative;
+    overflow: hidden;
+    color: #ffffff;
+    background:
+        radial-gradient(
+            circle at 82% 24%,
+            rgba(104, 214, 232, 0.22),
+            transparent 26%
+        ),
+        linear-gradient(120deg, #071526 0%, #0d3159 62%, #184f87 100%);
+}
+
+.about-hero::after {
+    content: "";
+    position: absolute;
+    right: -120px;
+    bottom: -180px;
+    width: 420px;
+    height: 420px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 50%;
+}
+
+.about-hero-inner {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: minmax(0, 1.35fr) minmax(280px, 0.65fr);
+    align-items: center;
+    gap: clamp(48px, 7vw, 110px);
+    min-height: 540px;
+    padding-top: 86px;
+    padding-bottom: 86px;
+}
+
+.about-eyebrow {
+    display: inline-block;
+    margin-bottom: 14px;
+    color: #48b9ff;
+    font-size: 0.78rem;
+    font-weight: 800;
+    letter-spacing: 0.16em;
+}
+
+.about-hero-copy h1 {
+    max-width: 760px;
+    margin: 0 0 22px;
+    color: #ffffff;
+    font-size: clamp(2.5rem, 5vw, 4.8rem);
+    line-height: 1.04;
+    letter-spacing: -0.045em;
+}
+
+.about-hero-copy > p {
+    max-width: 680px;
+    margin: 0;
+    color: #d5e2f1;
+    font-size: clamp(1rem, 1.5vw, 1.16rem);
+    line-height: 1.8;
+}
+
+.about-hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 32px;
+}
+
+.about-outline-button {
+    color: #ffffff;
+    border-color: rgba(255, 255, 255, 0.48);
+    background: rgba(255, 255, 255, 0.06);
+}
+
+.about-outline-button:hover {
+    color: #071526;
+    border-color: #ffffff;
+    background: #ffffff;
+}
+
+.about-hero-mark {
+    display: grid;
+    place-items: center;
+    width: min(100%, 360px);
+    aspect-ratio: 1;
+    justify-self: end;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.06);
+    box-shadow:
+        inset 0 0 0 24px rgba(255, 255, 255, 0.025),
+        0 30px 80px rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(12px);
+}
+
+.about-mark-letter {
+    margin-bottom: -56px;
+    color: #ffffff;
+    font-size: clamp(6rem, 13vw, 10rem);
+    font-weight: 300;
+    line-height: 1;
+}
+
+.about-mark-caption {
+    color: #9ddfff;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+}
+
+.about-story-section,
+.about-values-section,
+.about-contact-section {
+    padding: clamp(70px, 8vw, 112px) 0;
+}
+
+.about-story-section {
+    background: #ffffff;
+}
+
+.about-story-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+    gap: clamp(40px, 8vw, 130px);
+}
+
+.about-story-grid h2,
+.about-section-heading h2,
+.about-contact-card h2 {
+    margin: 0;
+    color: #0b1e36;
+    font-size: clamp(2rem, 3.4vw, 3.2rem);
+    line-height: 1.15;
+    letter-spacing: -0.035em;
+}
+
+.about-story-copy {
+    padding-top: 28px;
+}
+
+.about-story-copy p {
+    margin: 0;
+    color: #516177;
+    font-size: 1.06rem;
+    line-height: 1.9;
+}
+
+.about-story-copy p + p {
+    margin-top: 20px;
+}
+
+.about-section-heading {
+    max-width: 720px;
+    margin-bottom: 42px;
+}
+
+.about-values-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 22px;
+}
+
+.about-value-card {
+    min-height: 280px;
+    padding: clamp(28px, 3vw, 42px);
+    border: 1px solid #dce6f2;
+    border-radius: 24px;
+    background: #ffffff;
+    box-shadow: 0 18px 55px rgba(15, 39, 71, 0.07);
+}
+
+.about-value-number {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    margin-bottom: 44px;
+    color: #146fc1;
+    border-radius: 50%;
+    background: #eaf5ff;
+    font-size: 0.8rem;
+    font-weight: 800;
+}
+
+.about-value-card h3 {
+    margin: 0 0 14px;
+    color: #0b1e36;
+    font-size: 1.35rem;
+}
+
+.about-value-card p {
+    margin: 0;
+    color: #66768b;
+    line-height: 1.75;
+}
+
+.about-contact-section {
+    padding-top: 0;
+}
+
+.about-contact-card {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 48px;
+    padding: clamp(34px, 5vw, 68px);
+    color: #ffffff;
+    border-radius: 30px;
+    background: linear-gradient(125deg, #0b1e36, #174e84);
+    box-shadow: 0 26px 70px rgba(15, 39, 71, 0.18);
+}
+
+.about-contact-card h2 {
+    max-width: 680px;
+    color: #ffffff;
+}
+
+.about-contact-card p {
+    max-width: 720px;
+    margin: 18px 0 0;
+    color: #cedced;
+    line-height: 1.75;
+}
+
+.about-contact-phone {
+    display: flex;
+    min-width: 220px;
+    padding: 22px 26px;
+    flex-direction: column;
+    color: #0b1e36;
+    border-radius: 18px;
+    background: #ffffff;
+    text-decoration: none;
+    transition:
+        transform 0.22s ease,
+        box-shadow 0.22s ease;
+}
+
+.about-contact-phone:hover {
+    color: #0b1e36;
+    transform: translateY(-3px);
+    box-shadow: 0 18px 35px rgba(0, 0, 0, 0.18);
+}
+
+.about-contact-phone span {
+    color: #6a788b;
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+}
+
+.about-contact-phone strong {
+    margin-top: 5px;
+    font-size: 1.55rem;
+}
+
+@media (max-width: 900px) {
+    .about-hero-inner,
+    .about-story-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .about-hero-mark {
+        display: none;
+    }
+
+    .about-values-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .about-value-card {
+        min-height: auto;
+    }
+
+    .about-value-number {
+        margin-bottom: 28px;
+    }
+}
+
+@media (max-width: 700px) {
+    .about-hero-inner {
+        min-height: auto;
+        padding-top: 68px;
+        padding-bottom: 68px;
+    }
+
+    .about-hero-actions {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .about-hero-actions .btn {
+        justify-content: center;
+        width: 100%;
+    }
+
+    .about-contact-card {
+        grid-template-columns: 1fr;
+        gap: 30px;
+        border-radius: 22px;
+    }
+
+    .about-contact-phone {
+        width: 100%;
+        min-width: 0;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .about-contact-phone {
+        transition: none;
+    }
+}
