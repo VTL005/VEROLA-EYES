@@ -10,9 +10,9 @@ use Illuminate\Validation\ValidationException;
 class OrderStatusService
 {
     /**
-     * Luồng trạng thái dành cho Staff/Admin.
+     * Luồng trạng thái dành cho Admin.
      *
-     * Staff/Admin chỉ xác nhận đã giao hàng.
+     * Admin chỉ xác nhận đã giao hàng.
      * Customer mới là người xác nhận hoàn thành.
      */
     private array $allowedTransitions = [
@@ -44,7 +44,7 @@ class OrderStatusService
     ];
 
     /**
-     * Staff/Admin cập nhật trạng thái.
+     * Admin cập nhật trạng thái.
      */
     public function updateStatus(
         Order $order,
@@ -52,8 +52,7 @@ class OrderStatusService
         User $user
     ): Order {
         if (
-            ! $user->isStaff()
-            && ! $user->isAdmin()
+            ! $user->isAdmin()
         ) {
             abort(403);
         }
@@ -111,7 +110,7 @@ class OrderStatusService
                 |--------------------------------------------------------------------------
                 |
                 | Đơn thanh toán online phải Paid trước khi
-                | Staff/Admin xác nhận đã giao hàng.
+                | Admin xác nhận đã giao hàng.
                 |
                 */
 
@@ -273,7 +272,7 @@ class OrderStatusService
     }
 
     /**
-     * Trạng thái tiếp theo hợp lệ dành cho Staff/Admin.
+     * Trạng thái tiếp theo hợp lệ dành cho Admin.
      */
     public function nextStatuses(
         Order $order

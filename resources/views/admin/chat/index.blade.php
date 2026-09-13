@@ -1,15 +1,15 @@
-@extends('layouts.staff')
+@extends('layouts.admin')
 
 
 @push('styles')
 <link
     rel="stylesheet"
-    href="{{ asset('css/staff-chat.css') }}?v={{ filemtime(public_path('css/staff-chat.css')) }}"
+    href="{{ asset('css/admin-chat.css') }}?v={{ filemtime(public_path('css/admin-chat.css')) }}"
 >
 @endpush
 
 
-@section('title', 'Tư vấn khách hàng - Staff')
+@section('title', 'Tư vấn khách hàng - Admin')
 
 @section('page-title', 'Tư vấn khách hàng')
 
@@ -20,12 +20,12 @@
 
     $waitingCount =
         $conversations
-            ->whereNull('staff_id')
+            ->whereNull('admin_id')
             ->count();
 
     $myCount =
         $conversations
-            ->where('staff_id', auth()->id())
+            ->where('admin_id', auth()->id())
             ->count();
 
     $unreadCount =
@@ -39,11 +39,11 @@
     PAGE HEADER
 ========================================================= --}}
 
-<div class="staff-page-header">
+<div class="admin-page-header">
 
     <div>
 
-        <span class="staff-page-kicker">
+        <span class="admin-page-kicker">
             CUSTOMER SUPPORT
         </span>
 
@@ -65,17 +65,17 @@
     STATS
 ========================================================= --}}
 
-<div class="staff-chat-stats">
+<div class="admin-chat-stats">
 
 
     {{-- ĐANG CHỜ --}}
-    <div class="staff-chat-stat">
+    <div class="admin-chat-stat">
 
-        <span class="staff-chat-stat-label">
+        <span class="admin-chat-stat-label">
             Đang chờ
         </span>
 
-        <strong id="staffChatWaitingCount">
+        <strong id="adminChatWaitingCount">
             {{ $waitingCount }}
         </strong>
 
@@ -87,9 +87,9 @@
 
 
     {{-- TÔI ĐANG HỖ TRỢ --}}
-    <div class="staff-chat-stat">
+    <div class="admin-chat-stat">
 
-        <span class="staff-chat-stat-label">
+        <span class="admin-chat-stat-label">
             Tôi đang hỗ trợ
         </span>
 
@@ -105,13 +105,13 @@
 
 
     {{-- TIN CHƯA ĐỌC --}}
-    <div class="staff-chat-stat">
+    <div class="admin-chat-stat">
 
-        <span class="staff-chat-stat-label">
+        <span class="admin-chat-stat-label">
             Tin chưa đọc
         </span>
 
-        <strong id="staffChatUnreadCount">
+        <strong id="adminChatUnreadCount">
             {{ $unreadCount }}
         </strong>
 
@@ -128,14 +128,14 @@
     CHAT PANEL
 ========================================================= --}}
 
-<div class="staff-chat-panel">
+<div class="admin-chat-panel">
 
 
     {{-- =====================================================
         PANEL HEADER
     ====================================================== --}}
 
-    <div class="staff-chat-panel-header">
+    <div class="admin-chat-panel-header">
 
         <div>
 
@@ -152,8 +152,8 @@
 
 
         <span
-            class="staff-chat-total"
-            id="staffChatTotal"
+            class="admin-chat-total"
+            id="adminChatTotal"
         >
             {{ $conversations->count() }}
             hội thoại
@@ -169,11 +169,11 @@
     @if ($conversations->isEmpty())
 
         <div
-            class="staff-chat-empty"
-            id="staffChatEmpty"
+            class="admin-chat-empty"
+            id="adminChatEmpty"
         >
 
-            <div class="staff-chat-empty-icon">
+            <div class="admin-chat-empty-icon">
 
                 <svg
                     viewBox="0 0 24 24"
@@ -210,8 +210,8 @@
     @else
 
         <div
-            class="staff-chat-list"
-            id="staffChatList"
+            class="admin-chat-list"
+            id="adminChatList"
         >
 
             @foreach ($conversations as $conversation)
@@ -219,11 +219,11 @@
                 @php
 
                     $isMine =
-                        $conversation->staff_id
+                        $conversation->admin_id
                         === auth()->id();
 
                     $isWaiting =
-                        $conversation->staff_id
+                        $conversation->admin_id
                         === null;
 
                     $latestMessage =
@@ -239,7 +239,7 @@
 
                 <article
                     data-conversation-id="{{ $conversation->id }}"
-                    class="staff-chat-item
+                    class="admin-chat-item
                     {{ $isMine ? 'is-mine' : 'is-waiting' }}
                     {{ $unread > 0 ? 'has-unread' : '' }}"
                 >
@@ -249,7 +249,7 @@
                         CUSTOMER AVATAR
                     ====================================== --}}
 
-                    <div class="staff-chat-customer-avatar">
+                    <div class="admin-chat-customer-avatar">
 
                         {{ mb_strtoupper(
                             mb_substr(
@@ -267,14 +267,14 @@
                         MAIN
                     ====================================== --}}
 
-                    <div class="staff-chat-item-main">
+                    <div class="admin-chat-item-main">
 
 
                         {{-- =================================
                             TOP
                         ================================== --}}
 
-                        <div class="staff-chat-item-top">
+                        <div class="admin-chat-item-top">
 
                             <div>
 
@@ -285,7 +285,7 @@
                                 </h3>
 
 
-                                <div class="staff-chat-customer-meta">
+                                <div class="admin-chat-customer-meta">
 
                                     <span>
                                         {{ $conversation->customer?->email
@@ -296,7 +296,7 @@
 
                                     @if ($conversation->customer?->phone)
 
-                                        <span class="staff-chat-meta-separator">
+                                        <span class="admin-chat-meta-separator">
                                             •
                                         </span>
 
@@ -315,17 +315,17 @@
                                 STATUS
                             ============================== --}}
 
-                            <div class="staff-chat-item-status">
+                            <div class="admin-chat-item-status">
 
                                 @if ($isMine)
 
-                                    <span class="staff-chat-badge mine">
+                                    <span class="admin-chat-badge mine">
                                         Đang hỗ trợ
                                     </span>
 
                                 @else
 
-                                    <span class="staff-chat-badge waiting">
+                                    <span class="admin-chat-badge waiting">
                                         Đang chờ
                                     </span>
 
@@ -334,7 +334,7 @@
 
                                 @if ($unread > 0)
 
-                                    <span class="staff-chat-unread">
+                                    <span class="admin-chat-unread">
                                         {{ $unread }}
                                     </span>
 
@@ -349,11 +349,11 @@
                             LAST MESSAGE
                         ================================== --}}
 
-                        <div class="staff-chat-preview">
+                        <div class="admin-chat-preview">
 
                             @if ($latestMessage)
 
-                                <span class="staff-chat-preview-sender">
+                                <span class="admin-chat-preview-sender">
 
                                     @if (
                                         $latestMessage->sender_id
@@ -371,7 +371,7 @@
                                 </span>
 
 
-                                <span class="staff-chat-preview-message">
+                                <span class="admin-chat-preview-message">
 
                                     {{ \Illuminate\Support\Str::limit(
                                         $latestMessage->message,
@@ -382,11 +382,11 @@
 
                             @else
 
-                                <span class="staff-chat-preview-sender">
+                                <span class="admin-chat-preview-sender">
                                     Khách:
                                 </span>
 
-                                <span class="staff-chat-preview-message">
+                                <span class="admin-chat-preview-message">
                                     Chưa có tin nhắn.
                                 </span>
 
@@ -399,9 +399,9 @@
                             BOTTOM
                         ================================== --}}
 
-                        <div class="staff-chat-item-bottom">
+                        <div class="admin-chat-item-bottom">
 
-                            <span class="staff-chat-time">
+                            <span class="admin-chat-time">
 
                                 @if ($conversation->last_message_at)
 
@@ -421,13 +421,13 @@
                                 ACTIONS
                             ============================== --}}
 
-                            <div class="staff-chat-actions">
+                            <div class="admin-chat-actions">
 
                                 @if ($isWaiting)
 
                                     <form
                                         action="{{ route(
-                                            'staff.chat.accept',
+                                            'admin.chat.accept',
                                             $conversation
                                         ) }}"
                                         method="POST"
@@ -438,7 +438,7 @@
 
                                         <button
                                             type="submit"
-                                            class="staff-chat-btn primary"
+                                            class="admin-chat-btn primary"
                                         >
                                             Tiếp nhận
                                         </button>
@@ -450,10 +450,10 @@
 
                                 <a
                                     href="{{ route(
-                                        'staff.chat.show',
+                                        'admin.chat.show',
                                         $conversation
                                     ) }}"
-                                    class="staff-chat-btn secondary"
+                                    class="admin-chat-btn secondary"
                                 >
                                     Xem hội thoại
                                 </a>
@@ -494,19 +494,19 @@ document.addEventListener(
         |--------------------------------------------------------------------------
         */
 
-        const currentStaffId =
+        const currentAdminId =
             {{ (int) auth()->id() }};
 
 
         const chatList =
             document.getElementById(
-                'staffChatList'
+                'adminChatList'
             );
 
 
         const unreadTotal =
             document.getElementById(
-                'staffChatUnreadCount'
+                'adminChatUnreadCount'
             );
 
 
@@ -589,13 +589,13 @@ document.addEventListener(
 
             let previewSender =
                 item.querySelector(
-                    '.staff-chat-preview-sender'
+                    '.admin-chat-preview-sender'
                 );
 
 
             const previewMessage =
                 item.querySelector(
-                    '.staff-chat-preview-message'
+                    '.admin-chat-preview-message'
                 );
 
 
@@ -640,7 +640,7 @@ document.addEventListener(
 
             const time =
                 item.querySelector(
-                    '.staff-chat-time'
+                    '.admin-chat-time'
                 );
 
 
@@ -660,7 +660,7 @@ document.addEventListener(
 
             let unreadBadge =
                 item.querySelector(
-                    '.staff-chat-unread'
+                    '.admin-chat-unread'
                 );
 
 
@@ -677,7 +677,7 @@ document.addEventListener(
 
 
                 unreadBadge.className =
-                    'staff-chat-unread';
+                    'admin-chat-unread';
 
 
                 unreadBadge.textContent =
@@ -686,7 +686,7 @@ document.addEventListener(
 
                 const status =
                     item.querySelector(
-                        '.staff-chat-item-status'
+                        '.admin-chat-item-status'
                     );
 
 
@@ -773,16 +773,16 @@ document.addEventListener(
         | CHANNEL 1
         |--------------------------------------------------------------------------
         |
-        | Hội thoại chưa được Staff nào tiếp nhận.
+        | Hội thoại chưa được Admin nào tiếp nhận.
         |
         */
 
         window.Echo
             .private(
-                'staff.chat.inbox'
+                'admin.chat.inbox'
             )
             .listen(
-                '.staff.chat.inbox.updated',
+                '.admin.chat.inbox.updated',
                 handleInboxUpdate
             );
 
@@ -792,17 +792,17 @@ document.addEventListener(
         | CHANNEL 2
         |--------------------------------------------------------------------------
         |
-        | Hội thoại mà Staff hiện tại đang phụ trách.
+        | Hội thoại mà Admin hiện tại đang phụ trách.
         |
         */
 
         window.Echo
             .private(
-                'staff.chat.inbox.'
-                + currentStaffId
+                'admin.chat.inbox.'
+                + currentAdminId
             )
             .listen(
-                '.staff.chat.inbox.updated',
+                '.admin.chat.inbox.updated',
                 handleInboxUpdate
             );
 

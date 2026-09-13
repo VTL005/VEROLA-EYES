@@ -1862,7 +1862,7 @@ $product->style_tags ?? []
 
 
 
-          <div class="admin-staff-switch">
+          <div class="admin-toggle-switch">
 
             <input type="checkbox" id="edit-product-is-active" name="is_active" value="1" form="edit-product-form" {{
                                 $product->is_active

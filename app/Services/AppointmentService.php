@@ -373,7 +373,7 @@ class AppointmentService
 
 
     /**
-     * Staff/Admin cập nhật trạng thái lịch.
+     * Admin cập nhật trạng thái lịch.
      */
     public function updateStatusByOperator(
         User $user,
@@ -381,11 +381,10 @@ class AppointmentService
         string $newStatus
     ): Appointment {
         /*
-         * Chỉ Staff/Admin.
+         * Chỉ Admin.
          */
         if (
-            !$user->isStaff()
-            && !$user->isAdmin()
+            !$user->isAdmin()
         ) {
             abort(403);
         }
@@ -449,7 +448,7 @@ class AppointmentService
 
                 /*
                 |--------------------------------------------------------------------------
-                | STAFF XÁC NHẬN LỊCH
+                | ADMIN XÁC NHẬN LỊCH
                 |--------------------------------------------------------------------------
                 */
 
@@ -498,7 +497,7 @@ class AppointmentService
 
 
     /**
-     * Trạng thái tiếp theo Staff được phép chọn.
+     * Trạng thái tiếp theo Admin được phép chọn.
      */
     public function nextStatuses(
         Appointment $appointment

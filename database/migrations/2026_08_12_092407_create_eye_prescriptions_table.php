@@ -37,7 +37,7 @@ return new class extends Migration
                     ->nullOnDelete();
 
                 /*
-                 * Staff thực hiện đo mắt.
+                 * Admin thực hiện đo mắt.
                  */
                 $table->foreignId('performed_by')
                     ->nullable()

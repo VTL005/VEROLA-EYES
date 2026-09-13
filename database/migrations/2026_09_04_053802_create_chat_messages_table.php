@@ -30,9 +30,9 @@ return new class extends Migration
             | SENDER
             |--------------------------------------------------------------------------
             |
-            | Có thể là Customer hoặc Staff.
+            | Có thể là Customer hoặc Admin.
             |
-            | Nếu tài khoản Staff sau này bị xóa,
+            | Nếu tài khoản Admin sau này bị xóa,
             | lịch sử tin nhắn vẫn được giữ lại.
             |
             */

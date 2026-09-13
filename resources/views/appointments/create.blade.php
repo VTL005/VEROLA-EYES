@@ -442,7 +442,7 @@
                         <p class="mb-0">
                             Sau khi đặt lịch, lịch hẹn sẽ
                             ở trạng thái chờ xác nhận.
-                            Nhân viên VELORA sẽ tiếp nhận
+                            Admin VELORA sẽ tiếp nhận
                             và xác nhận lịch của bạn.
                         </p>
 

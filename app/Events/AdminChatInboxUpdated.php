@@ -9,7 +9,7 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class StaffChatInboxUpdated implements ShouldBroadcastNow
+class AdminChatInboxUpdated implements ShouldBroadcastNow
 {
     use Dispatchable;
     use InteractsWithSockets;
@@ -23,7 +23,7 @@ class StaffChatInboxUpdated implements ShouldBroadcastNow
         $this->conversation =
             $conversation->loadMissing([
                 'customer:id,name,email,phone',
-                'staff:id,name',
+                'admin:id,name',
                 'latestMessage.sender:id,name',
             ]);
     }
@@ -37,26 +37,26 @@ class StaffChatInboxUpdated implements ShouldBroadcastNow
     public function broadcastOn(): array
     {
         /*
-         * Chat chưa có Staff nhận:
-         * → toàn bộ Staff được biết có khách đang chờ.
+         * Chat chưa có Admin nhận:
+         * → toàn bộ Admin được biết có khách đang chờ.
          */
-        if ($this->conversation->staff_id === null) {
+        if ($this->conversation->admin_id === null) {
 
             return [
                 new PrivateChannel(
-                    'staff.chat.inbox'
+                    'admin.chat.inbox'
                 ),
             ];
         }
 
         /*
-         * Chat đã có Staff phụ trách:
-         * → chỉ Staff đó nhận cập nhật.
+         * Chat đã có Admin phụ trách:
+         * → chỉ Admin đó nhận cập nhật.
          */
         return [
             new PrivateChannel(
-                'staff.chat.inbox.'
-                .$this->conversation->staff_id
+                'admin.chat.inbox.'
+                .$this->conversation->admin_id
             ),
         ];
     }
@@ -69,7 +69,7 @@ class StaffChatInboxUpdated implements ShouldBroadcastNow
 
     public function broadcastAs(): string
     {
-        return 'staff.chat.inbox.updated';
+        return 'admin.chat.inbox.updated';
     }
 
     /*
@@ -90,7 +90,7 @@ class StaffChatInboxUpdated implements ShouldBroadcastNow
 
                 'customer_id' => $this->conversation->customer_id,
 
-                'staff_id' => $this->conversation->staff_id,
+                'admin_id' => $this->conversation->admin_id,
 
                 'status' => $this->conversation->status,
 

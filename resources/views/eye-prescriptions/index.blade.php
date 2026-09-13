@@ -386,7 +386,7 @@
                         <div>
 
                             <span>
-                                Nhân viên thực hiện
+                                Admin thực hiện
                             </span>
 
                             <strong>

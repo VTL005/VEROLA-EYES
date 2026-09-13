@@ -347,7 +347,7 @@
                         </strong>
 
                         Các thông số đo mắt được lưu
-                        bởi nhân viên VELORA và Customer
+                        bởi Admin VELORA và Customer
                         không thể tự chỉnh sửa.
 
                     </p>
@@ -398,7 +398,7 @@
                         <div>
 
                             <span>
-                                Nhân viên thực hiện
+                                Admin thực hiện
                             </span>
 
                             <strong>

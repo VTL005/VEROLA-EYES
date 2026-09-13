@@ -471,7 +471,7 @@
 
       {{-- KÍCH HOẠT VOUCHER --}}
 
-      <div class="admin-staff-switch">
+      <div class="admin-toggle-switch">
 
         <input type="checkbox" id="is_active" name="is_active" value="1" {{
                         old(
@@ -506,7 +506,7 @@
 
       {{-- CÔNG KHAI VOUCHER --}}
 
-      <div class="admin-staff-switch">
+      <div class="admin-toggle-switch">
 
         <input type="checkbox" id="is_public" name="is_public" value="1" {{
                         old(

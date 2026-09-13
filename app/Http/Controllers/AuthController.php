@@ -166,9 +166,6 @@ class AuthController extends Controller
         'admin.dashboard'
     ),
 
-    'staff' => redirect()
-        ->route('staff.orders.index'),
-
     default => redirect()
         ->route('home'),
     };

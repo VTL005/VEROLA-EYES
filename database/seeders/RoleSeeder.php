@@ -17,12 +17,6 @@ class RoleSeeder extends Seeder
                 'is_active' => true,
             ],
             [
-                'name' => 'staff',
-                'display_name' => 'Nhân viên',
-                'description' => 'Nhân viên vận hành bán hàng và chăm sóc khách hàng.',
-                'is_active' => true,
-            ],
-            [
                 'name' => 'admin',
                 'display_name' => 'Quản trị viên',
                 'description' => 'Quản trị viên có quyền quản lý toàn bộ hệ thống.',

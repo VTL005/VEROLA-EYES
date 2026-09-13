@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Events\ChatMessageSent;
 use App\Events\ChatMessagesRead;
-use App\Events\StaffChatInboxUpdated;
+use App\Events\AdminChatInboxUpdated;
 use App\Models\ChatConversation;
 use App\Models\ChatMessage;
 use App\Models\Product;
@@ -235,7 +235,7 @@ class CustomerChatController extends Controller
                     if (! $conversation) {
                         $conversation = ChatConversation::create([
                             'customer_id' => $user->id,
-                            'staff_id' => null,
+                            'admin_id' => null,
                             'status' => 'open',
                             'last_message_at' => now(),
                             'closed_at' => null,
@@ -321,7 +321,7 @@ class CustomerChatController extends Controller
             $message
         );
 
-        StaffChatInboxUpdated::dispatch(
+        AdminChatInboxUpdated::dispatch(
             $message->conversation
         );
 
@@ -371,7 +371,7 @@ class CustomerChatController extends Controller
                 if (! $conversation) {
                     $conversation = ChatConversation::create([
                         'customer_id' => $user->id,
-                        'staff_id' => null,
+                        'admin_id' => null,
                         'status' => 'open',
                         'last_message_at' => now(),
                         'closed_at' => null,
@@ -410,7 +410,7 @@ class CustomerChatController extends Controller
             $message
         );
 
-        StaffChatInboxUpdated::dispatch(
+        AdminChatInboxUpdated::dispatch(
             $message->conversation
         );
 

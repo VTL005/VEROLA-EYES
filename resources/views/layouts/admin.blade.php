@@ -146,19 +146,34 @@
 
 
       <a href="{{ route(
-                'admin.staff.index'
+                'admin.chat.index'
             ) }}" class="{{
                 request()->routeIs(
-                    'admin.staff.*'
+                    'admin.chat.*'
                 )
                     ? 'active'
                     : ''
             }}">
         <span class="admin-nav-icon">
-          <i class="bi bi-person-badge"></i>
+          <i class="bi bi-chat-dots"></i>
         </span>
 
-        Nhân viên
+        Tư vấn khách hàng
+
+        <span
+          id="adminSidebarChatBadge"
+          class="admin-sidebar-badge {{
+            ($adminChatUnreadCount ?? 0) > 0
+              ? ''
+              : 'is-empty'
+          }}"
+          data-count="{{ (int) ($adminChatUnreadCount ?? 0) }}"
+        >
+          {{ ($adminChatUnreadCount ?? 0) > 99
+              ? '99+'
+              : ($adminChatUnreadCount ?? 0)
+          }}
+        </span>
       </a>
 
 
@@ -591,6 +606,85 @@
       'click',
       closeAdminSidebar
     );
+  </script>
+
+
+  @vite('resources/js/app.js')
+
+
+  <script>
+  document.addEventListener(
+    'DOMContentLoaded',
+    function () {
+
+      const currentAdminId =
+        {{ (int) auth()->id() }};
+
+      const badge =
+        document.getElementById(
+          'adminSidebarChatBadge'
+        );
+
+      if (
+        !window.Echo
+        || !badge
+        || !currentAdminId
+      ) {
+        return;
+      }
+
+      function increaseChatBadge(event) {
+
+        if (
+          !event
+          || !event.conversation
+        ) {
+          return;
+        }
+
+        const openConversation =
+          document.querySelector(
+            '[data-open-conversation-id]'
+          );
+
+        if (
+          openConversation
+          && Number(
+            openConversation.dataset.openConversationId
+          ) === Number(event.conversation.id)
+        ) {
+          return;
+        }
+
+        let count =
+          parseInt(
+            badge.dataset.count,
+            10
+          ) || 0;
+
+        count++;
+        badge.dataset.count = count;
+        badge.textContent = count > 99 ? '99+' : count;
+        badge.classList.remove('is-empty');
+      }
+
+      window.Echo
+        .private('admin.chat.inbox')
+        .listen(
+          '.admin.chat.inbox.updated',
+          increaseChatBadge
+        );
+
+      window.Echo
+        .private(
+          'admin.chat.inbox.' + currentAdminId
+        )
+        .listen(
+          '.admin.chat.inbox.updated',
+          increaseChatBadge
+        );
+    }
+  );
   </script>
 
 

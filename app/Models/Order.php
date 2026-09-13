@@ -194,7 +194,7 @@ class Order extends Model
      * Kiểm tra chuyển trạng thái theo luồng chuẩn.
      *
      * Không xử lý Cancel ở đây vì quyền Cancel của
-     * Customer và Staff/Admin là khác nhau.
+     * Customer và Admin/Admin là khác nhau.
      */
     public function canTransitionTo(string $newStatus): bool
     {

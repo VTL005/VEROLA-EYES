@@ -39,7 +39,7 @@ return new class extends Migration
                 ->nullable();
 
             /*
-             * Staff/Admin có thể ẩn Review
+             * Admin có thể ẩn Review
              * thay vì xóa cứng.
              */
             $table->boolean('is_visible')

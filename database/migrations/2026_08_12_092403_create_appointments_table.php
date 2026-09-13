@@ -68,7 +68,7 @@ return new class extends Migration
                 ->default('pending');
 
             /*
-             * Staff/Admin xác nhận lịch.
+             * Admin xác nhận lịch.
              */
             $table->foreignId('confirmed_by')
                 ->nullable()

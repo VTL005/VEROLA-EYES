@@ -14,7 +14,9 @@ class CustomerMiddleware
         $user = $request->user();
 
         abort_unless(
-            $user && $user->isCustomer(),
+            $user
+                && $user->is_active
+                && $user->isCustomer(),
             403,
             'Chức năng này chỉ dành cho khách hàng.'
         );

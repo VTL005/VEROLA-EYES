@@ -25,7 +25,7 @@ Broadcast::channel(
 | Chỉ cho phép:
 |
 | - Customer sở hữu cuộc trò chuyện
-| - Staff đang phụ trách cuộc trò chuyện
+| - Admin đang phụ trách cuộc trò chuyện
 |
 | nghe dữ liệu realtime của hội thoại đó.
 |
@@ -40,7 +40,7 @@ Broadcast::channel(
                 ->select([
                     'id',
                     'customer_id',
-                    'staff_id',
+                    'admin_id',
                 ])
                 ->find($conversationId);
 
@@ -60,12 +60,12 @@ Broadcast::channel(
         }
 
         /*
-         * Staff đang phụ trách hội thoại.
+         * Admin đang phụ trách hội thoại.
          */
         if (
-            $user->isStaff()
-            && $conversation->staff_id !== null
-            && (int) $conversation->staff_id
+            $user->isAdmin()
+            && $conversation->admin_id !== null
+            && (int) $conversation->admin_id
                 === (int) $user->id
         ) {
             return true;
@@ -77,35 +77,35 @@ Broadcast::channel(
 
 /*
 |--------------------------------------------------------------------------
-| STAFF CHAT INBOX
+| ADMIN CHAT INBOX
 |--------------------------------------------------------------------------
 |
-| Channel dùng cho danh sách Chat của Staff.
-| Chỉ tài khoản Staff mới được phép subscribe.
+| Channel dùng cho danh sách Chat của Admin.
+| Chỉ tài khoản Admin mới được phép subscribe.
 |
 */
 
 Broadcast::channel(
-    'staff.chat.inbox',
+    'admin.chat.inbox',
     function ($user) {
 
-        return $user->isStaff();
+        return $user->isAdmin();
     }
 );
 /*
 |--------------------------------------------------------------------------
-| STAFF PERSONAL CHAT INBOX
+| ADMIN PERSONAL CHAT INBOX
 |--------------------------------------------------------------------------
 |
-| Mỗi Staff chỉ được subscribe inbox của chính mình.
+| Mỗi Admin chỉ được subscribe inbox của chính mình.
 |
 */
 
 Broadcast::channel(
-    'staff.chat.inbox.{staffId}',
-    function ($user, $staffId) {
+    'admin.chat.inbox.{adminId}',
+    function ($user, $adminId) {
 
-        return $user->isStaff()
-            && (int) $user->id === (int) $staffId;
+        return $user->isAdmin()
+            && (int) $user->id === (int) $adminId;
     }
 );

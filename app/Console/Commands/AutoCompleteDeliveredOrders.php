@@ -156,7 +156,7 @@ class AutoCompleteDeliveredOrders extends Command
 
                                         /*
                                          * NULL vì đây là thay đổi tự động,
-                                         * không do Customer/Staff/Admin.
+                                         * không do Customer/Admin/Admin.
                                          */
                                         'updated_by' => null,
                                     ]);

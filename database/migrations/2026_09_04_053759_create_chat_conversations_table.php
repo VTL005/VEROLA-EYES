@@ -30,17 +30,17 @@ return new class extends Migration
 
             /*
             |--------------------------------------------------------------------------
-            | STAFF
+            | ADMIN
             |--------------------------------------------------------------------------
             |
-            | Staff đang tiếp nhận cuộc trò chuyện.
+            | Admin đang tiếp nhận cuộc trò chuyện.
             |
-            | Ban đầu có thể chưa có Staff nhận,
+            | Ban đầu có thể chưa có Admin nhận,
             | vì vậy cho phép NULL.
             |
             */
 
-            $table->foreignId('staff_id')
+            $table->foreignId('admin_id')
                 ->nullable()
                 ->constrained('users')
                 ->nullOnDelete();
@@ -96,7 +96,7 @@ return new class extends Migration
             ]);
 
             $table->index([
-                'staff_id',
+                'admin_id',
                 'status',
             ]);
 

@@ -121,8 +121,7 @@
 
     <div class="velora-container">
 
-      © {{ date('Y') }} VELORA Eyes.
-      All rights reserved.
+      © {{ date('Y') }} VELORA Eyes — Dự án thực hiện bởi Nhóm 14 | Phạm Thị Thúy Mỹ & Vy Thế Long
 
     </div>
 

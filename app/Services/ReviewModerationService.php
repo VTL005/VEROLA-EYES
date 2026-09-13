@@ -9,18 +9,17 @@ use Illuminate\Support\Facades\DB;
 class ReviewModerationService
 {
     /**
-     * Staff/Admin ẩn hoặc hiện Review.
+     * Admin ẩn hoặc hiện Review.
      */
     public function toggleVisibility(
         User $operator,
         Review $review
     ): Review {
         /*
-         * Chỉ Staff/Admin.
+         * Chỉ Admin.
          */
         if (
-            !$operator->isStaff()
-            && !$operator->isAdmin()
+            !$operator->isAdmin()
         ) {
             abort(403);
         }

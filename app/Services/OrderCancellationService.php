@@ -34,24 +34,20 @@ class OrderCancellationService
 
 
     /**
-     * Staff/Admin hủy đơn.
+     * Admin hủy đơn.
      */
     public function cancelByOperator(
         User $user,
         Order $order
     ): Order {
         if (
-            !$user->isStaff()
-            && !$user->isAdmin()
+            !$user->isAdmin()
         ) {
             abort(403);
         }
 
 
-        $description =
-            $user->isAdmin()
-                ? 'Admin đã hủy đơn hàng.'
-                : 'Nhân viên đã hủy đơn hàng.';
+        $description = 'Admin đã hủy đơn hàng.';
 
 
         return $this->performCancellation(

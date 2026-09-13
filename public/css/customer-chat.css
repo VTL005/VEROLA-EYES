@@ -154,7 +154,7 @@
     justify-content: flex-end;
 }
 
-.customer-chat-message-row.is-staff {
+.customer-chat-message-row.is-admin {
     justify-content: flex-start;
 }
 
@@ -171,12 +171,12 @@
     margin-left: auto;
 }
 
-.is-staff .customer-chat-message {
+.is-admin .customer-chat-message {
     margin-right: auto;
 }
 
 /* =========================================================
-   STAFF NAME
+   ADMIN NAME
 ========================================================= */
 
 .customer-chat-message-sender {
@@ -212,9 +212,9 @@
     box-shadow: 0 5px 15px rgba(47, 111, 179, 0.16);
 }
 
-/* STAFF */
+/* ADMIN */
 
-.is-staff .customer-chat-message-content {
+.is-admin .customer-chat-message-content {
     background: #ffffff;
     color: #23344c;
     border: 1px solid rgba(15, 39, 71, 0.1);

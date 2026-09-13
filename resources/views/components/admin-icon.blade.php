@@ -44,29 +44,6 @@
 
         @break
 
-
-
-    {{-- STAFF --}}
-    @case('staff')
-
-        <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="1.8"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-        >
-            <circle cx="12" cy="8" r="3.5"/>
-            <path d="M5.5 20c.7-4 3-6 6.5-6s5.8 2 6.5 6"/>
-            <path d="M17 4h4v4"/>
-            <path d="M19 4v4"/>
-        </svg>
-
-        @break
-
-
-
     {{-- CATEGORY --}}
     @case('categories')
 

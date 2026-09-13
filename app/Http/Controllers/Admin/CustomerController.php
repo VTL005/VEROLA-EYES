@@ -199,7 +199,7 @@ class CustomerController extends Controller
     ) {
         /*
          * Không cho URL Customer
-         * mở Staff/Admin.
+         * mở Admin/Admin.
          */
         abort_unless(
             $customer->isCustomer(),

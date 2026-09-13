@@ -66,7 +66,7 @@ class Appointment extends Model
     }
 
     /**
-     * Staff/Admin xác nhận lịch.
+     * Admin/Admin xác nhận lịch.
      */
     public function confirmer(): BelongsTo
     {

@@ -457,30 +457,6 @@
 
       </form>
 
-
-
-      {{-- =============================================
-                    STAFF
-                ============================================== --}}
-
-      @elseif(auth()->user()->isStaff())
-
-      <a href="{{ route('staff.dashboard') }}" class="btn btn-primary btn-sm">
-        Staff Dashboard
-      </a>
-
-
-      <form action="{{ route('logout') }}" method="POST">
-
-        @csrf
-
-
-        <button type="submit" class="btn btn-outline btn-sm">
-          Đăng xuất
-        </button>
-
-      </form>
-
       @endif
 
       @endguest

@@ -29,7 +29,7 @@ class EyePrescriptionController extends Controller
 
             /*
              * Load thông tin Appointment
-             * và nhân viên thực hiện.
+             * và Admin thực hiện.
              */
             ->with([
                 'appointment',

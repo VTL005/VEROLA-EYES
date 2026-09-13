@@ -1,15 +1,15 @@
-@extends('layouts.staff')
+@extends('layouts.admin')
 
 
 @push('styles')
 <link
     rel="stylesheet"
-    href="{{ asset('css/staff-chat.css') }}?v={{ filemtime(public_path('css/staff-chat.css')) }}"
+    href="{{ asset('css/admin-chat.css') }}?v={{ filemtime(public_path('css/admin-chat.css')) }}"
 >
 @endpush
 
 
-@section('title', 'Hội thoại khách hàng - Staff')
+@section('title', 'Hội thoại khách hàng - Admin')
 
 @section('page-title', 'Tư vấn khách hàng')
 
@@ -19,11 +19,11 @@
 @php
 
     $isMine =
-        (int) $conversation->staff_id
+        (int) $conversation->admin_id
         === (int) auth()->id();
 
     $isWaiting =
-        $conversation->staff_id === null;
+        $conversation->admin_id === null;
 
 @endphp
 
@@ -32,11 +32,11 @@
     PAGE HEADER
 ========================================================= --}}
 
-<div class="staff-page-header">
+<div class="admin-page-header">
 
     <div>
 
-        <span class="staff-page-kicker">
+        <span class="admin-page-kicker">
             CUSTOMER SUPPORT
         </span>
 
@@ -54,8 +54,8 @@
 
 
     <a
-        href="{{ route('staff.chat.index') }}"
-        class="staff-chat-back"
+        href="{{ route('admin.chat.index') }}"
+        class="admin-chat-back"
     >
         ← Danh sách hội thoại
     </a>
@@ -69,7 +69,7 @@
 
 @if (session('chat_success'))
 
-    <div class="staff-chat-success">
+    <div class="admin-chat-success">
         {{ session('chat_success') }}
     </div>
 
@@ -80,16 +80,16 @@
     CHAT WORKSPACE
 ========================================================= --}}
 
-<div class="staff-chat-workspace">
+<div class="admin-chat-workspace">
 
 
     {{-- =====================================================
         CUSTOMER INFO
     ====================================================== --}}
 
-    <aside class="staff-chat-profile">
+    <aside class="admin-chat-profile">
 
-        <div class="staff-chat-profile-avatar">
+        <div class="admin-chat-profile-avatar">
 
             {{ mb_strtoupper(
                 mb_substr(
@@ -110,12 +110,12 @@
         </h2>
 
 
-        <span class="staff-chat-profile-role">
+        <span class="admin-chat-profile-role">
             Khách hàng VELORA Eyes
         </span>
 
 
-        <div class="staff-chat-profile-info">
+        <div class="admin-chat-profile-info">
 
             <div>
 
@@ -165,7 +165,7 @@
 
                     @else
 
-                        Đã có nhân viên phụ trách
+                        Đã có quản trị viên phụ trách
 
                     @endif
 
@@ -184,11 +184,11 @@
 
             <form
                 action="{{ route(
-                    'staff.chat.accept',
+                    'admin.chat.accept',
                     $conversation
                 ) }}"
                 method="POST"
-                class="staff-chat-profile-action"
+                class="admin-chat-profile-action"
             >
 
                 @csrf
@@ -196,7 +196,7 @@
 
                 <button
                     type="submit"
-                    class="staff-chat-accept-btn"
+                    class="admin-chat-accept-btn"
                 >
                     Tiếp nhận cuộc trò chuyện
                 </button>
@@ -214,11 +214,11 @@
 
             <form
                 action="{{ route(
-                    'staff.chat.close',
+                    'admin.chat.close',
                     $conversation
                 ) }}"
                 method="POST"
-                class="staff-chat-profile-action"
+                class="admin-chat-profile-action"
                 onsubmit="return confirm('Bạn có chắc muốn kết thúc cuộc trò chuyện này?');"
             >
 
@@ -228,7 +228,7 @@
 
                 <button
                     type="submit"
-                    class="staff-chat-close-btn"
+                    class="admin-chat-close-btn"
                 >
                     Kết thúc hỗ trợ
                 </button>
@@ -245,7 +245,7 @@
     ====================================================== --}}
 
     <section
-        class="staff-chat-conversation"
+        class="admin-chat-conversation"
         data-open-conversation-id="{{ $conversation->id }}"
     >
 
@@ -254,7 +254,7 @@
             CONVERSATION HEADER
         ================================================== --}}
 
-        <div class="staff-chat-conversation-header">
+        <div class="admin-chat-conversation-header">
 
             <div>
 
@@ -271,7 +271,7 @@
             </div>
 
 
-            <div class="staff-chat-conversation-status">
+            <div class="admin-chat-conversation-status">
 
                 <span></span>
 
@@ -299,8 +299,8 @@
         ================================================== --}}
 
         <div
-            class="staff-chat-messages"
-            id="staffChatMessages"
+            class="admin-chat-messages"
+            id="adminChatMessages"
         >
 
             @forelse (
@@ -310,7 +310,7 @@
 
                 @php
 
-                    $isStaffMessage =
+                    $isAdminMessage =
                         (int) $chatMessage->sender_id
                         === (int) auth()->id();
 
@@ -318,23 +318,23 @@
 
 
                 <div
-                    class="staff-chat-message-row
-                    {{ $isStaffMessage
-                        ? 'is-staff'
+                    class="admin-chat-message-row
+                    {{ $isAdminMessage
+                        ? 'is-admin'
                         : 'is-customer'
                     }}"
                 >
 
-                    <div class="staff-chat-message-box">
+                    <div class="admin-chat-message-box">
 
 
                         {{-- =================================
                             SENDER
                         ================================== --}}
 
-                        @unless ($isStaffMessage)
+                        @unless ($isAdminMessage)
 
-                            <div class="staff-chat-message-name">
+                            <div class="admin-chat-message-name">
 
                                 {{ $chatMessage->sender?->name
                                     ?? 'Khách hàng'
@@ -349,7 +349,7 @@
     MESSAGE CONTENT
 ================================== --}}
 
-<div class="staff-chat-message-content">{{ $chatMessage->message }}</div>
+<div class="admin-chat-message-content">{{ $chatMessage->message }}</div>
 
 {{-- =================================
     IMAGE ATTACHMENTS
@@ -357,7 +357,7 @@
 
 @if ($chatMessage->attachments->isNotEmpty())
 
-    <div class="staff-chat-message-images">
+    <div class="admin-chat-message-images">
 
         @foreach ($chatMessage->attachments as $attachment)
 
@@ -365,7 +365,7 @@
 
                 <a
                     href="{{ $attachment->url }}"
-                    class="staff-chat-message-image"
+                    class="admin-chat-message-image"
                     target="_blank"
                     rel="noopener"
                 >
@@ -396,7 +396,7 @@
     && $chatMessage->products->isNotEmpty()
 )
 
-    <div class="staff-chat-message-products">
+    <div class="admin-chat-message-products">
 
         @foreach ($chatMessage->products as $product)
 
@@ -425,12 +425,12 @@
                     'products.show',
                     $product
                 ) }}"
-                class="staff-chat-message-product-card"
+                class="admin-chat-message-product-card"
                 target="_blank"
                 rel="noopener"
             >
 
-                <span class="staff-chat-message-product-image">
+                <span class="admin-chat-message-product-image">
 
                     <img
                         src="{{ asset($imagePath) }}"
@@ -441,7 +441,7 @@
                 </span>
 
 
-                <span class="staff-chat-message-product-info">
+                <span class="admin-chat-message-product-info">
 
                     <strong>
                         {{ $product->name }}
@@ -457,7 +457,7 @@
                     @endif
 
 
-                    <span class="staff-chat-message-product-price">
+                    <span class="admin-chat-message-product-price">
 
                         {{ number_format(
                             $currentPrice,
@@ -485,7 +485,7 @@
                 </span>
 
 
-                <span class="staff-chat-message-product-action">
+                <span class="admin-chat-message-product-action">
                     Xem →
                 </span>
 
@@ -502,17 +502,17 @@
                             META
                         ================================== --}}
 
-                        <div class="staff-chat-message-meta">
+                        <div class="admin-chat-message-meta">
 
                             <span>
                                 {{ $chatMessage->created_at->format('H:i') }}
                             </span>
 
 
-                            @if ($isStaffMessage)
+                            @if ($isAdminMessage)
 
                                 <span
-                                    class="staff-chat-read-status"
+                                    class="admin-chat-read-status"
                                     data-message-id="{{ $chatMessage->id }}"
                                 >
                                     {{ $chatMessage->read_at
@@ -531,7 +531,7 @@
 
             @empty
 
-                <div class="staff-chat-messages-empty">
+                <div class="admin-chat-messages-empty">
                     Chưa có tin nhắn trong cuộc trò chuyện.
                 </div>
 
@@ -546,7 +546,7 @@
 
         @error('message')
 
-            <div class="staff-chat-message-error">
+            <div class="admin-chat-message-error">
                 {{ $message }}
             </div>
 
@@ -559,7 +559,7 @@
 
         @if ($isMine && $conversation->isOpen())
 
-            <div class="staff-chat-product-suggestion">
+            <div class="admin-chat-product-suggestion">
 
 
                 {{-- =========================================
@@ -568,8 +568,8 @@
 
                 <button
                     type="button"
-                    class="staff-chat-product-toggle"
-                    id="staffChatProductToggle"
+                    class="admin-chat-product-toggle"
+                    id="adminChatProductToggle"
                 >
 
                     <span>
@@ -588,8 +588,8 @@
                 ========================================== --}}
 
                 <div
-                    class="staff-chat-product-panel"
-                    id="staffChatProductPanel"
+                    class="admin-chat-product-panel"
+                    id="adminChatProductPanel"
                     hidden
                 >
 
@@ -598,7 +598,7 @@
                         HEADER
                     ====================================== --}}
 
-                    <div class="staff-chat-product-panel-header">
+                    <div class="admin-chat-product-panel-header">
 
                         <div>
 
@@ -615,8 +615,8 @@
 
                         <button
                             type="button"
-                            class="staff-chat-product-close"
-                            id="staffChatProductClose"
+                            class="admin-chat-product-close"
+                            id="adminChatProductClose"
                             aria-label="Đóng"
                         >
                             ×
@@ -629,20 +629,20 @@
                         SEARCH
                     ====================================== --}}
 
-                    <div class="staff-chat-product-search-wrap">
+                    <div class="admin-chat-product-search-wrap">
 
                         <input
                             type="search"
-                            id="staffChatProductSearch"
-                            class="staff-chat-product-search"
+                            id="adminChatProductSearch"
+                            class="admin-chat-product-search"
                             placeholder="Tìm theo tên hoặc mã sản phẩm..."
                             autocomplete="off"
                         >
 
 
                         <span
-                            class="staff-chat-product-selected-count"
-                            id="staffChatProductSelectedCount"
+                            class="admin-chat-product-selected-count"
+                            id="adminChatProductSelectedCount"
                         >
                             Đã chọn 0/5
                         </span>
@@ -656,11 +656,11 @@
 
                     <form
                         action="{{ route(
-                            'staff.chat.products.store',
+                            'admin.chat.products.store',
                             $conversation
                         ) }}"
                         method="POST"
-                        id="staffChatProductForm"
+                        id="adminChatProductForm"
                     >
 
                         @csrf
@@ -668,7 +668,7 @@
 
                         @error('product_ids')
 
-                            <div class="staff-chat-message-error">
+                            <div class="admin-chat-message-error">
                                 {{ $message }}
                             </div>
 
@@ -680,8 +680,8 @@
                         ================================== --}}
 
                         <div
-                            class="staff-chat-product-list"
-                            id="staffChatProductList"
+                            class="admin-chat-product-list"
+                            id="adminChatProductList"
                         >
 
                             @forelse ($products as $product)
@@ -707,7 +707,7 @@
 
 
                                 <label
-                                    class="staff-chat-product-option"
+                                    class="admin-chat-product-option"
                                     data-product-name="{{ mb_strtolower($product->name) }}"
                                     data-product-sku="{{ mb_strtolower($product->sku ?? '') }}"
                                 >
@@ -717,13 +717,13 @@
                                         type="checkbox"
                                         name="product_ids[]"
                                         value="{{ $product->id }}"
-                                        class="staff-chat-product-checkbox"
+                                        class="admin-chat-product-checkbox"
                                     >
 
 
                                     {{-- IMAGE --}}
 
-                                    <span class="staff-chat-product-image">
+                                    <span class="admin-chat-product-image">
 
                                         <img
                                             src="{{ asset($imagePath) }}"
@@ -736,7 +736,7 @@
 
                                     {{-- INFO --}}
 
-                                    <span class="staff-chat-product-info">
+                                    <span class="admin-chat-product-info">
 
                                         <strong>
                                             {{ $product->name }}
@@ -758,7 +758,7 @@
                                         </small>
 
 
-                                        <span class="staff-chat-product-price">
+                                        <span class="admin-chat-product-price">
 
                                             {{ number_format(
                                                 $currentPrice,
@@ -790,7 +790,7 @@
 
                                     {{-- CHECK --}}
 
-                                    <span class="staff-chat-product-checkmark">
+                                    <span class="admin-chat-product-checkmark">
                                         ✓
                                     </span>
 
@@ -798,7 +798,7 @@
 
                             @empty
 
-                                <div class="staff-chat-product-empty">
+                                <div class="admin-chat-product-empty">
                                     Hiện chưa có sản phẩm đang kinh doanh.
                                 </div>
 
@@ -811,18 +811,18 @@
                             FOOTER
                         ================================== --}}
 
-                        <div class="staff-chat-product-footer">
+                        <div class="admin-chat-product-footer">
 
                             <span>
-                                Staff chỉ nên chọn những sản phẩm
+                                Admin chỉ nên chọn những sản phẩm
                                 phù hợp với nhu cầu của khách hàng.
                             </span>
 
 
                             <button
                                 type="submit"
-                                class="staff-chat-product-send"
-                                id="staffChatProductSend"
+                                class="admin-chat-product-send"
+                                id="adminChatProductSend"
                                 disabled
                             >
                                 Gửi sản phẩm đã chọn
@@ -847,13 +847,13 @@
 
             <form
                 action="{{ route(
-                    'staff.chat.messages.store',
+                    'admin.chat.messages.store',
                     $conversation
                 ) }}"
                 method="POST"
                 enctype="multipart/form-data"
-                class="staff-chat-reply-form"
-                id="staffChatReplyForm"
+                class="admin-chat-reply-form"
+                id="adminChatReplyForm"
             >
 
                 @csrf
@@ -864,18 +864,18 @@
                 ========================================== --}}
 
                 <div
-                    class="staff-chat-upload-preview"
-                    id="staffChatUploadPreview"
+                    class="admin-chat-upload-preview"
+                    id="adminChatUploadPreview"
                     hidden
                 >
 
-                    <div class="staff-chat-upload-preview-header">
+                    <div class="admin-chat-upload-preview-header">
 
                         <span>
                             Ảnh đã chọn
                         </span>
 
-                        <small id="staffChatUploadCount">
+                        <small id="adminChatUploadCount">
                             0/5 ảnh
                         </small>
 
@@ -883,8 +883,8 @@
 
 
                     <div
-                        class="staff-chat-upload-preview-list"
-                        id="staffChatUploadPreviewList"
+                        class="admin-chat-upload-preview-list"
+                        id="adminChatUploadPreviewList"
                     ></div>
 
                 </div>
@@ -894,13 +894,13 @@
                     REPLY AREA
                 ========================================== --}}
 
-                <div class="staff-chat-reply-wrap">
+                <div class="admin-chat-reply-wrap">
 
 
                     <button
                         type="button"
-                        class="staff-chat-upload-button"
-                        id="staffChatUploadButton"
+                        class="admin-chat-upload-button"
+                        id="adminChatUploadButton"
                         aria-label="Chọn ảnh"
                         title="Gửi hình ảnh"
                     >
@@ -935,7 +935,7 @@
                     <input
                         type="file"
                         name="images[]"
-                        id="staffChatImages"
+                        id="adminChatImages"
                         accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
                         multiple
                         hidden
@@ -944,18 +944,18 @@
 
                     <textarea
                         name="message"
-                        id="staffChatInput"
+                        id="adminChatInput"
                         rows="1"
                         maxlength="2000"
-                        class="staff-chat-reply-input"
+                        class="admin-chat-reply-input"
                         placeholder="Nhập nội dung trả lời..."
                     >{{ old('message') }}</textarea>
 
 
                     <button
                         type="submit"
-                        class="staff-chat-send-btn"
-                        id="staffChatSendButton"
+                        class="admin-chat-send-btn"
+                        id="adminChatSendButton"
                     >
 
                         <svg
@@ -979,7 +979,7 @@
                 </div>
 
 
-                <small id="staffChatReplyNote">
+                <small id="adminChatReplyNote">
                     Enter để gửi • Shift + Enter để xuống dòng
                     • Tối đa 5 ảnh
                 </small>
@@ -989,7 +989,7 @@
 
         @elseif ($isWaiting)
 
-            <div class="staff-chat-disabled">
+            <div class="admin-chat-disabled">
 
                 Bạn cần tiếp nhận cuộc trò chuyện
                 trước khi có thể trả lời khách hàng.
@@ -999,7 +999,7 @@
 
         @else
 
-            <div class="staff-chat-disabled">
+            <div class="admin-chat-disabled">
 
                 Bạn không phụ trách cuộc trò chuyện này.
 
@@ -1033,19 +1033,19 @@ document.addEventListener(
 
         const messages =
             document.getElementById(
-                'staffChatMessages'
+                'adminChatMessages'
             );
 
 
         const form =
             document.getElementById(
-                'staffChatReplyForm'
+                'adminChatReplyForm'
             );
 
 
         const input =
             document.getElementById(
-                'staffChatInput'
+                'adminChatInput'
             );
 
 
@@ -1057,43 +1057,43 @@ document.addEventListener(
 
         const uploadButton =
             document.getElementById(
-                'staffChatUploadButton'
+                'adminChatUploadButton'
             );
 
 
         const uploadInput =
             document.getElementById(
-                'staffChatImages'
+                'adminChatImages'
             );
 
 
         const uploadPreview =
             document.getElementById(
-                'staffChatUploadPreview'
+                'adminChatUploadPreview'
             );
 
 
         const uploadPreviewList =
             document.getElementById(
-                'staffChatUploadPreviewList'
+                'adminChatUploadPreviewList'
             );
 
 
         const uploadCount =
             document.getElementById(
-                'staffChatUploadCount'
+                'adminChatUploadCount'
             );
 
 
         const sendButton =
             document.getElementById(
-                'staffChatSendButton'
+                'adminChatSendButton'
             );
 
 
         const replyNote =
             document.getElementById(
-                'staffChatReplyNote'
+                'adminChatReplyNote'
             );
 
 
@@ -1108,55 +1108,55 @@ document.addEventListener(
 
         const productToggle =
             document.getElementById(
-                'staffChatProductToggle'
+                'adminChatProductToggle'
             );
 
 
         const productPanel =
             document.getElementById(
-                'staffChatProductPanel'
+                'adminChatProductPanel'
             );
 
 
         const productClose =
             document.getElementById(
-                'staffChatProductClose'
+                'adminChatProductClose'
             );
 
 
         const productSearch =
             document.getElementById(
-                'staffChatProductSearch'
+                'adminChatProductSearch'
             );
 
 
         const productForm =
             document.getElementById(
-                'staffChatProductForm'
+                'adminChatProductForm'
             );
 
 
         const productSend =
             document.getElementById(
-                'staffChatProductSend'
+                'adminChatProductSend'
             );
 
 
         const selectedCount =
             document.getElementById(
-                'staffChatProductSelectedCount'
+                'adminChatProductSelectedCount'
             );
 
 
         const productOptions =
             document.querySelectorAll(
-                '.staff-chat-product-option'
+                '.admin-chat-product-option'
             );
 
 
         const productCheckboxes =
             document.querySelectorAll(
-                '.staff-chat-product-checkbox'
+                '.admin-chat-product-checkbox'
             );
 
 
@@ -1266,7 +1266,7 @@ document.addEventListener(
 
 
                     item.className =
-                        'staff-chat-upload-preview-item';
+                        'admin-chat-upload-preview-item';
 
 
                     const image =
@@ -1315,7 +1315,7 @@ document.addEventListener(
 
 
                     removeButton.className =
-                        'staff-chat-upload-remove';
+                        'admin-chat-upload-remove';
 
 
                     removeButton.textContent =
@@ -1543,7 +1543,7 @@ document.addEventListener(
         const markReadUrl =
             @json(
                 route(
-                    'staff.chat.read',
+                    'admin.chat.read',
                     $conversation
                 )
             );
@@ -1647,7 +1647,7 @@ document.addEventListener(
         |--------------------------------------------------------------------------
         */
 
-        function markStaffMessagesAsReadRealtime(
+        function markAdminMessagesAsReadRealtime(
             event
         ) {
 
@@ -1678,7 +1678,7 @@ document.addEventListener(
 
             const statuses =
                 document.querySelectorAll(
-                    '.staff-chat-read-status'
+                    '.admin-chat-read-status'
                 );
 
 
@@ -1716,7 +1716,7 @@ document.addEventListener(
 
 
             row.className =
-                'staff-chat-message-row is-customer';
+                'admin-chat-message-row is-customer';
 
 
             const messageBox =
@@ -1726,7 +1726,7 @@ document.addEventListener(
 
 
             messageBox.className =
-                'staff-chat-message-box';
+                'admin-chat-message-box';
 
 
             const sender =
@@ -1736,7 +1736,7 @@ document.addEventListener(
 
 
             sender.className =
-                'staff-chat-message-name';
+                'admin-chat-message-name';
 
 
             sender.textContent =
@@ -1751,7 +1751,7 @@ document.addEventListener(
 
 
             content.className =
-                'staff-chat-message-content';
+                'admin-chat-message-content';
 
 
             /*
@@ -1769,7 +1769,7 @@ document.addEventListener(
 
 
             meta.className =
-                'staff-chat-message-meta';
+                'admin-chat-message-meta';
 
 
             const time =
@@ -1832,7 +1832,7 @@ if (
 
 
         imagesContainer.className =
-            'staff-chat-message-images';
+            'admin-chat-message-images';
 
 
         imageAttachments.forEach(
@@ -1851,7 +1851,7 @@ if (
 
 
                 imageLink.className =
-                    'staff-chat-message-image';
+                    'admin-chat-message-image';
 
 
                 imageLink.href =
@@ -1932,7 +1932,7 @@ if (
 
 
             /*
-             * Staff đang mở chat
+             * Admin đang mở chat
              * nên tin Customer được xem là đã đọc.
              */
             markCustomerMessagesAsRead();
@@ -1980,7 +1980,7 @@ if (
 
 
                     /*
-                     * Tin do chính Staff gửi
+                     * Tin do chính Admin gửi
                      * không chèn lại.
                      */
                     if (
@@ -2002,13 +2002,13 @@ if (
 
 
             /*
-             * Customer đã đọc tin Staff.
+             * Customer đã đọc tin Admin.
              */
             channel.listen(
                 '.chat.messages.read',
                 function (event) {
 
-                    markStaffMessagesAsReadRealtime(
+                    markAdminMessagesAsReadRealtime(
                         event
                     );
 
@@ -2126,7 +2126,7 @@ if (
 
                     const checkbox =
                         option.querySelector(
-                            '.staff-chat-product-checkbox'
+                            '.admin-chat-product-checkbox'
                         );
 
 

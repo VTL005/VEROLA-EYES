@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Appointment;
+use App\Models\ChatConversation;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\Review;
@@ -63,19 +64,12 @@ class DashboardController extends Controller
 
 
         /*
-         * Staff.
+         * Hội thoại đang chờ Admin tiếp nhận.
          */
-        $staffCount =
-            User::query()
-                ->whereHas(
-                    'role',
-                    function ($query) {
-                        $query->where(
-                            'name',
-                            'staff'
-                        );
-                    }
-                )
+        $waitingChatCount =
+            ChatConversation::query()
+                ->where('status', 'open')
+                ->whereNull('admin_id')
                 ->count();
 
 
@@ -163,7 +157,7 @@ class DashboardController extends Controller
                 'orderCount',
                 'revenue',
                 'customerCount',
-                'staffCount',
+                'waitingChatCount',
                 'pendingOrderCount',
                 'pendingAppointmentCount',
                 'todayAppointmentCount',

@@ -12,7 +12,7 @@ use Illuminate\Validation\ValidationException;
 class WarrantyService
 {
     /**
-     * Staff/Admin tạo bảo hành điện tử
+     * Admin tạo bảo hành điện tử
      * cho sản phẩm thuộc đơn hàng đã hoàn thành.
      */
     public function create(
@@ -22,13 +22,12 @@ class WarrantyService
     ): Warranty {
         /*
         |--------------------------------------------------------------------------
-        | CHỈ STAFF / ADMIN
+        | CHỈ ADMIN
         |--------------------------------------------------------------------------
         */
 
         if (
-            !$operator->isStaff()
-            && !$operator->isAdmin()
+            !$operator->isAdmin()
         ) {
             abort(403);
         }

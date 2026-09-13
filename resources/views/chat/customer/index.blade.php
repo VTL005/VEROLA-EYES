@@ -80,18 +80,18 @@ $complaintOrderCode !== ''
 
             <p>
 
-              @if ($conversation?->staff)
+              @if ($conversation?->admin)
 
               Bạn đang được hỗ trợ bởi
 
               <strong>
-                {{ $conversation->staff->name }}
+                {{ $conversation->admin->name }}
               </strong>
 
               @else
 
               Hãy gửi câu hỏi.
-              Nhân viên VELORA Eyes sẽ hỗ trợ bạn.
+              Admin VELORA Eyes sẽ hỗ trợ bạn.
 
               @endif
 
@@ -272,7 +272,7 @@ $complaintOrderCode !== ''
   <div class="customer-chat-message-row
                             {{ $isMine
                                 ? 'is-customer'
-                                : 'is-staff'
+                                : 'is-admin'
                             }}">
 
     <div class="customer-chat-message">
@@ -287,7 +287,7 @@ $complaintOrderCode !== ''
       <div class="customer-chat-message-sender">
 
         {{ $chatMessage->sender?->name
-                                            ?? 'Nhân viên VELORA Eyes'
+                                            ?? 'Admin VELORA Eyes'
                                         }}
 
       </div>
@@ -547,11 +547,11 @@ $complaintOrderCode !== ''
 
         <p>
           Tồn kho được hiển thị theo từng màu và kích thước.
-          Nhân viên sẽ kiểm tra lại đúng phiên bản bạn cần.
+          Admin sẽ kiểm tra lại đúng phiên bản bạn cần.
         </p>
 
         <button type="button" class="customer-chat-faq-use" data-chat-question="Sản phẩm này còn hàng không?">
-          Hỏi nhân viên
+          Hỏi Admin
         </button>
 
       </div>
@@ -569,11 +569,11 @@ $complaintOrderCode !== ''
 
         <p>
           VELORA Eyes có hỗ trợ tư vấn tròng kính theo nhu cầu.
-          Bạn có thể gửi thông số kính để nhân viên kiểm tra.
+          Bạn có thể gửi thông số kính để Admin kiểm tra.
         </p>
 
         <button type="button" class="customer-chat-faq-use" data-chat-question="Kính này có lắp được tròng cận không?">
-          Hỏi nhân viên
+          Hỏi Admin
         </button>
 
       </div>
@@ -591,12 +591,12 @@ $complaintOrderCode !== ''
 
         <p>
           Độ phù hợp phụ thuộc vào dáng mặt, kích thước gọng
-          và phong cách bạn mong muốn. Nhân viên có thể tư vấn
+          và phong cách bạn mong muốn. Admin có thể tư vấn
           cụ thể hơn khi bạn cung cấp thêm thông tin.
         </p>
 
         <button type="button" class="customer-chat-faq-use" data-chat-question="Kính này phù hợp với khuôn mặt nào?">
-          Hỏi nhân viên
+          Hỏi Admin
         </button>
 
       </div>
@@ -615,12 +615,12 @@ $complaintOrderCode !== ''
         <p>
           Điều kiện bảo hành hoặc đổi trả phụ thuộc vào tình
           trạng sản phẩm và chính sách áp dụng cho đơn hàng.
-          Nhân viên sẽ kiểm tra chi tiết trước khi xác nhận.
+          Admin sẽ kiểm tra chi tiết trước khi xác nhận.
         </p>
 
         <button type="button" class="customer-chat-faq-use"
           data-chat-question="Chính sách bảo hành và đổi trả của sản phẩm này thế nào?">
-          Hỏi nhân viên
+          Hỏi Admin
         </button>
 
       </div>
@@ -644,7 +644,7 @@ $complaintOrderCode !== ''
 
         <button type="button" class="customer-chat-faq-use"
           data-chat-question="Đơn hàng của tôi dự kiến giao trong bao lâu?">
-          Hỏi nhân viên
+          Hỏi Admin
         </button>
 
       </div>
@@ -1323,21 +1323,12 @@ document.addEventListener(
     |--------------------------------------------------------------------------
     */
 
-    const currentUserId = {
-      {
-        (int) auth() - > id()
-      }
-    };
+    const currentUserId =
+      @js((int) auth()->id());
 
 
-    const conversationId = {
-      {
-        $conversation
-          ?
-          (int) $conversation - > id :
-          'null'
-      }
-    };
+    const conversationId =
+      @js($conversation?->id);
 
 
     const markReadUrl =
@@ -1387,11 +1378,11 @@ document.addEventListener(
 
     /*
     |--------------------------------------------------------------------------
-    | CUSTOMER ĐÁNH DẤU TIN STAFF ĐÃ ĐỌC
+    | CUSTOMER ĐÁNH DẤU TIN ADMIN ĐÃ ĐỌC
     |--------------------------------------------------------------------------
     */
 
-    async function markStaffMessagesAsRead() {
+    async function markAdminMessagesAsRead() {
 
       if (
         !markReadUrl ||
@@ -1424,7 +1415,7 @@ document.addEventListener(
         if (!response.ok) {
 
           console.error(
-            'Đánh dấu tin Staff đã đọc thất bại:',
+            'Đánh dấu tin Admin đã đọc thất bại:',
             response.status
           );
 
@@ -1433,7 +1424,7 @@ document.addEventListener(
       } catch (error) {
 
         console.error(
-          'Không thể đánh dấu tin Staff đã đọc.',
+          'Không thể đánh dấu tin Admin đã đọc.',
           error
         );
 
@@ -1444,7 +1435,7 @@ document.addEventListener(
 
     /*
     |--------------------------------------------------------------------------
-    | STAFF ĐÃ ĐỌC TIN CUSTOMER
+    | ADMIN ĐÃ ĐỌC TIN CUSTOMER
     |--------------------------------------------------------------------------
     */
 
@@ -1475,7 +1466,7 @@ document.addEventListener(
        * người đọc thì không xử lý.
        *
        * Trường hợp cần xử lý:
-       * Staff là người đọc.
+       * Admin là người đọc.
        */
       if (
         Number(
@@ -1507,13 +1498,13 @@ document.addEventListener(
 
     /*
     |--------------------------------------------------------------------------
-    | STAFF KẾT THÚC HỘI THOẠI
+    | ADMIN KẾT THÚC HỘI THOẠI
     |--------------------------------------------------------------------------
     */
 
     /*
 |--------------------------------------------------------------------------
-| STAFF KẾT THÚC HỘI THOẠI
+| ADMIN KẾT THÚC HỘI THOẠI
 |--------------------------------------------------------------------------
 */
 
@@ -1588,7 +1579,7 @@ document.addEventListener(
 
     /*
     |--------------------------------------------------------------------------
-    | THÊM TIN NHẮN STAFF REALTIME
+    | THÊM TIN NHẮN ADMIN REALTIME
     |--------------------------------------------------------------------------
     */
 
@@ -1614,7 +1605,7 @@ document.addEventListener(
 
 
       row.className =
-        'customer-chat-message-row is-staff';
+        'customer-chat-message-row is-admin';
 
 
       /*
@@ -1635,7 +1626,7 @@ document.addEventListener(
 
       /*
       |--------------------------------------------------------------------------
-      | STAFF NAME
+      | ADMIN NAME
       |--------------------------------------------------------------------------
       */
 
@@ -1651,7 +1642,7 @@ document.addEventListener(
 
       sender.textContent =
         chatMessage.sender_name ||
-        'Nhân viên VELORA Eyes';
+        'Admin VELORA Eyes';
 
 
       /*
@@ -2140,12 +2131,12 @@ document.addEventListener(
       |--------------------------------------------------------------------------
       |
       | Customer đang mở trực tiếp chat,
-      | vì vậy tin Staff vừa tới được xem
+      | vì vậy tin Admin vừa tới được xem
       | là đã đọc.
       |
       */
 
-      markStaffMessagesAsRead();
+      markAdminMessagesAsRead();
 
     }
 
@@ -2239,7 +2230,7 @@ document.addEventListener(
       | CONVERSATION CLOSED
       |--------------------------------------------------------------------------
       |
-      | Staff kết thúc hỗ trợ
+      | Admin kết thúc hỗ trợ
       | → Customer biết ngay mà không F5.
       |
       */

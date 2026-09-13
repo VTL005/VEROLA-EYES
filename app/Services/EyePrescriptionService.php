@@ -11,7 +11,7 @@ use Illuminate\Validation\ValidationException;
 class EyePrescriptionService
 {
     /**
-     * Staff/Admin tạo hồ sơ thị lực
+     * Admin tạo hồ sơ thị lực
      * từ một Appointment.
      */
     public function create(
@@ -20,11 +20,10 @@ class EyePrescriptionService
         array $data
     ): EyePrescription {
         /*
-         * Chỉ Staff/Admin.
+         * Chỉ Admin.
          */
         if (
-            !$operator->isStaff()
-            && !$operator->isAdmin()
+            !$operator->isAdmin()
         ) {
             abort(403);
         }

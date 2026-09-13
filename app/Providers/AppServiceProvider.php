@@ -23,19 +23,19 @@ class AppServiceProvider extends ServiceProvider
     {
         /*
         |--------------------------------------------------------------------------
-        | STAFF LAYOUT DATA
+        | ADMIN LAYOUT DATA
         |--------------------------------------------------------------------------
         |
         | Cung cấp số tin nhắn Customer chưa đọc
-        | cho toàn bộ các trang sử dụng layouts.staff.
+        | cho toàn bộ các trang sử dụng layouts.admin.
         |
         */
 
         View::composer(
-            'layouts.staff',
+            'layouts.admin',
             function ($view) {
 
-                $staffChatUnreadCount = 0;
+                $adminChatUnreadCount = 0;
 
                 $user = auth()->user();
 
@@ -43,11 +43,11 @@ class AppServiceProvider extends ServiceProvider
                  * Chỉ tính khi:
                  *
                  * - Đã đăng nhập
-                 * - Tài khoản là Staff
+                 * - Tài khoản là Admin
                  */
                 if (
                     $user
-                    && $user->isStaff()
+                    && $user->isAdmin()
                 ) {
 
                     $conversations =
@@ -62,20 +62,20 @@ class AppServiceProvider extends ServiceProvider
                             )
 
                             /*
-                             * Staff được nhìn thấy:
+                             * Admin được nhìn thấy:
                              *
-                             * - Chat chưa có Staff nhận
-                             * - Chat do chính Staff này phụ trách
+                             * - Chat chưa có Admin nhận
+                             * - Chat do chính Admin này phụ trách
                              */
                             ->where(
                                 function ($query) use ($user) {
 
                                     $query
                                         ->whereNull(
-                                            'staff_id'
+                                            'admin_id'
                                         )
                                         ->orWhere(
-                                            'staff_id',
+                                            'admin_id',
                                             $user->id
                                         );
                                 }
@@ -100,7 +100,7 @@ class AppServiceProvider extends ServiceProvider
 
                             ->get();
 
-                    $staffChatUnreadCount =
+                    $adminChatUnreadCount =
                         (int) $conversations->sum(
                             'unread_messages_count'
                         );
@@ -109,11 +109,11 @@ class AppServiceProvider extends ServiceProvider
                 /*
                  * Biến này sẽ dùng được trong:
                  *
-                 * resources/views/layouts/staff.blade.php
+                 * resources/views/layouts/admin.blade.php
                  */
                 $view->with(
-                    'staffChatUnreadCount',
-                    $staffChatUnreadCount
+                    'adminChatUnreadCount',
+                    $adminChatUnreadCount
                 );
             }
         );

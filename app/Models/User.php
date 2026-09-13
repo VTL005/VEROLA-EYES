@@ -99,13 +99,13 @@ class User extends Authenticatable
     }
 
     /**
-     * Các cuộc trò chuyện mà User là Staff phụ trách.
+     * Các cuộc trò chuyện mà User là Admin phụ trách.
      */
-    public function staffChatConversations(): HasMany
+    public function adminChatConversations(): HasMany
     {
         return $this->hasMany(
             ChatConversation::class,
-            'staff_id'
+            'admin_id'
         );
     }
 
@@ -194,14 +194,6 @@ class User extends Authenticatable
     public function isCustomer(): bool
     {
         return $this->hasRole('customer');
-    }
-
-    /**
-     * Staff?
-     */
-    public function isStaff(): bool
-    {
-        return $this->hasRole('staff');
     }
 
     /**

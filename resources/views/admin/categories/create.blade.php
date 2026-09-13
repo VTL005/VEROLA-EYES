@@ -209,7 +209,7 @@
             </div>
 
 
-            <div class="admin-staff-switch">
+            <div class="admin-toggle-switch">
 
                 <input
                     type="checkbox"

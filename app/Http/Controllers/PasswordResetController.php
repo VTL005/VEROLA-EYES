@@ -40,19 +40,13 @@ class PasswordResetController extends Controller
         );
 
         /*
-         * Chỉ cho Customer và Staff sử dụng
+         * Chỉ cho Customer sử dụng
          * chức năng quên mật khẩu.
          */
         $user = User::query()
             ->where('email', $email)
             ->whereHas('role', function ($query) {
-                $query->whereIn(
-                    'name',
-                    [
-                        'customer',
-                        'staff',
-                    ]
-                );
+                $query->where('name', 'customer');
             })
             ->first();
 
@@ -151,7 +145,7 @@ class PasswordResetController extends Controller
         ]);
 
         /*
-         * Đảm bảo email thuộc Customer hoặc Staff
+         * Đảm bảo email thuộc Customer
          * và tài khoản đang hoạt động.
          */
         $user = User::query()
@@ -161,13 +155,7 @@ class PasswordResetController extends Controller
             )
             ->where('is_active', true)
             ->whereHas('role', function ($query) {
-                $query->whereIn(
-                    'name',
-                    [
-                        'customer',
-                        'staff',
-                    ]
-                );
+                $query->where('name', 'customer');
             })
             ->first();
 

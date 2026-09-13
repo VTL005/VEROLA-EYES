@@ -3,6 +3,7 @@
 use App\Http\Controllers\AddressController;
 use App\Http\Controllers\Admin\AppointmentController as AdminAppointmentController;
 use App\Http\Controllers\Admin\CategoryController as AdminCategoryController;
+use App\Http\Controllers\Admin\ChatController as AdminChatController;
 use App\Http\Controllers\Admin\CustomerController as AdminCustomerController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\EyePrescriptionController as AdminEyePrescriptionController;
@@ -14,7 +15,6 @@ use App\Http\Controllers\Admin\ProductImageController as AdminProductImageContro
 use App\Http\Controllers\Admin\ProductVariantController as AdminProductVariantController;
 use App\Http\Controllers\Admin\ReportController as AdminReportController;
 use App\Http\Controllers\Admin\ReviewController as AdminReviewController;
-use App\Http\Controllers\Admin\StaffController as AdminStaffController;
 use App\Http\Controllers\Admin\VoucherController as AdminVoucherController;
 use App\Http\Controllers\Admin\WarrantyController as AdminWarrantyController;
 use App\Http\Controllers\AppointmentController;
@@ -35,18 +35,6 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\SocialAuthController;
 use App\Http\Controllers\VoucherController;
-use App\Http\Controllers\Staff\AppointmentController as StaffAppointmentController;
-use App\Http\Controllers\Staff\CategoryController as StaffCategoryController;
-use App\Http\Controllers\Staff\ChatController as StaffChatController;
-use App\Http\Controllers\Staff\DashboardController as StaffDashboardController;
-use App\Http\Controllers\Staff\EyePrescriptionController as StaffEyePrescriptionController;
-use App\Http\Controllers\Staff\InventoryController as StaffInventoryController;
-use App\Http\Controllers\Staff\OrderController as StaffOrderController;
-use App\Http\Controllers\Staff\ProductController as StaffProductController;
-use App\Http\Controllers\Staff\ProductImageController as StaffProductImageController;
-use App\Http\Controllers\Staff\ProductVariantController as StaffProductVariantController;
-use App\Http\Controllers\Staff\ReviewController as StaffReviewController;
-use App\Http\Controllers\Staff\WarrantyController as StaffWarrantyController;
 use App\Http\Controllers\WarrantyController;
 use App\Http\Controllers\WishlistController;
 use Illuminate\Support\Facades\Route;
@@ -532,11 +520,6 @@ Route::delete(
         '/orders/{order}',
         [OrderController::class, 'show']
     )->name('orders.show');
-    Route::get(
-        '/orders/{order}',
-        [OrderController::class, 'show']
-    )->name('orders.show');
-
     Route::patch(
         '/orders/{order}/confirm-received',
         [OrderController::class, 'confirmReceived']
@@ -546,11 +529,6 @@ Route::delete(
         '/orders/{order}/cancel',
         [OrderController::class, 'cancel']
     )->name('orders.cancel');
-    Route::patch(
-        '/orders/{order}/cancel',
-        [OrderController::class, 'cancel']
-    )->name('orders.cancel');
-
     /*
     |--------------------------------------------------------------------------
     | PAYMENT PAYOS QR
@@ -641,306 +619,6 @@ Route::match(
 )->name('payments.onepay.ipn');
 /*
 |--------------------------------------------------------------------------
-| STAFF
-|--------------------------------------------------------------------------
-*/
-
-Route::prefix('staff')
-    ->name('staff.')
-    ->middleware([
-        'auth',
-        'staff',
-    ])
-    ->group(function () {
-
-        /*
-|--------------------------------------------------------------------------
-| STAFF DASHBOARD
-|--------------------------------------------------------------------------
-*/
-
-        Route::get(
-            '/dashboard',
-            [StaffDashboardController::class, 'index']
-        )->name('dashboard');
-
-        /*
-        |--------------------------------------------------------------------------
-        | STAFF CHAT
-        |--------------------------------------------------------------------------
-        */
-
-        Route::get(
-            '/chat',
-            [StaffChatController::class, 'index']
-        )->name('chat.index');
-
-        Route::get(
-            '/chat/{conversation}',
-            [StaffChatController::class, 'show']
-        )->name('chat.show');
-
-        Route::post(
-            '/chat/{conversation}/accept',
-            [StaffChatController::class, 'accept']
-        )->name('chat.accept');
-
-        Route::post(
-            '/chat/{conversation}/messages',
-            [StaffChatController::class, 'store']
-        )->name('chat.messages.store');
-
-        Route::post(
-            '/chat/{conversation}/products',
-            [StaffChatController::class, 'storeProducts']
-        )->name('chat.products.store');
-
-        Route::patch(
-            '/chat/{conversation}/close',
-            [StaffChatController::class, 'close']
-        )->name('chat.close');
-        Route::patch(
-            '/chat/{conversation}/read',
-            [StaffChatController::class, 'markRead']
-        )->name('chat.read');
-
-        /*
-        |--------------------------------------------------------------------------
-        | STAFF CATEGORIES
-        |--------------------------------------------------------------------------
-        */
-
-        Route::get(
-            '/categories',
-            [StaffCategoryController::class, 'index']
-        )->name('categories.index');
-
-        Route::get(
-            '/categories/create',
-            [StaffCategoryController::class, 'create']
-        )->name('categories.create');
-
-        Route::post(
-            '/categories',
-            [StaffCategoryController::class, 'store']
-        )->name('categories.store');
-
-        Route::get(
-            '/categories/{category}/edit',
-            [StaffCategoryController::class, 'edit']
-        )->name('categories.edit');
-
-        Route::put(
-            '/categories/{category}',
-            [StaffCategoryController::class, 'update']
-        )->name('categories.update');
-
-        /*
-        |--------------------------------------------------------------------------
-        | STAFF PRODUCTS
-        |--------------------------------------------------------------------------
-        */
-
-        Route::get(
-            '/products',
-            [StaffProductController::class, 'index']
-        )->name('products.index');
-
-        Route::get(
-            '/products/create',
-            [StaffProductController::class, 'create']
-        )->name('products.create');
-
-        Route::post(
-            '/products',
-            [StaffProductController::class, 'store']
-        )->name('products.store');
-
-        Route::get(
-            '/products/{product}',
-            [StaffProductController::class, 'show']
-        )->name('products.show');
-
-        Route::get(
-            '/products/{product}/edit',
-            [StaffProductController::class, 'edit']
-        )->name('products.edit');
-
-        Route::put(
-            '/products/{product}',
-            [StaffProductController::class, 'update']
-        )->name('products.update');
-
-        /*
-        |--------------------------------------------------------------------------
-        | STAFF PRODUCT IMAGES
-        |--------------------------------------------------------------------------
-        */
-
-        Route::post(
-            '/products/{product}/images',
-            [StaffProductImageController::class, 'store']
-        )->name('products.images.store');
-
-        Route::patch(
-            '/products/{product}/images/{image}/primary',
-            [StaffProductImageController::class, 'setPrimary']
-        )->name('products.images.set-primary');
-
-        Route::delete(
-            '/products/{product}/images/{image}',
-            [StaffProductImageController::class, 'destroy']
-        )->name('products.images.destroy');
-
-        /*
-        |--------------------------------------------------------------------------
-        | STAFF PRODUCT VARIANTS
-        |--------------------------------------------------------------------------
-        */
-
-        Route::get(
-            '/products/{product}/variants/create',
-            [StaffProductVariantController::class, 'create']
-        )->name('products.variants.create');
-
-        Route::post(
-            '/products/{product}/variants',
-            [StaffProductVariantController::class, 'store']
-        )->name('products.variants.store');
-
-        Route::get(
-            '/products/{product}/variants/{variant}/edit',
-            [StaffProductVariantController::class, 'edit']
-        )->name('products.variants.edit');
-
-        Route::put(
-            '/products/{product}/variants/{variant}',
-            [StaffProductVariantController::class, 'update']
-        )->name('products.variants.update');
-
-        Route::patch(
-            '/products/{product}/variants/{variant}/deactivate',
-            [StaffProductVariantController::class, 'deactivate']
-        )->name('products.variants.deactivate');
-
-        /*
-        |--------------------------------------------------------------------------
-        | STAFF INVENTORY
-        |--------------------------------------------------------------------------
-        */
-
-        Route::get(
-            '/inventory',
-            [StaffInventoryController::class, 'index']
-        )->name('inventory.index');
-
-        /*
-        |--------------------------------------------------------------------------
-        | STAFF REVIEWS
-        |--------------------------------------------------------------------------
-        */
-
-        Route::get(
-            '/reviews',
-            [StaffReviewController::class, 'index']
-        )->name('reviews.index');
-
-        Route::get(
-            '/reviews/{review}',
-            [StaffReviewController::class, 'show']
-        )->name('reviews.show');
-
-        Route::patch(
-            '/reviews/{review}/visibility',
-            [StaffReviewController::class, 'toggleVisibility']
-        )->name('reviews.toggle-visibility');
-
-        /*
-|--------------------------------------------------------------------------
-| STAFF WARRANTIES
-|--------------------------------------------------------------------------
-*/
-
-        Route::get(
-            '/order-details/{orderDetail}/warranty/create',
-            [StaffWarrantyController::class, 'create']
-        )->name('warranties.create');
-
-        Route::post(
-            '/order-details/{orderDetail}/warranty',
-            [StaffWarrantyController::class, 'store']
-        )->name('warranties.store');
-
-        Route::get(
-            '/warranties/{warranty}',
-            [StaffWarrantyController::class, 'show']
-        )->name('warranties.show');
-
-        /*
-|--------------------------------------------------------------------------
-| STAFF EYE PRESCRIPTIONS
-|--------------------------------------------------------------------------
-*/
-
-        Route::get(
-            '/appointments/{appointment}/eye-prescriptions/create',
-            [StaffEyePrescriptionController::class, 'create']
-        )->name('eye-prescriptions.create');
-
-        Route::post(
-            '/appointments/{appointment}/eye-prescriptions',
-            [StaffEyePrescriptionController::class, 'store']
-        )->name('eye-prescriptions.store');
-
-        Route::get(
-            '/eye-prescriptions/{eyePrescription}',
-            [StaffEyePrescriptionController::class, 'show']
-        )->name('eye-prescriptions.show');
-
-        /*
-|--------------------------------------------------------------------------
-| STAFF APPOINTMENTS
-|--------------------------------------------------------------------------
-*/
-
-        Route::get(
-            '/appointments',
-            [StaffAppointmentController::class, 'index']
-        )->name('appointments.index');
-
-        Route::get(
-            '/appointments/{appointment}',
-            [StaffAppointmentController::class, 'show']
-        )->name('appointments.show');
-
-        Route::patch(
-            '/appointments/{appointment}/status',
-            [StaffAppointmentController::class, 'updateStatus']
-        )->name('appointments.update-status');
-
-        Route::get(
-            '/orders',
-            [StaffOrderController::class, 'index']
-        )->name('orders.index');
-
-        Route::get(
-            '/orders/{order}',
-            [StaffOrderController::class, 'show']
-        )->name('orders.show');
-
-        Route::patch(
-            '/orders/{order}/status',
-            [StaffOrderController::class, 'updateStatus']
-        )->name('orders.update-status');
-
-        Route::patch(
-            '/orders/{order}/cancel',
-            [StaffOrderController::class, 'cancel']
-        )->name('orders.cancel');
-
-    });
-/*
-|--------------------------------------------------------------------------
 | ADMIN
 |--------------------------------------------------------------------------
 |
@@ -955,6 +633,47 @@ Route::prefix('admin')
         'admin',
     ])
     ->group(function () {
+
+        /*
+        |--------------------------------------------------------------------------
+        | ADMIN CHAT
+        |--------------------------------------------------------------------------
+        */
+
+        Route::get(
+            '/chat',
+            [AdminChatController::class, 'index']
+        )->name('chat.index');
+
+        Route::get(
+            '/chat/{conversation}',
+            [AdminChatController::class, 'show']
+        )->name('chat.show');
+
+        Route::post(
+            '/chat/{conversation}/accept',
+            [AdminChatController::class, 'accept']
+        )->name('chat.accept');
+
+        Route::post(
+            '/chat/{conversation}/messages',
+            [AdminChatController::class, 'store']
+        )->name('chat.messages.store');
+
+        Route::post(
+            '/chat/{conversation}/products',
+            [AdminChatController::class, 'storeProducts']
+        )->name('chat.products.store');
+
+        Route::patch(
+            '/chat/{conversation}/close',
+            [AdminChatController::class, 'close']
+        )->name('chat.close');
+
+        Route::patch(
+            '/chat/{conversation}/read',
+            [AdminChatController::class, 'markRead']
+        )->name('chat.read');
 
         Route::patch(
             '/payments/{payment}/refund',
@@ -1215,47 +934,6 @@ Route::prefix('admin')
             '/dashboard',
             [AdminDashboardController::class, 'index']
         )->name('dashboard');
-
-        /*
-|--------------------------------------------------------------------------
-| ADMIN STAFF
-|--------------------------------------------------------------------------
-*/
-
-        Route::get(
-            '/staff',
-            [AdminStaffController::class, 'index']
-        )->name('staff.index');
-
-        Route::get(
-            '/staff/create',
-            [AdminStaffController::class, 'create']
-        )->name('staff.create');
-
-        Route::post(
-            '/staff',
-            [AdminStaffController::class, 'store']
-        )->name('staff.store');
-
-        Route::get(
-            '/staff/{staff}',
-            [AdminStaffController::class, 'show']
-        )->name('staff.show');
-
-        Route::get(
-            '/staff/{staff}/edit',
-            [AdminStaffController::class, 'edit']
-        )->name('staff.edit');
-
-        Route::put(
-            '/staff/{staff}',
-            [AdminStaffController::class, 'update']
-        )->name('staff.update');
-
-        Route::patch(
-            '/staff/{staff}/toggle-active',
-            [AdminStaffController::class, 'toggleActive']
-        )->name('staff.toggle-active');
 
         /*
 |--------------------------------------------------------------------------

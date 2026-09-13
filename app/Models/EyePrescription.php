@@ -62,7 +62,7 @@ class EyePrescription extends Model
     }
 
     /**
-     * Staff thực hiện đo mắt.
+     * Admin thực hiện đo mắt.
      */
     public function performer(): BelongsTo
     {

@@ -18,7 +18,7 @@ class ChatConversation extends Model
      */
     protected $fillable = [
         'customer_id',
-        'staff_id',
+        'admin_id',
         'status',
         'last_message_at',
         'closed_at',
@@ -47,13 +47,13 @@ class ChatConversation extends Model
     }
 
     /**
-     * Staff đang phụ trách cuộc trò chuyện.
+     * Admin đang phụ trách cuộc trò chuyện.
      */
-    public function staff(): BelongsTo
+    public function admin(): BelongsTo
     {
         return $this->belongsTo(
             User::class,
-            'staff_id'
+            'admin_id'
         );
     }
 

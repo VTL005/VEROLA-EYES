@@ -107,7 +107,7 @@
 
 
                     <p>
-                        Nhập email của Customer hoặc Staff
+                        Nhập email Customer
                         để nhận liên kết đặt lại mật khẩu.
                     </p>
 

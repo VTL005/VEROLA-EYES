@@ -510,7 +510,7 @@
 
                                     @else
 
-                                        Đang chờ nhân viên
+                                        Đang chờ Admin
                                         xác nhận lịch.
 
                                     @endif
@@ -844,7 +844,7 @@
 
                         <p>
 
-                            Nếu nhân viên đã lưu kết quả
+                            Nếu Admin đã lưu kết quả
                             đo mắt, bạn có thể xem trong
                             hồ sơ thị lực của mình.
 

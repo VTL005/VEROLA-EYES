@@ -14,7 +14,9 @@ class AdminMiddleware
         $user = $request->user();
 
         abort_unless(
-            $user && $user->isAdmin(),
+            $user
+                && $user->is_active
+                && $user->isAdmin(),
             403,
             'Bạn không có quyền truy cập khu vực quản trị.'
         );

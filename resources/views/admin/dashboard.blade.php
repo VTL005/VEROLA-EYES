@@ -333,21 +333,21 @@
 
     <a
         href="{{ route(
-            'admin.staff.index'
+            'admin.chat.index'
         ) }}"
         class="admin-dashboard-mini-card"
     >
 
         <span>
-            Nhân viên
+            Tư vấn khách hàng
         </span>
 
         <strong>
-            {{ $staffCount }}
+            {{ $waitingChatCount }} hội thoại chờ
         </strong>
 
         <small>
-            Quản lý nhân viên →
+            Mở hộp thư tư vấn →
         </small>
 
     </a>

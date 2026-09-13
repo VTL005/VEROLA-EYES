@@ -165,7 +165,7 @@ class ReviewService
 
                     /*
                      * Review mới mặc định hiển thị.
-                     * Staff/Admin có thể ẩn sau.
+                     * Admin/Admin có thể ẩn sau.
                      */
                     'is_visible' =>
                         true,
