@@ -1,0 +1,1093 @@
+/* =========================================================
+   VELORA EYES - HOMEPAGE STYLING (BATCH 1)
+   Quiet Luxury / Haute Optique / Editorial Eyewear
+   Responsive: 375px, 430px, 768px, 1024px, 1280px, 1440px
+========================================================= */
+
+.vl-home-page {
+  overflow-x: hidden;
+  background-color: var(--vl-warm-alabaster);
+}
+
+/* =========================================================
+   1. EDITORIAL ASYMMETRIC HERO (Large Cinematic Video)
+========================================================= */
+
+.vl-hero-section {
+  position: relative;
+  min-height: 600px;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  isolation: isolate;
+  background:
+    radial-gradient(circle at 75% 40%, rgba(56, 189, 248, 0.08), transparent 35%),
+    linear-gradient(105deg, var(--vl-warm-alabaster) 0%, #f5f8fc 45%, var(--vl-ice-blue) 100%);
+  border-bottom: 1px solid var(--vl-border-subtle);
+}
+
+/* Protective left scrim ensuring text readability */
+.vl-hero-section::before {
+  content: "";
+  position: absolute;
+  z-index: 2;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 52%;
+  pointer-events: none;
+  background: linear-gradient(
+    90deg,
+    var(--vl-warm-alabaster) 0%,
+    rgba(250, 248, 243, 0.98) 60%,
+    rgba(250, 248, 243, 0.65) 84%,
+    transparent 100%
+  );
+}
+
+.vl-hero-container {
+  position: relative;
+  z-index: 5;
+  width: min(calc(100% - (var(--vl-gutter) * 2)), var(--vl-container-max));
+  margin-left: auto;
+  margin-right: auto;
+  padding: 80px 0 100px;
+}
+
+.vl-hero-content {
+  position: relative;
+  z-index: 6;
+  max-width: 580px;
+}
+
+.vl-hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  border-radius: var(--vl-radius-full);
+  background: var(--vl-surface-white);
+  border: 1px solid var(--vl-champagne-border);
+  color: var(--vl-navy-deep);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 22px;
+  box-shadow: var(--vl-shadow-xs);
+}
+
+.vl-hero-title {
+  font-family: var(--vl-font-serif);
+  font-size: clamp(2.35rem, 4.3vw, 3.8rem);
+  font-weight: 700;
+  line-height: 1.1;
+  color: var(--vl-navy-deep);
+  letter-spacing: normal;
+  margin: 0 0 22px;
+}
+
+.vl-hero-title .vl-hero-accent {
+  font-style: italic;
+  font-weight: 400;
+  color: var(--vl-champagne-dark);
+}
+
+.vl-hero-description {
+  font-size: clamp(1.02rem, 1.3vw, 1.16rem);
+  line-height: 1.7;
+  color: var(--vl-body-text);
+  max-width: 520px;
+  margin: 0 0 32px;
+}
+
+.vl-hero-actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+/* Large Cinematic Video Stage */
+.vl-hero-video-stage {
+  position: absolute;
+  z-index: 1;
+  top: 50%;
+  right: -3%;
+  width: min(72vw, 1080px);
+  aspect-ratio: 21 / 9;
+  transform: translateY(-50%);
+  overflow: hidden;
+  border-radius: var(--vl-radius-xl);
+  box-shadow:
+    0 24px 60px rgba(8, 22, 40, 0.1),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.35);
+  background-color: var(--vl-navy-deep);
+}
+
+.vl-hero-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+}
+
+/* Left-Edge Feathered Blur Transition (Only blurs overlap zone) */
+.vl-hero-video-feather {
+  position: absolute;
+  z-index: 3;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 28%;
+  pointer-events: none;
+  background: linear-gradient(
+    90deg,
+    rgba(250, 248, 243, 0.96) 0%,
+    rgba(250, 248, 243, 0.75) 25%,
+    rgba(250, 248, 243, 0.35) 60%,
+    transparent 100%
+  );
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  -webkit-mask-image: linear-gradient(90deg, #000 0%, rgba(0, 0, 0, 0.85) 30%, rgba(0, 0, 0, 0.4) 65%, transparent 100%);
+  mask-image: linear-gradient(90deg, #000 0%, rgba(0, 0, 0, 0.85) 30%, rgba(0, 0, 0, 0.4) 65%, transparent 100%);
+}
+
+/* Ambient glow */
+.vl-hero-glow {
+  position: absolute;
+  z-index: 0;
+  top: 50%;
+  right: 8%;
+  width: 580px;
+  height: 320px;
+  transform: translateY(-50%);
+  pointer-events: none;
+  background: radial-gradient(circle at center, rgba(56, 189, 248, 0.18) 0%, rgba(14, 34, 61, 0.08) 45%, transparent 72%);
+  filter: blur(36px);
+}
+
+/* =========================================================
+   2. FLOATING BENEFITS STRIP (Layering Depth)
+========================================================= */
+
+.vl-strip-wrapper {
+  position: relative;
+  z-index: 10;
+  margin-top: -46px;
+  margin-bottom: 64px;
+}
+
+.vl-strip-card {
+  background: var(--vl-surface-white);
+  border-radius: var(--vl-radius-md);
+  border: 1px solid var(--vl-border-subtle);
+  box-shadow: var(--vl-shadow-md);
+  padding: 30px 36px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 32px;
+}
+
+.vl-strip-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  position: relative;
+}
+
+.vl-strip-item:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  top: 6px;
+  bottom: 6px;
+  right: -16px;
+  width: 1px;
+  background-color: var(--vl-border-subtle);
+}
+
+.vl-strip-icon {
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  border-radius: var(--vl-radius-sm);
+  background: var(--vl-ice-tint);
+  border: 1px solid var(--vl-ice-border);
+  color: var(--vl-navy-midnight);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.vl-strip-icon svg {
+  width: 22px;
+  height: 22px;
+  stroke: var(--vl-navy-midnight);
+}
+
+.vl-strip-title {
+  font-family: var(--vl-font-serif);
+  font-size: 1.12rem;
+  font-weight: 700;
+  color: var(--vl-navy-deep);
+  margin: 0 0 6px;
+}
+
+.vl-strip-text {
+  font-size: 0.9rem;
+  color: var(--vl-body-text);
+  line-height: 1.55;
+  margin: 0;
+}
+
+/* =========================================================
+   3. BENTO GRID CATEGORIES
+========================================================= */
+
+.vl-section-categories {
+  padding: 24px 0 88px;
+}
+
+.vl-section-header {
+  margin-bottom: 38px;
+}
+
+.vl-section-header.text-center {
+  text-align: center;
+}
+.vl-section-header.text-center .vl-kicker {
+  justify-content: center;
+}
+
+.vl-section-title {
+  font-family: var(--vl-font-serif);
+  font-size: clamp(1.85rem, 3.2vw, 2.75rem);
+  font-weight: 700;
+  line-height: 1.18;
+  color: var(--vl-navy-deep);
+  margin: 0 0 12px;
+  letter-spacing: normal;
+}
+
+.vl-section-subtitle {
+  font-size: 1.02rem;
+  color: var(--vl-body-text);
+  line-height: 1.6;
+  max-width: 600px;
+  margin: 0;
+}
+
+.vl-section-header.text-center .vl-section-subtitle {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.vl-bento-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.vl-bento-item {
+  position: relative;
+  background: var(--vl-surface-white);
+  border-radius: var(--vl-radius-md);
+  border: 1px solid var(--vl-border-subtle);
+  overflow: hidden;
+  box-shadow: var(--vl-shadow-sm);
+  display: flex;
+  flex-direction: column;
+  transition: transform var(--vl-duration-micro) var(--vl-ease-luxury), box-shadow var(--vl-duration-micro) ease;
+}
+
+.vl-bento-item:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--vl-shadow-lg);
+  border-color: rgba(14, 34, 61, 0.16);
+}
+
+.vl-bento-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 220px;
+  background: radial-gradient(circle at 50% 50%, #FFFFFF 0%, #F5F1EA 100%);
+  position: relative;
+  overflow: hidden;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(14, 34, 61, 0.05);
+}
+
+.vl-bento-img {
+  width: auto;
+  height: auto;
+  max-width: 84%;
+  max-height: 84%;
+  object-fit: contain;
+  mix-blend-mode: multiply;
+  padding: 0;
+  transition: transform 0.4s var(--vl-ease-luxury);
+}
+
+.vl-bento-item:hover .vl-bento-img {
+  transform: scale(1.05);
+}
+
+.vl-bento-fallback {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3rem;
+  color: var(--vl-border-subtle);
+  background: var(--vl-soft-stone);
+}
+
+.vl-bento-body {
+  padding: 20px 24px 24px;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.vl-bento-title {
+  font-family: var(--vl-font-serif);
+  font-size: 1.22rem;
+  font-weight: 700;
+  color: var(--vl-navy-deep);
+  margin: 0 0 8px;
+}
+
+.vl-bento-desc {
+  font-size: 0.88rem;
+  color: var(--vl-body-text);
+  line-height: 1.55;
+  margin: 0 0 14px;
+  flex-grow: 1;
+}
+
+.vl-bento-action {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--vl-navy-midnight);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: gap var(--vl-duration-micro) ease, color var(--vl-duration-micro) ease;
+}
+
+.vl-bento-action:hover {
+  color: var(--vl-optical-cyan);
+  gap: 10px;
+}
+
+/* =========================================================
+   4. CURATED NEW ARRIVALS (Featured Spotlight + Subgrid)
+========================================================= */
+
+.vl-section-arrivals {
+  padding: 80px 0;
+  background: var(--vl-surface-white);
+  border-top: 1px solid var(--vl-border-subtle);
+  border-bottom: 1px solid var(--vl-border-subtle);
+}
+
+.vl-section-header-row {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 38px;
+  flex-wrap: wrap;
+}
+
+.vl-curated-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 1.35fr);
+  gap: 32px;
+  align-items: stretch;
+}
+
+/* Featured Card */
+.vl-featured-card {
+  background: var(--vl-warm-alabaster);
+  border: 1px solid var(--vl-border-subtle);
+  border-radius: var(--vl-radius-lg);
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-shadow: var(--vl-shadow-sm);
+  position: relative;
+  transition: box-shadow var(--vl-duration-micro) ease, transform var(--vl-duration-micro) ease;
+}
+
+.vl-featured-card:hover {
+  box-shadow: var(--vl-shadow-lg);
+  transform: translateY(-3px);
+}
+
+.vl-featured-badge-top {
+  position: absolute;
+  top: 24px;
+  left: 24px;
+  z-index: 3;
+  padding: 4px 10px;
+  background: var(--vl-navy-midnight);
+  color: #ffffff;
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border-radius: var(--vl-radius-xs);
+}
+
+.vl-featured-discount {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  z-index: 3;
+  padding: 4px 10px;
+  background: var(--vl-error);
+  color: #ffffff;
+  font-size: 0.8rem;
+  font-weight: 700;
+  border-radius: var(--vl-radius-xs);
+}
+
+.vl-featured-img-wrap {
+  width: 100%;
+  aspect-ratio: 16 / 11;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 20px 0;
+  overflow: hidden;
+}
+
+.vl-featured-img {
+  max-width: 88%;
+  max-height: 88%;
+  object-fit: contain;
+  transition: transform 0.4s var(--vl-ease-luxury);
+}
+
+.vl-featured-card:hover .vl-featured-img {
+  transform: scale(1.05);
+}
+
+.vl-featured-category {
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--vl-champagne-dark);
+  text-decoration: none;
+  margin-bottom: 6px;
+  display: inline-block;
+}
+
+.vl-featured-title {
+  font-family: var(--vl-font-serif);
+  font-size: clamp(1.35rem, 2.2vw, 1.75rem);
+  font-weight: 700;
+  color: var(--vl-navy-deep);
+  margin: 0 0 10px;
+  line-height: 1.25;
+}
+
+.vl-featured-title a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.vl-featured-pricing {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.vl-featured-price-curr {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--vl-navy-deep);
+}
+
+.vl-featured-price-old {
+  font-size: 0.95rem;
+  color: var(--vl-text-muted);
+  text-decoration: line-through;
+}
+
+.vl-featured-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: var(--vl-radius-full);
+  margin-bottom: 22px;
+}
+
+.vl-featured-status.is-ready {
+  background: var(--vl-success-bg);
+  color: var(--vl-success);
+  border: 1px solid var(--vl-success-border);
+}
+
+.vl-featured-status.is-contact {
+  background: var(--vl-soft-stone);
+  color: var(--vl-body-text);
+  border: 1px solid var(--vl-border-subtle);
+}
+
+/* Secondary Subgrid */
+.vl-arrivals-subgrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+/* Product Card Enhanced Compatibility */
+.vl-home-page .product-card {
+  background: var(--vl-surface-white);
+  border: 1px solid var(--vl-border-subtle);
+  border-radius: var(--vl-radius-md);
+  overflow: hidden;
+  box-shadow: var(--vl-shadow-xs);
+  display: flex;
+  flex-direction: column;
+  transition: transform var(--vl-duration-micro) var(--vl-ease-luxury), box-shadow var(--vl-duration-micro) ease;
+}
+
+.vl-home-page .product-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--vl-shadow-md);
+  border-color: rgba(14, 34, 61, 0.16);
+}
+
+.vl-home-page .product-card-image {
+  background: var(--vl-warm-alabaster);
+  aspect-ratio: 16 / 11;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  position: relative;
+  overflow: hidden;
+}
+
+.vl-home-page .product-card-image img {
+  max-width: 88%;
+  max-height: 88%;
+  object-fit: contain;
+  transition: transform 0.35s var(--vl-ease-luxury);
+}
+
+.vl-home-page .product-card:hover .product-card-image img {
+  transform: scale(1.05);
+}
+
+.vl-home-page .product-card-body {
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.vl-home-page .product-category {
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--vl-champagne-dark);
+  text-decoration: none;
+  margin-bottom: 4px;
+}
+
+.vl-home-page .product-title {
+  font-family: var(--vl-font-serif);
+  font-size: 1.05rem;
+  font-weight: 700;
+  line-height: 1.35;
+  margin: 0 0 10px;
+  color: var(--vl-navy-deep);
+}
+
+.vl-home-page .product-title a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.vl-home-page .product-price {
+  font-size: 1.12rem;
+  font-weight: 800;
+  color: var(--vl-navy-deep);
+}
+
+.vl-home-page .product-old-price {
+  font-size: 0.88rem;
+  color: var(--vl-text-muted);
+  text-decoration: line-through;
+  margin-right: 6px;
+}
+
+.vl-home-page .product-card .btn {
+  border-radius: var(--vl-radius-sm);
+  font-size: 0.88rem;
+  min-height: 42px;
+}
+
+/* =========================================================
+   5. SALE PRODUCTS SECTION (SPECIAL OFFER)
+========================================================= */
+
+.vl-section-sale {
+  padding: 88px 0;
+  background: var(--vl-warm-alabaster);
+  border-bottom: 1px solid var(--vl-border-subtle);
+}
+
+.vl-sale-badge-header {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 12px;
+  background: var(--vl-error-bg);
+  border: 1px solid var(--vl-error-border);
+  color: var(--vl-error);
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border-radius: var(--vl-radius-full);
+  margin-bottom: 10px;
+}
+
+.vl-sale-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 22px;
+}
+
+/* =========================================================
+   6. VISION CARE / ĐẶT LỊCH ĐO MẮT (Deep Ocean Navy)
+========================================================= */
+
+.vl-section-vision {
+  padding: 96px 0;
+  background: var(--vl-navy-deep);
+  color: #ffffff;
+  position: relative;
+  overflow: hidden;
+}
+
+.vl-vision-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.95fr);
+  gap: 52px;
+  align-items: center;
+  position: relative;
+  z-index: 2;
+}
+
+.vl-vision-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  border-radius: var(--vl-radius-full);
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  color: var(--vl-ice-blue);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 18px;
+}
+
+.vl-vision-title {
+  font-family: var(--vl-font-serif);
+  font-size: clamp(2rem, 3.4vw, 2.9rem);
+  font-weight: 700;
+  line-height: 1.16;
+  color: #ffffff;
+  margin: 0 0 18px;
+  letter-spacing: normal;
+}
+
+.vl-vision-text {
+  font-size: 1.05rem;
+  line-height: 1.7;
+  color: #cbd5e1;
+  margin: 0 0 32px;
+  max-width: 530px;
+}
+
+.vl-vision-card-box {
+  background: linear-gradient(145deg, rgba(21, 52, 84, 0.65), rgba(14, 34, 61, 0.9));
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: var(--vl-radius-lg);
+  padding: 36px;
+  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.32);
+}
+
+.vl-vision-spec-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.vl-vision-spec-item:not(:last-child) {
+  margin-bottom: 24px;
+}
+
+.vl-vision-spec-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: var(--vl-radius-sm);
+  background: rgba(56, 189, 248, 0.12);
+  border: 1px solid rgba(56, 189, 248, 0.28);
+  color: var(--vl-optical-cyan);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.vl-vision-spec-icon svg {
+  width: 18px;
+  height: 18px;
+  stroke: var(--vl-optical-cyan);
+}
+
+.vl-vision-spec-content h4 {
+  font-family: var(--vl-font-serif);
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0 0 4px;
+}
+
+.vl-vision-spec-content p {
+  font-size: 0.88rem;
+  color: #94a3b8;
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* =========================================================
+   7. THE VELORA EXPERIENCE (Storytelling Flow)
+========================================================= */
+
+.vl-section-experience {
+  padding: 96px 0;
+  background: var(--vl-surface-white);
+}
+
+.vl-experience-timeline {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 26px;
+  position: relative;
+  margin-top: 48px;
+}
+
+.vl-experience-timeline::before {
+  content: "";
+  position: absolute;
+  top: 34px;
+  left: 24px;
+  right: 24px;
+  height: 1px;
+  background: var(--vl-border-subtle);
+  z-index: 1;
+}
+
+.vl-step-card {
+  position: relative;
+  z-index: 2;
+  background: var(--vl-surface-white);
+  padding: 24px 20px;
+  border-radius: var(--vl-radius-md);
+  border: 1px solid var(--vl-border-subtle);
+  transition: all var(--vl-duration-micro) ease;
+}
+
+.vl-step-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(14, 34, 61, 0.2);
+  box-shadow: var(--vl-shadow-md);
+}
+
+.vl-step-badge {
+  font-family: var(--vl-font-serif);
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--vl-champagne-dark);
+  line-height: 1;
+  margin-bottom: 16px;
+  display: inline-block;
+  padding: 6px 12px;
+  background: var(--vl-champagne-light);
+  border-radius: var(--vl-radius-sm);
+  border: 1px solid var(--vl-champagne-border);
+}
+
+.vl-step-title {
+  font-family: var(--vl-font-serif);
+  font-size: 1.12rem;
+  font-weight: 700;
+  color: var(--vl-navy-deep);
+  margin: 0 0 8px;
+}
+
+.vl-step-desc {
+  font-size: 0.9rem;
+  color: var(--vl-body-text);
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* =========================================================
+   8. WARRANTY & SUPPORT
+========================================================= */
+
+.vl-section-warranty {
+  padding: 0 0 96px;
+  background: var(--vl-surface-white);
+}
+
+.vl-warranty-box {
+  background: linear-gradient(135deg, var(--vl-warm-alabaster) 0%, var(--vl-surface-white) 100%);
+  border: 1px solid var(--vl-border-subtle);
+  border-radius: var(--vl-radius-lg);
+  padding: 44px 52px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 32px;
+  box-shadow: var(--vl-shadow-sm);
+  flex-wrap: wrap;
+}
+
+.vl-warranty-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: var(--vl-radius-full);
+  background: var(--vl-success-bg);
+  border: 1px solid var(--vl-success-border);
+  color: var(--vl-success);
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 12px;
+}
+
+.vl-warranty-title {
+  font-family: var(--vl-font-serif);
+  font-size: clamp(1.55rem, 2.5vw, 2.15rem);
+  font-weight: 700;
+  color: var(--vl-navy-deep);
+  margin: 0 0 8px;
+}
+
+.vl-warranty-desc {
+  font-size: 1rem;
+  color: var(--vl-body-text);
+  margin: 0;
+  max-width: 580px;
+}
+
+/* =========================================================
+   RESPONSIVE MATRIX (375px, 430px, 768px, 1024px, 1440px)
+========================================================= */
+
+/* Mobile Portrait <= 640px (Target: 375px, 430px) */
+@media (max-width: 640px) {
+  .vl-hero-section {
+    padding: 36px 0 48px;
+    min-height: auto;
+  }
+  .vl-hero-section::before {
+    display: none;
+  }
+  .vl-hero-container {
+    padding: 0;
+  }
+  .vl-hero-video-stage {
+    position: relative;
+    top: auto;
+    right: auto;
+    transform: none;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    margin-top: 28px;
+    border-radius: var(--vl-radius-md);
+  }
+  .vl-hero-video-feather {
+    display: none;
+  }
+  .vl-hero-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .vl-hero-actions .vl-btn {
+    width: 100%;
+  }
+
+  /* Strip */
+  .vl-strip-wrapper {
+    margin-top: 24px;
+    margin-bottom: 48px;
+  }
+  .vl-strip-card {
+    grid-template-columns: 1fr;
+    gap: 20px;
+    padding: 20px;
+  }
+  .vl-strip-item:not(:last-child)::after {
+    display: none;
+  }
+
+  /* Bento Grid */
+  .vl-bento-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  .vl-bento-grid > .vl-bento-item,
+  .vl-bento-grid > .vl-bento-item:nth-child(n) {
+    grid-column: span 1 !important;
+  }
+  .vl-bento-link {
+    height: 190px !important;
+  }
+
+  /* Curated Arrivals */
+  .vl-curated-layout {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+  .vl-arrivals-subgrid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  .vl-featured-card {
+    padding: 22px;
+  }
+
+  /* Sale */
+  .vl-sale-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  /* Vision Care */
+  .vl-section-vision {
+    padding: 60px 0;
+  }
+  .vl-vision-grid {
+    grid-template-columns: 1fr;
+    gap: 36px;
+  }
+  .vl-vision-card-box {
+    padding: 24px;
+  }
+
+  /* Timeline */
+  .vl-experience-timeline {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  .vl-experience-timeline::before {
+    display: none;
+  }
+
+  /* Warranty */
+  .vl-warranty-box {
+    padding: 28px 20px;
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .vl-warranty-box .vl-btn {
+    width: 100%;
+  }
+}
+
+/* Tablet Portrait (641px - 899px, Target: 768px) */
+@media (min-width: 641px) and (max-width: 899px) {
+  .vl-hero-section {
+    padding: 48px 0;
+  }
+  .vl-hero-section::before {
+    width: 70%;
+  }
+  .vl-hero-video-stage {
+    right: -12%;
+    width: 85vw;
+    opacity: 0.65;
+  }
+  .vl-strip-card {
+    grid-template-columns: 1fr;
+    gap: 22px;
+  }
+  .vl-strip-item:not(:last-child)::after {
+    display: none;
+  }
+
+  .vl-bento-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .vl-bento-grid > .vl-bento-item,
+  .vl-bento-grid > .vl-bento-item:nth-child(n) {
+    grid-column: span 1 !important;
+  }
+
+  .vl-curated-layout {
+    grid-template-columns: 1fr;
+  }
+  .vl-arrivals-subgrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .vl-sale-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .vl-vision-grid {
+    grid-template-columns: 1fr;
+    gap: 36px;
+  }
+  .vl-experience-timeline {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .vl-experience-timeline::before {
+    display: none;
+  }
+}
+
+/* Tablet Landscape / Small Desktop (900px - 1199px, Target: 1024px) */
+@media (min-width: 900px) and (max-width: 1199px) {
+  .vl-hero-video-stage {
+    right: -6%;
+    width: 68vw;
+  }
+  .vl-curated-layout {
+    grid-template-columns: 1fr 1.2fr;
+    gap: 24px;
+  }
+  .vl-sale-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}

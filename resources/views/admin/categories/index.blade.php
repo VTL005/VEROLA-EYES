@@ -368,6 +368,14 @@
 
                                         </span>
 
+                                        @if($category->is_home_featured)
+                                            <div style="margin-top: 4px;">
+                                                <span class="admin-status success" style="font-size: 0.7rem; padding: 2px 6px;">
+                                                    <i class="bi bi-star-fill" style="margin-right: 3px;"></i> Danh mục chủ đạo
+                                                </span>
+                                            </div>
+                                        @endif
+
                                     </div>
 
                                 </div>

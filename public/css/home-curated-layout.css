@@ -1,0 +1,490 @@
+/* =========================================================
+   VELORA EYES — HOME CURATED LAYOUT
+   Section Categories (1 Featured 9:16 + 4 Secondary 1:1)
+   Section New Products (1 Primary + 4 Secondary 2x2)
+   ========================================================= */
+
+/* ---------------------------------------------------------
+   1. SECTION CATEGORIES
+   --------------------------------------------------------- */
+
+/* Default Mobile (< 768px) */
+.vl-home-page .home-categories__layout {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+    width: 100%;
+    margin-inline: auto;
+}
+
+.vl-home-page .home-category-featured {
+    position: relative;
+    width: 100%;
+    max-width: 320px;
+    margin-inline: auto;
+    aspect-ratio: 9 / 16;
+    overflow: hidden;
+    border-radius: 20px;
+    box-shadow: 0 12px 32px -6px rgba(16, 40, 59, 0.12);
+    background: #0f172a;
+}
+
+.vl-home-page .home-categories__secondary-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+    width: 100%;
+    min-width: 0;
+}
+
+.vl-home-page .home-category-secondary {
+    position: relative;
+    width: 100%;
+    min-width: 0;
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+    border-radius: 16px;
+    box-shadow: 0 8px 24px -4px rgba(16, 40, 59, 0.08);
+    background: #0f172a;
+}
+
+/* Category Card Media Covering Slot Perfectly */
+.vl-home-page .home-category-card__media {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    margin: 0;
+    display: block;
+    overflow: hidden;
+    z-index: 1;
+}
+
+.vl-home-page .home-category-card__media img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    object-fit: cover;
+    object-position: center;
+    transform: none;
+    transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.vl-home-page .home-category-featured:hover .home-category-card__media img,
+.vl-home-page .home-category-secondary:hover .home-category-card__media img {
+    transform: scale(1.04);
+}
+
+/* Category Card Overlay Content */
+.vl-home-page .home-category-card__content {
+    position: absolute;
+    inset-inline: 0;
+    bottom: 0;
+    z-index: 2;
+    padding: 24px 20px;
+    background: linear-gradient(180deg, rgba(15, 23, 42, 0) 0%, rgba(15, 23, 42, 0.5) 35%, rgba(15, 23, 42, 0.92) 100%);
+    color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    pointer-events: none;
+}
+
+.vl-home-page .home-category-card__content > * {
+    pointer-events: auto;
+}
+
+.vl-home-page .home-category-badge {
+    align-self: flex-start;
+    display: inline-block;
+    padding: 5px 12px;
+    background: #ffffff;
+    color: #0f172a;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    border-radius: 6px;
+    margin-bottom: 4px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.vl-home-page .home-category-title {
+    font-size: 1.375rem;
+    font-weight: 600;
+    color: #ffffff;
+    margin: 0;
+    line-height: 1.25;
+    letter-spacing: -0.01em;
+}
+
+.vl-home-page .home-category-secondary .home-category-title {
+    font-size: 1.125rem;
+}
+
+.vl-home-page .home-category-desc {
+    font-size: 0.875rem;
+    color: rgba(255, 255, 255, 0.88);
+    margin: 0;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.vl-home-page .home-category-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #ffffff;
+    text-decoration: none;
+    margin-top: 4px;
+    transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.vl-home-page .home-category-cta:hover {
+    color: #93c5fd;
+    transform: translateX(4px);
+}
+
+/* Category Tablet (768px - 1023px) */
+@media (min-width: 768px) and (max-width: 1023px) {
+    .vl-home-page .home-categories__layout {
+        display: grid;
+        grid-template-columns: minmax(0, 9fr) minmax(0, 16fr);
+        gap: 16px;
+        align-items: start;
+    }
+
+    .vl-home-page .home-category-featured {
+        max-width: none;
+        margin-inline: 0;
+        border-radius: 20px;
+    }
+
+    .vl-home-page .home-categories__secondary-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 16px;
+    }
+
+    .vl-home-page .home-category-secondary {
+        border-radius: 16px;
+    }
+}
+
+/* Category Desktop (>= 1024px) */
+@media (min-width: 1024px) {
+    .vl-home-page .home-categories__layout {
+        display: grid;
+        grid-template-columns: minmax(0, 9fr) minmax(0, 16fr);
+        gap: 24px;
+        align-items: start;
+        width: 100%;
+        max-width: 1440px;
+        margin-inline: auto;
+    }
+
+    .vl-home-page .home-category-featured {
+        position: relative;
+        width: 100%;
+        min-width: 0;
+        max-width: none;
+        margin-inline: 0;
+        aspect-ratio: 9 / 16;
+        overflow: hidden;
+        border-radius: 24px;
+        box-shadow: 0 16px 40px -10px rgba(16, 40, 59, 0.14);
+    }
+
+    .vl-home-page .home-categories__secondary-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 24px;
+        min-width: 0;
+    }
+
+    .vl-home-page .home-category-secondary {
+        position: relative;
+        width: 100%;
+        min-width: 0;
+        aspect-ratio: 1 / 1;
+        overflow: hidden;
+        border-radius: 20px;
+        box-shadow: 0 10px 28px -6px rgba(16, 40, 59, 0.08);
+    }
+}
+
+/* Mobile extra-small (< 480px) */
+@media (max-width: 479px) {
+    .vl-home-page .home-categories__secondary-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+
+/* ---------------------------------------------------------
+   2. SECTION NEW PRODUCTS (1 Primary + 4 Secondary 2x2)
+   --------------------------------------------------------- */
+
+/* Default Mobile (< 768px) */
+.vl-home-page .home-new-products__layout {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+    width: 100%;
+    margin-inline: auto;
+}
+
+.vl-home-page .home-new-products__primary {
+    position: relative;
+    background: #ffffff;
+    border: 1px solid rgba(16, 40, 59, 0.08);
+    border-radius: 20px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-shadow: 0 10px 30px -6px rgba(16, 40, 59, 0.06);
+    min-width: 0;
+}
+
+.vl-home-page .home-new-products__secondary-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+    width: 100%;
+    min-width: 0;
+}
+
+/* Primary Card Elements */
+.vl-home-page .home-new-products__badge-top {
+    position: absolute;
+    top: 18px;
+    left: 20px;
+    background: #0f172a;
+    color: #ffffff;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    padding: 5px 12px;
+    border-radius: 100px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    z-index: 10;
+}
+
+.vl-home-page .home-new-products__discount {
+    position: absolute;
+    top: 18px;
+    right: 20px;
+    background: #ef4444;
+    color: #ffffff;
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 4px 8px;
+    border-radius: 6px;
+    z-index: 10;
+}
+
+.vl-home-page .home-new-products__primary-media {
+    display: block;
+    position: relative;
+    aspect-ratio: 4 / 3;
+    border-radius: 14px;
+    overflow: hidden;
+    background: #f8fafc;
+    margin-top: 24px;
+    margin-bottom: 16px;
+}
+
+.vl-home-page .home-new-products__primary-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    transition: transform 0.5s ease;
+}
+
+.vl-home-page .home-new-products__primary:hover .home-new-products__primary-img {
+    transform: scale(1.03);
+}
+
+.vl-home-page .home-new-products__primary-body {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex: 1;
+    justify-content: flex-end;
+}
+
+.vl-home-page .home-new-products__category {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #64748b;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.vl-home-page .home-new-products__category:hover {
+    color: #0f172a;
+}
+
+.vl-home-page .home-new-products__title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin: 0;
+    line-height: 1.3;
+}
+
+.vl-home-page .home-new-products__title a {
+    color: #0f172a;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.vl-home-page .home-new-products__title a:hover {
+    color: #2563eb;
+}
+
+.vl-home-page .home-new-products__pricing {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+}
+
+.vl-home-page .home-new-products__price-curr {
+    font-size: 1.1875rem;
+    font-weight: 700;
+    color: #0f172a;
+}
+
+.vl-home-page .home-new-products__price-old {
+    font-size: 0.875rem;
+    color: #94a3b8;
+    text-decoration: line-through;
+}
+
+.vl-home-page .home-new-products__status {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 6px;
+    display: inline-flex;
+    align-self: flex-start;
+}
+
+.vl-home-page .home-new-products__status.is-ready {
+    background: #ecfdf5;
+    color: #059669;
+}
+
+.vl-home-page .home-new-products__status.is-contact {
+    background: #f1f5f9;
+    color: #475569;
+}
+
+.vl-home-page .home-new-products__primary-action {
+    margin-top: 10px;
+}
+
+/* Secondary Cards inside 2x2 Grid */
+.vl-home-page .home-new-products__secondary-grid .product-card {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    border-radius: 20px;
+    border: 1px solid rgba(16, 40, 59, 0.08);
+    background: #ffffff;
+    overflow: hidden;
+    box-shadow: 0 4px 16px -2px rgba(16, 40, 59, 0.05);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.vl-home-page .home-new-products__secondary-grid .product-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 28px -4px rgba(16, 40, 59, 0.1);
+}
+
+.vl-home-page .home-new-products__secondary-grid .product-card-image {
+    aspect-ratio: 1 / 1;
+    position: relative;
+    background: #f8fafc;
+    overflow: hidden;
+}
+
+.vl-home-page .home-new-products__secondary-grid .product-card-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    transition: transform 0.4s ease;
+}
+
+.vl-home-page .home-new-products__secondary-grid .product-card:hover .product-card-image img {
+    transform: scale(1.04);
+}
+
+.vl-home-page .home-new-products__secondary-grid .product-card-body {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    justify-content: space-between;
+}
+
+/* New Products Tablet (768px - 1023px) */
+@media (min-width: 768px) and (max-width: 1023px) {
+    .vl-home-page .home-new-products__layout {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 16px;
+        align-items: stretch;
+    }
+
+    .vl-home-page .home-new-products__secondary-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 16px;
+    }
+}
+
+/* New Products Desktop (>= 1024px) */
+@media (min-width: 1024px) {
+    .vl-home-page .home-new-products__layout {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 24px;
+        align-items: stretch;
+        width: 100%;
+        max-width: 1440px;
+        margin-inline: auto;
+    }
+
+    .vl-home-page .home-new-products__primary {
+        padding: 28px;
+        border-radius: 24px;
+        box-shadow: 0 12px 36px -8px rgba(16, 40, 59, 0.08);
+    }
+
+    .vl-home-page .home-new-products__secondary-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 24px;
+        min-width: 0;
+    }
+}
+
+/* New Products Mobile Extra-Small (< 480px) */
+@media (max-width: 479px) {
+    .vl-home-page .home-new-products__secondary-grid {
+        grid-template-columns: 1fr;
+    }
+}

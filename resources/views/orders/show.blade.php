@@ -192,7 +192,7 @@ true
 
 
 
-<section class="section">
+<section class="section orders-section-luxury">
 
   <div class="velora-container">
 

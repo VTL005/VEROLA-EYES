@@ -1094,7 +1094,7 @@ $product->style_tags ?? []
               @if(! $image->is_primary)
 
               <form action="{{ route(
-                                            'admin.products.images.primary',
+                                            'admin.products.images.set-primary',
                                             [
                                                 $product,
                                                 $image,

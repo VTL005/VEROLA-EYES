@@ -37,35 +37,22 @@ return
   @endphp
 
 
-  <section style="
-        padding:54px 0 42px;
-        background:linear-gradient(135deg,#f8fbff,#edf5fc);
-        border-bottom:1px solid var(--velora-border);
-    ">
-
+  <section class="cart-intro-pearl">
     <div class="velora-container">
-
-      <span class="hero-kicker">
-        SHOPPING CART
-      </span>
-
-      <h1 style="margin-bottom:10px;">
-        Giỏ hàng của bạn
-      </h1>
-
-      <p class="text-muted mb-0">
-
-        Kiểm tra sản phẩm, số lượng
-        và voucher trước khi thanh toán.
-
-      </p>
-
+      <div class="cart-intro-inner">
+        <nav class="cart-breadcrumb" aria-label="Breadcrumb">
+          <a href="{{ route('home') }}">Trang chủ</a>
+          <span class="breadcrumb-separator">›</span>
+          <span class="breadcrumb-current">Giỏ hàng</span>
+        </nav>
+        <h1 class="cart-pearl-title">Giỏ hàng của bạn</h1>
+      </div>
     </div>
-
   </section>
 
 
-  <section class="section">
+
+  <section class="section cart-section-luxury">
 
     <div class="velora-container">
 

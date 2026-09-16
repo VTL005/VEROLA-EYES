@@ -1,432 +1,416 @@
 /* =========================================================
-   VELORA EYES - VOUCHER WALLET
-========================================================= */
+   VELORA OPTICAL PEARL COMMERCE: VOUCHER WALLET
+   ========================================================= */
+
+:root {
+  --vl-op-ink: #10243E;
+  --vl-op-petrol: #174654;
+  --vl-op-pearl: #F7F4EE;
+  --vl-op-porcelain: #FFFEFB;
+  --vl-op-mist: #E8F1F3;
+  --vl-op-glass: #BFD9DF;
+  --vl-op-champagne: #B89562;
+  --vl-op-terracotta: #C75A3B;
+  --vl-op-slate: #5B6878;
+  --vl-op-success: #2F765E;
+  --vl-op-warning: #A66A21;
+  --vl-op-error: #A33D3D;
+}
 
 .voucher-wallet-hero {
-    padding: 58px 0 54px;
-    background:
-        radial-gradient(
-            circle at 88% 15%,
-            rgba(74, 156, 255, 0.18),
-            transparent 30%
-        ),
-        linear-gradient(135deg, #071526 0%, #0b213c 55%, #123b69 100%);
-    color: #ffffff;
+  padding: 36px 0 32px !important;
+  background: var(--vl-op-pearl) !important;
+  border-bottom: 1px solid var(--vl-op-glass) !important;
+  color: var(--vl-op-ink) !important;
 }
 
 .voucher-wallet-kicker,
 .voucher-wallet-eyebrow {
-    display: inline-block;
-    color: #4aa7ff;
-    font-size: 0.76rem;
-    font-weight: 800;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
+  display: inline-block !important;
+  color: var(--vl-op-champagne) !important;
+  font-size: 0.72rem !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.14em !important;
+  text-transform: uppercase !important;
+  font-family: var(--vl-font-sans, 'Be Vietnam Pro', sans-serif) !important;
 }
 
 .voucher-wallet-hero h1 {
-    margin: 10px 0 8px;
-    color: #ffffff;
-    font-size: clamp(2rem, 5vw, 3.4rem);
-    line-height: 1.08;
+  margin: 6px 0 8px !important;
+  font-family: var(--vl-font-sans, 'Be Vietnam Pro', sans-serif) !important;
+  color: var(--vl-op-ink) !important;
+  font-size: clamp(1.6rem, 2.8vw, 2.2rem) !important;
+  font-weight: 700 !important;
+  letter-spacing: -0.02em !important;
+  line-height: 1.2 !important;
 }
 
 .voucher-wallet-hero p {
-    max-width: 620px;
-    margin: 0;
-    color: rgba(255, 255, 255, 0.74);
-    font-size: 1rem;
-    line-height: 1.7;
+  max-width: 620px !important;
+  margin: 0 !important;
+  color: var(--vl-op-slate) !important;
+  font-size: 0.92rem !important;
+  line-height: 1.6 !important;
+  font-family: var(--vl-font-sans, 'Be Vietnam Pro', sans-serif) !important;
 }
 
 /* =========================================================
    SECTION
-========================================================= */
+   ========================================================= */
 
 .voucher-wallet-section {
-    min-height: 520px;
-    padding: 52px 0 76px;
-    background: #f4f7fb;
+  min-height: 520px !important;
+  padding: 40px 0 72px !important;
+  background: var(--vl-op-pearl) !important;
 }
 
 .voucher-wallet-heading {
-    display: flex;
-    align-items: flex-end;
-    justify-content: space-between;
-    gap: 24px;
-    margin-bottom: 28px;
+  display: flex !important;
+  align-items: flex-end !important;
+  justify-content: space-between !important;
+  gap: 24px !important;
+  margin-bottom: 28px !important;
 }
 
 .voucher-wallet-heading h2 {
-    margin: 7px 0 6px;
-    color: #0b1e36;
-    font-size: clamp(1.45rem, 3vw, 2rem);
+  margin: 0 0 4px !important;
+  color: var(--vl-op-ink) !important;
+  font-size: clamp(1.35rem, 2.4vw, 1.7rem) !important;
+  font-weight: 700 !important;
+  font-family: var(--vl-font-sans, 'Be Vietnam Pro', sans-serif) !important;
 }
 
 .voucher-wallet-heading p {
-    margin: 0;
-    color: #68768a;
-    line-height: 1.6;
+  margin: 0 !important;
+  color: var(--vl-op-slate) !important;
+  font-size: 0.88rem !important;
+  font-family: var(--vl-font-sans, 'Be Vietnam Pro', sans-serif) !important;
 }
 
 .voucher-wallet-count {
-    flex-shrink: 0;
-    padding: 9px 14px;
-    border: 1px solid rgba(11, 30, 54, 0.1);
-    border-radius: 999px;
-    background: #ffffff;
-    color: #0b1e36;
-    font-size: 0.86rem;
-    font-weight: 700;
-    box-shadow: 0 8px 24px rgba(11, 30, 54, 0.06);
+  flex-shrink: 0 !important;
+  padding: 6px 14px !important;
+  border: 1px solid var(--vl-op-glass) !important;
+  border-radius: 999px !important;
+  background: var(--vl-op-porcelain) !important;
+  color: var(--vl-op-petrol) !important;
+  font-size: 0.82rem !important;
+  font-weight: 700 !important;
+  font-family: var(--vl-font-sans, 'Be Vietnam Pro', sans-serif) !important;
+  box-shadow: 0 2px 8px rgba(16, 36, 62, 0.04) !important;
 }
 
 /* =========================================================
    GRID
-========================================================= */
+   ========================================================= */
 
 .voucher-wallet-grid {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 22px;
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 20px !important;
 }
 
 /* =========================================================
-   VOUCHER CARD
-========================================================= */
+   VOUCHER CARD — TICKET CUTOUT
+   ========================================================= */
 
 .voucher-wallet-card {
-    position: relative;
-    display: grid;
-    grid-template-columns: 88px minmax(0, 1fr);
-    min-height: 280px;
-    overflow: hidden;
-    border: 1px solid rgba(11, 30, 54, 0.1);
-    border-radius: 18px;
-    background: #ffffff;
-    box-shadow: 0 15px 38px rgba(11, 30, 54, 0.08);
-    transition:
-        transform 0.22s ease,
-        box-shadow 0.22s ease,
-        border-color 0.22s ease;
+  position: relative !important;
+  display: grid !important;
+  grid-template-columns: 84px minmax(0, 1fr) !important;
+  min-height: 250px !important;
+  overflow: hidden !important;
+  border: 1px solid var(--vl-op-glass) !important;
+  border-radius: 16px !important;
+  background: var(--vl-op-porcelain) !important;
+  box-shadow: 0 4px 16px rgba(16, 36, 62, 0.04) !important;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease !important;
 }
 
 .voucher-wallet-card:hover {
-    transform: translateY(-4px);
-    border-color: rgba(31, 119, 209, 0.26);
-    box-shadow: 0 20px 48px rgba(11, 30, 54, 0.13);
+  transform: translateY(-2px) !important;
+  border-color: var(--vl-op-petrol) !important;
+  box-shadow: 0 8px 24px rgba(23, 70, 84, 0.08) !important;
 }
 
 .voucher-wallet-card::before,
 .voucher-wallet-card::after {
-    position: absolute;
-    left: 88px;
-    z-index: 2;
-    width: 22px;
-    height: 22px;
-    border: 1px solid rgba(11, 30, 54, 0.1);
-    border-radius: 50%;
-    background: #f4f7fb;
-    content: "";
-    transform: translateX(-50%);
+  position: absolute !important;
+  left: 84px !important;
+  z-index: 2 !important;
+  width: 20px !important;
+  height: 20px !important;
+  border: 1px solid var(--vl-op-glass) !important;
+  border-radius: 50% !important;
+  background: var(--vl-op-pearl) !important;
+  content: "" !important;
+  transform: translateX(-50%) !important;
 }
 
 .voucher-wallet-card::before {
-    top: -12px;
+  top: -11px !important;
 }
 
 .voucher-wallet-card::after {
-    bottom: -12px;
+  bottom: -11px !important;
 }
 
 .voucher-wallet-card.is-saved {
-    border-color: rgba(30, 142, 85, 0.25);
+  border-color: #B8E0D2 !important;
 }
 
-/* =========================================================
-   TICKET EDGE
-========================================================= */
-
+/* TICKET EDGE */
 .voucher-wallet-ticket-edge {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 18px 12px;
-    background: linear-gradient(160deg, #0b1e36, #164b80);
-    color: #ffffff;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 16px 10px !important;
+  background: var(--vl-op-mist) !important;
+  border-right: 1px dashed var(--vl-op-glass) !important;
+  color: var(--vl-op-petrol) !important;
 }
 
 .voucher-wallet-ticket-edge span {
-    display: grid;
-    width: 48px;
-    height: 48px;
-    place-items: center;
-    border: 1px solid rgba(255, 255, 255, 0.42);
-    border-radius: 50%;
-    font-family: Georgia, serif;
-    font-size: 1.7rem;
-    font-weight: 700;
-    box-shadow: inset 0 0 0 5px rgba(255, 255, 255, 0.08);
+  display: grid !important;
+  width: 44px !important;
+  height: 44px !important;
+  place-items: center !important;
+  border: 1px solid var(--vl-op-glass) !important;
+  border-radius: 50% !important;
+  background: var(--vl-op-porcelain) !important;
+  font-family: var(--vl-font-sans, 'Be Vietnam Pro', sans-serif) !important;
+  font-size: 1.3rem !important;
+  font-weight: 800 !important;
+  color: var(--vl-op-petrol) !important;
 }
 
-/* =========================================================
-   CONTENT
-========================================================= */
-
+/* CONTENT */
 .voucher-wallet-content {
-    display: flex;
-    min-width: 0;
-    flex-direction: column;
-    padding: 24px;
+  display: flex !important;
+  min-width: 0 !important;
+  flex-direction: column !important;
+  padding: 20px !important;
 }
 
 .voucher-wallet-card-top {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 16px;
+  display: flex !important;
+  align-items: flex-start !important;
+  justify-content: space-between !important;
+  gap: 14px !important;
 }
 
 .voucher-wallet-brand {
-    display: block;
-    margin-bottom: 5px;
-    color: #1f77d1;
-    font-size: 0.7rem;
-    font-weight: 800;
-    letter-spacing: 0.12em;
+  display: block !important;
+  margin-bottom: 4px !important;
+  color: var(--vl-op-champagne) !important;
+  font-size: 0.68rem !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.1em !important;
+  text-transform: uppercase !important;
+  font-family: var(--vl-font-sans, 'Be Vietnam Pro', sans-serif) !important;
 }
 
 .voucher-wallet-card h3 {
-    margin: 0;
-    color: #0b1e36;
-    font-size: 1.4rem;
-    line-height: 1.25;
+  margin: 0 !important;
+  color: var(--vl-op-ink) !important;
+  font-size: 1.25rem !important;
+  font-weight: 700 !important;
+  line-height: 1.3 !important;
+  font-family: var(--vl-font-sans, 'Be Vietnam Pro', sans-serif) !important;
 }
 
 .voucher-wallet-saved-badge {
-    flex-shrink: 0;
-    padding: 6px 10px;
-    border-radius: 999px;
-    background: #e8f8ef;
-    color: #147643;
-    font-size: 0.75rem;
-    font-weight: 800;
+  flex-shrink: 0 !important;
+  padding: 4px 10px !important;
+  border-radius: 999px !important;
+  background: #EFF9F5 !important;
+  color: var(--vl-op-success) !important;
+  border: 1px solid #B8E0D2 !important;
+  font-size: 0.72rem !important;
+  font-weight: 700 !important;
+  font-family: var(--vl-font-sans, 'Be Vietnam Pro', sans-serif) !important;
 }
-/* =========================================================
-   VOUCHER STATUS
-========================================================= */
 
 .voucher-wallet-statuses {
-    display: flex;
-    align-items: flex-end;
-    flex-direction: column;
-    flex-shrink: 0;
-    gap: 7px;
+  display: flex !important;
+  align-items: flex-end !important;
+  flex-direction: column !important;
+  flex-shrink: 0 !important;
+  gap: 6px !important;
 }
 
 .voucher-wallet-status-badge {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 6px 10px;
-    border-radius: 999px;
-    font-size: 0.73rem;
-    font-weight: 800;
-    white-space: nowrap;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 4px 10px !important;
+  border-radius: 999px !important;
+  font-size: 0.72rem !important;
+  font-weight: 700 !important;
+  white-space: nowrap !important;
+  font-family: var(--vl-font-sans, 'Be Vietnam Pro', sans-serif) !important;
 }
 
 .voucher-wallet-status-badge.is-upcoming {
-    border: 1px solid #cbdcf0;
-    background: #eef5fc;
-    color: #235b91;
+  border: 1px solid var(--vl-op-glass) !important;
+  background: var(--vl-op-mist) !important;
+  color: var(--vl-op-petrol) !important;
 }
 
-.voucher-wallet-card.is-upcoming {
-    border-color: rgba(35, 91, 145, 0.2);
-}
-
-.voucher-wallet-card.is-upcoming .voucher-wallet-ticket-edge {
-    background: linear-gradient(160deg, #38516c, #6685a6);
-}
-/* =========================================================
-   CODE
-========================================================= */
-
+/* CODE */
 .voucher-wallet-code {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 16px;
-    margin: 18px 0 15px;
-    padding: 11px 13px;
-    border: 1px dashed rgba(31, 119, 209, 0.36);
-    border-radius: 10px;
-    background: #f3f8fe;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 12px !important;
+  margin: 14px 0 12px !important;
+  padding: 9px 12px !important;
+  border: 1px dashed var(--vl-op-glass) !important;
+  border-radius: 8px !important;
+  background: var(--vl-op-mist) !important;
 }
 
 .voucher-wallet-code span {
-    color: #68768a;
-    font-size: 0.78rem;
+  color: var(--vl-op-slate) !important;
+  font-size: 0.78rem !important;
+  font-family: var(--vl-font-sans, 'Be Vietnam Pro', sans-serif) !important;
 }
 
 .voucher-wallet-code strong {
-    overflow-wrap: anywhere;
-    color: #0d579e;
-    font-size: 0.88rem;
-    letter-spacing: 0.06em;
+  overflow-wrap: anywhere !important;
+  color: var(--vl-op-petrol) !important;
+  font-size: 0.9rem !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.05em !important;
+  font-family: var(--vl-font-sans, 'Be Vietnam Pro', sans-serif) !important;
 }
 
-/* =========================================================
-   CONDITIONS
-========================================================= */
-
+/* CONDITIONS */
 .voucher-wallet-conditions {
-    display: grid;
-    gap: 8px;
-    margin: 0 0 20px;
-    padding: 0;
-    list-style: none;
+  display: grid !important;
+  gap: 6px !important;
+  margin: 0 0 16px !important;
+  padding: 0 !important;
+  list-style: none !important;
 }
 
 .voucher-wallet-conditions li {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 16px;
-    color: #68768a;
-    font-size: 0.82rem;
-    line-height: 1.45;
+  display: flex !important;
+  align-items: flex-start !important;
+  justify-content: space-between !important;
+  gap: 12px !important;
+  color: var(--vl-op-slate) !important;
+  font-size: 0.8rem !important;
+  line-height: 1.4 !important;
+  font-family: var(--vl-font-sans, 'Be Vietnam Pro', sans-serif) !important;
 }
 
 .voucher-wallet-conditions strong {
-    color: #26364c;
-    text-align: right;
+  color: var(--vl-op-ink) !important;
+  font-weight: 600 !important;
+  text-align: right !important;
 }
 
-/* =========================================================
-   ACTIONS
-========================================================= */
-
+/* ACTIONS */
 .voucher-wallet-actions {
-    margin-top: auto;
+  margin-top: auto !important;
 }
 
 .voucher-wallet-actions form {
-    width: 100%;
-    margin: 0;
+  width: 100% !important;
+  margin: 0 !important;
 }
 
 .voucher-wallet-actions .btn {
-    width: 100%;
-    justify-content: center;
+  width: 100% !important;
+  min-height: 40px !important;
+  justify-content: center !important;
+  border-radius: 8px !important;
+  font-family: var(--vl-font-sans, 'Be Vietnam Pro', sans-serif) !important;
+  font-size: 0.86rem !important;
+  font-weight: 700 !important;
+}
+
+.voucher-wallet-actions .btn-primary {
+  background: var(--vl-op-ink) !important;
+  color: #FFFFFF !important;
+  border: none !important;
+  transition: all 0.15s ease !important;
+}
+
+.voucher-wallet-actions .btn-primary:hover:not(:disabled) {
+  background: var(--vl-op-petrol) !important;
 }
 
 .voucher-wallet-actions .btn:disabled {
-    border-color: #dce4ed;
-    background: #eef2f6;
-    color: #738196;
-    cursor: not-allowed;
-    opacity: 1;
+  border: 1px solid var(--vl-op-glass) !important;
+  background: var(--vl-op-mist) !important;
+  color: var(--vl-op-slate) !important;
+  cursor: not-allowed !important;
+  opacity: 1 !important;
 }
 
-/* =========================================================
-   EMPTY STATE
-========================================================= */
-
+/* EMPTY STATE */
 .voucher-wallet-empty {
-    grid-column: 1 / -1;
-    padding: 58px 24px;
-    border: 1px dashed rgba(11, 30, 54, 0.18);
-    border-radius: 20px;
-    background: #ffffff;
-    text-align: center;
-    box-shadow: 0 14px 36px rgba(11, 30, 54, 0.06);
+  grid-column: 1 / -1 !important;
+  padding: 56px 24px !important;
+  border: 1px dashed var(--vl-op-glass) !important;
+  border-radius: 18px !important;
+  background: var(--vl-op-porcelain) !important;
+  text-align: center !important;
+  box-shadow: 0 4px 16px rgba(16, 36, 62, 0.04) !important;
 }
 
 .voucher-wallet-empty-icon {
-    display: grid;
-    width: 66px;
-    height: 66px;
-    margin: 0 auto 18px;
-    place-items: center;
-    border-radius: 20px;
-    background: linear-gradient(135deg, #0b1e36, #1f77d1);
-    color: #ffffff;
-    font-size: 1.8rem;
-    font-weight: 800;
-    transform: rotate(-5deg);
+  display: grid !important;
+  width: 60px !important;
+  height: 60px !important;
+  margin: 0 auto 16px !important;
+  place-items: center !important;
+  border-radius: 50% !important;
+  background: var(--vl-op-mist) !important;
+  color: var(--vl-op-petrol) !important;
+  font-size: 1.6rem !important;
+  font-weight: 800 !important;
 }
 
 .voucher-wallet-empty h2 {
-    margin: 0 0 8px;
-    color: #0b1e36;
+  margin: 0 0 6px !important;
+  color: var(--vl-op-ink) !important;
+  font-family: var(--vl-font-sans, 'Be Vietnam Pro', sans-serif) !important;
+  font-size: 1.35rem !important;
+  font-weight: 700 !important;
 }
 
 .voucher-wallet-empty p {
-    margin: 0 0 22px;
-    color: #68768a;
+  margin: 0 0 20px !important;
+  color: var(--vl-op-slate) !important;
+  font-size: 0.9rem !important;
+  font-family: var(--vl-font-sans, 'Be Vietnam Pro', sans-serif) !important;
 }
 
-/* =========================================================
-   RESPONSIVE
-========================================================= */
-
+/* RESPONSIVE */
 @media (max-width: 900px) {
-    .voucher-wallet-grid {
-        grid-template-columns: 1fr;
-    }
+  .voucher-wallet-grid {
+    grid-template-columns: 1fr !important;
+  }
 }
 
 @media (max-width: 640px) {
-    .voucher-wallet-hero {
-        padding: 42px 0 40px;
-    }
-
-    .voucher-wallet-section {
-        padding: 36px 0 54px;
-    }
-
-    .voucher-wallet-heading {
-        align-items: flex-start;
-        flex-direction: column;
-    }
-
-    .voucher-wallet-card {
-        grid-template-columns: 68px minmax(0, 1fr);
-    }
-
-    .voucher-wallet-card::before,
-    .voucher-wallet-card::after {
-        left: 68px;
-    }
-
-    .voucher-wallet-ticket-edge {
-        padding: 14px 8px;
-    }
-
-    .voucher-wallet-ticket-edge span {
-        width: 42px;
-        height: 42px;
-        font-size: 1.45rem;
-    }
-
-    .voucher-wallet-content {
-        padding: 20px 17px;
-    }
-
-    .voucher-wallet-card-top {
-        flex-direction: column;
-        gap: 9px;
-    }
-
-    .voucher-wallet-code,
-    .voucher-wallet-conditions li {
-        align-items: flex-start;
-        flex-direction: column;
-        gap: 4px;
-    }
-
-    .voucher-wallet-conditions strong {
-        text-align: left;
-    }
+  .voucher-wallet-hero {
+    padding: 32px 0 28px !important;
+  }
+  .voucher-wallet-section {
+    padding: 28px 0 48px !important;
+  }
+  .voucher-wallet-card {
+    grid-template-columns: 64px minmax(0, 1fr) !important;
+  }
+  .voucher-wallet-card::before,
+  .voucher-wallet-card::after {
+    left: 64px !important;
+  }
+  .voucher-wallet-content {
+    padding: 16px 14px !important;
+  }
 }

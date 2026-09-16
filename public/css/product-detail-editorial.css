@@ -1,0 +1,101 @@
+/* =========================================================
+   VELORA EYES - PRODUCT EDITORIAL IMAGE
+========================================================= */
+
+/* Make the left column stretch to match the right column's height */
+.product-story-grid .product-story-main {
+    display: flex;
+    flex-direction: column;
+    align-self: stretch;
+    height: 100%;
+}
+
+.velora-product-editorial {
+    margin-top: 32px;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    border-radius: 12px;
+    overflow: hidden;
+    position: relative;
+    border: 1px solid rgba(197, 160, 89, 0.3); /* Champagne Gold thin border */
+    background: #fdfbf7; /* Ivory/warm white */
+    min-height: 250px;
+    transition: transform 0.3s ease;
+}
+
+.velora-product-editorial:hover {
+    transform: translateY(-2px);
+}
+
+.velora-product-editorial .editorial-image-wrapper {
+    flex-grow: 1;
+    width: 100%;
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+    /* absolute positioning to ensure image strictly fills flex child bounds */
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}
+
+.velora-product-editorial img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+}
+
+.velora-product-editorial .editorial-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 32px 24px 24px;
+    background: linear-gradient(to top, rgba(11, 34, 59, 0.85) 0%, rgba(11, 34, 59, 0) 100%);
+    pointer-events: none;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+}
+
+.velora-product-editorial .editorial-kicker {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #c5a059;
+    margin-bottom: 4px;
+    font-family: var(--velora-font-sans, sans-serif);
+}
+
+.velora-product-editorial .editorial-caption {
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: #ffffff;
+    margin: 0;
+    font-family: var(--velora-font-sans, sans-serif);
+    text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .product-story-grid .product-story-main {
+        height: auto;
+    }
+
+    .velora-product-editorial {
+        aspect-ratio: 4/3;
+        flex-grow: 0;
+        margin-top: 24px;
+        position: relative;
+    }
+
+    .velora-product-editorial .editorial-overlay {
+        padding: 24px 16px 16px;
+    }
+}

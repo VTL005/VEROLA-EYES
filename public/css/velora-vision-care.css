@@ -1,0 +1,1555 @@
+/* =========================================================
+   VELORA EYES - VISION CARE & CUSTOMER EXPERIENCE (BATCH 4)
+   Optical Pearl Design System:
+   - Optical Ink:    #10243E
+   - Deep Petrol:    #174654
+   - Pearl:          #F7F4EE
+   - Porcelain:      #FFFEFB
+   - Mist Blue:      #E8F1F3
+   - Glass Blue:     #BFD9DF
+   - Champagne:      #B89562
+   - Terracotta:     #C75A3B
+   - Slate:          #5B6878
+   Typography: Vietnamese Sans-serif (Be Vietnam Pro / Segoe UI Variable)
+========================================================= */
+
+/* ---------------------------------------------------------
+   1. HERO SECTIONS (Appointments, Prescriptions, Profile, Warranties, Addresses)
+--------------------------------------------------------- */
+.appointments-hero,
+.prescription-hero,
+.prescription-detail-hero,
+.profile-hero,
+.address-hero,
+.warranty-hero,
+.warranty-lookup-section,
+.warranty-lookup-result-section {
+    background: var(--vl-warm-alabaster, #F7F4EE);
+    border-bottom: 1px solid rgba(16, 36, 62, 0.08);
+    position: relative;
+}
+
+.appointments-hero,
+.prescription-hero,
+.prescription-detail-hero,
+.profile-hero {
+    padding: 48px 0 36px;
+}
+
+.appointments-hero h1,
+.prescription-hero h1,
+.prescription-detail-hero h1,
+.profile-hero h1,
+.warranty-lookup-intro h1,
+.address-hero h1 {
+    color: #10243E;
+    font-family: var(--vl-font-serif, "Noto Serif", Georgia, serif);
+    font-size: clamp(2rem, 3.2vw, 2.75rem);
+    font-weight: 700;
+    line-height: 1.15;
+    letter-spacing: -0.015em;
+    margin: 8px 0 12px;
+}
+
+.appointments-hero .hero-kicker,
+.prescription-hero .hero-kicker,
+.prescription-detail-hero .hero-kicker,
+.profile-hero .hero-kicker,
+.warranty-lookup-intro .hero-kicker,
+.address-form-intro .hero-kicker,
+.address-hero .hero-kicker {
+    color: #B89562;
+    font-family: var(--vl-font-sans);
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+}
+
+.appointments-hero p,
+.prescription-hero p,
+.prescription-detail-hero p,
+.profile-hero p,
+.warranty-lookup-intro p,
+.address-hero p {
+    color: #5B6878;
+    font-size: 1rem;
+    line-height: 1.6;
+    max-width: 600px;
+}
+
+/* ---------------------------------------------------------
+   2. APPOINTMENTS (Index, Filter Tabs, Cards, Create, Show)
+--------------------------------------------------------- */
+.appointment-page-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid rgba(16, 36, 62, 0.06);
+}
+
+.appointment-page-heading strong {
+    color: #10243E;
+    font-size: 1.25rem;
+    font-weight: 700;
+}
+
+.appointment-filter-tabs {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding-bottom: 8px;
+    margin-bottom: 28px;
+    scrollbar-width: thin;
+}
+
+.appointment-filter-tab {
+    display: inline-flex;
+    align-items: center;
+    padding: 8px 18px;
+    background: #FFFEFB;
+    border: 1px solid rgba(16, 36, 62, 0.12);
+    border-radius: 999px;
+    color: #5B6878;
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.appointment-filter-tab:hover {
+    color: #10243E;
+    border-color: #BFD9DF;
+    background: #E8F1F3;
+}
+
+.appointment-filter-tab.active {
+    background: #174654;
+    border-color: #174654;
+    color: #FFFEFB;
+    box-shadow: 0 2px 8px rgba(23, 70, 84, 0.2);
+}
+
+/* Appointment List & Cards */
+.appointment-list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+}
+
+@media (max-width: 768px) {
+    .appointment-list {
+        grid-template-columns: 1fr;
+    }
+}
+
+.appointment-card {
+    background: #FFFEFB;
+    border: 1px solid rgba(16, 36, 62, 0.08);
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(16, 36, 62, 0.03);
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    display: flex;
+    flex-direction: column;
+}
+
+.appointment-card:hover {
+    transform: translateY(-2px);
+    border-color: #BFD9DF;
+    box-shadow: 0 8px 24px rgba(16, 36, 62, 0.08);
+}
+
+.appointment-card-header {
+    padding: 16px 20px;
+    background: #F7F4EE;
+    border-bottom: 1px solid rgba(16, 36, 62, 0.06);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.appointment-code-label {
+    color: #5B6878;
+    font-size: 0.75rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+.appointment-code {
+    color: #10243E;
+    font-size: 1rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+}
+
+.appointment-card-body {
+    padding: 18px 20px;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+    flex: 1;
+}
+
+@media (max-width: 480px) {
+    .appointment-card-body {
+        grid-template-columns: 1fr;
+    }
+}
+
+.appointment-info-item {
+    background: #F7F4EE;
+    border: 1px solid rgba(16, 36, 62, 0.04);
+    border-radius: 8px;
+    padding: 10px 12px;
+}
+
+.appointment-info-item span {
+    display: block;
+    color: #5B6878;
+    font-size: 0.75rem;
+    margin-bottom: 4px;
+}
+
+.appointment-info-item strong {
+    color: #10243E;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.appointment-card-footer {
+    padding: 14px 20px;
+    background: #FFFEFB;
+    border-top: 1px solid rgba(16, 36, 62, 0.06);
+    display: flex;
+    justify-content: flex-end;
+}
+
+/* Appointment Status Badges */
+.appointment-status {
+    display: inline-flex;
+    align-items: center;
+    padding: 5px 12px;
+    border-radius: 999px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: 0.02em;
+}
+
+.appointment-pending {
+    background: #FFFBEB;
+    color: #B45309;
+    border: 1px solid rgba(184, 149, 98, 0.3);
+}
+
+.appointment-confirmed {
+    background: #E8F1F3;
+    color: #174654;
+    border: 1px solid #BFD9DF;
+}
+
+.appointment-completed {
+    background: #ECFDF5;
+    color: #15803D;
+    border: 1px solid #A7F3D0;
+}
+
+.appointment-cancelled {
+    background: #FEF2F2;
+    color: #991B1B;
+    border: 1px solid #FECACA;
+}
+
+.appointment-noshow {
+    background: #F1F5F9;
+    color: #5B6878;
+    border: 1px solid #CBD5E1;
+}
+
+.appointment-status-large {
+    font-size: 0.88rem;
+    padding: 7px 16px;
+}
+
+/* Appointments Empty State */
+.appointments-empty {
+    text-align: center;
+    padding: 56px 20px;
+    background: #FFFEFB;
+    border: 1px dashed rgba(16, 36, 62, 0.16);
+    border-radius: 16px;
+    max-width: 540px;
+    margin: 20px auto;
+}
+
+.appointments-empty-icon {
+    font-size: 2.5rem;
+    color: #B89562;
+    margin-bottom: 16px;
+}
+
+.appointments-empty h2 {
+    color: #10243E;
+    font-size: 1.35rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.appointments-empty p {
+    color: #5B6878;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin-bottom: 24px;
+}
+
+.appointments-empty-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+}
+
+/* Appointment Create View */
+.appointment-create-section {
+    padding: 48px 0 64px;
+    background: #F7F4EE;
+}
+
+.appointment-create-layout {
+    display: grid;
+    grid-template-columns: minmax(280px, 1fr) minmax(320px, 1.4fr);
+    gap: 40px;
+    align-items: start;
+}
+
+@media (max-width: 860px) {
+    .appointment-create-layout {
+        grid-template-columns: 1fr;
+        gap: 28px;
+    }
+}
+
+.appointment-create-intro h1 {
+    color: #10243E;
+    font-family: var(--vl-font-serif, "Noto Serif", Georgia, serif);
+    font-size: clamp(2rem, 3.2vw, 2.75rem);
+    font-weight: 700;
+    margin: 8px 0 14px;
+}
+
+.appointment-create-intro > p {
+    color: #5B6878;
+    font-size: 1rem;
+    line-height: 1.65;
+    margin-bottom: 28px;
+}
+
+.appointment-benefits {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin-bottom: 32px;
+}
+
+.appointment-benefits > div {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 12px 16px;
+    background: #FFFEFB;
+    border: 1px solid rgba(16, 36, 62, 0.08);
+    border-radius: 10px;
+}
+
+.appointment-benefits strong {
+    color: #B89562;
+    font-size: 0.85rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    background: rgba(184, 149, 98, 0.1);
+    padding: 4px 8px;
+    border-radius: 6px;
+}
+
+.appointment-benefits span {
+    color: #10243E;
+    font-size: 0.95rem;
+    font-weight: 600;
+}
+
+.appointment-back-link,
+.appointment-detail-back,
+.prescription-back-link,
+.address-back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: #174654;
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: color 0.2s ease, transform 0.2s ease;
+    margin-bottom: 16px;
+}
+
+.appointment-back-link:hover,
+.appointment-detail-back:hover,
+.prescription-back-link:hover,
+.address-back-link:hover {
+    color: #10243E;
+    transform: translateX(-3px);
+}
+
+.appointment-form-card {
+    background: #FFFEFB;
+    border: 1px solid rgba(16, 36, 62, 0.1);
+    border-radius: 16px;
+    padding: 32px 36px;
+    box-shadow: 0 4px 20px rgba(16, 36, 62, 0.04);
+}
+
+@media (max-width: 540px) {
+    .appointment-form-card {
+        padding: 24px 18px;
+    }
+}
+
+.appointment-form-heading {
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid rgba(16, 36, 62, 0.08);
+}
+
+.appointment-form-heading h2 {
+    color: #10243E;
+    font-size: 1.35rem;
+    font-weight: 700;
+    margin-bottom: 6px;
+}
+
+.appointment-form-heading p {
+    color: #5B6878;
+    font-size: 0.88rem;
+    margin: 0;
+}
+
+.appointment-form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+}
+
+.appointment-grid-full {
+    grid-column: 1 / -1;
+}
+
+@media (max-width: 540px) {
+    .appointment-form-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.appointment-form-notice {
+    background: #E8F1F3;
+    border: 1px solid #BFD9DF;
+    border-radius: 10px;
+    padding: 12px 16px;
+    margin-top: 18px;
+}
+
+.appointment-form-notice p {
+    color: #174654;
+    font-size: 0.85rem;
+    line-height: 1.55;
+    margin: 0;
+}
+
+.appointment-form-actions {
+    margin-top: 24px;
+    display: flex;
+    justify-content: flex-end;
+}
+
+/* Appointment Detail (Show) View */
+.appointment-detail-hero-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.appointment-detail-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1.4fr) minmax(280px, 0.8fr);
+    gap: 28px;
+    margin-top: 24px;
+}
+
+@media (max-width: 860px) {
+    .appointment-detail-layout {
+        grid-template-columns: 1fr;
+    }
+}
+
+.appointment-detail-card {
+    background: #FFFEFB;
+    border: 1px solid rgba(16, 36, 62, 0.08);
+    border-radius: 14px;
+    padding: 24px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 10px rgba(16, 36, 62, 0.03);
+}
+
+.appointment-detail-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid rgba(16, 36, 62, 0.06);
+}
+
+.appointment-detail-heading h2 {
+    color: #10243E;
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin: 0;
+}
+
+.appointment-detail-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+}
+
+@media (max-width: 480px) {
+    .appointment-detail-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.appointment-detail-item {
+    background: #F7F4EE;
+    border: 1px solid rgba(16, 36, 62, 0.04);
+    border-radius: 8px;
+    padding: 12px 14px;
+}
+
+.appointment-detail-item span {
+    display: block;
+    color: #5B6878;
+    font-size: 0.75rem;
+    margin-bottom: 4px;
+}
+
+.appointment-detail-item strong {
+    color: #10243E;
+    font-size: 0.95rem;
+    font-weight: 600;
+}
+
+/* ---------------------------------------------------------
+   3. EYE PRESCRIPTIONS (Optical Records, Specs Matrix, Detail)
+--------------------------------------------------------- */
+.prescription-page-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid rgba(16, 36, 62, 0.06);
+}
+
+.prescription-page-heading strong {
+    color: #10243E;
+    font-size: 1.25rem;
+    font-weight: 700;
+}
+
+/* Latest Featured Prescription Card */
+.latest-prescription-card {
+    background: #FFFEFB;
+    border: 1.5px solid #BFD9DF;
+    border-radius: 16px;
+    overflow: hidden;
+    margin-bottom: 32px;
+    box-shadow: 0 4px 20px rgba(23, 70, 84, 0.06);
+}
+
+.latest-prescription-header {
+    background: #E8F1F3;
+    padding: 16px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    border-bottom: 1px solid #BFD9DF;
+}
+
+.latest-prescription-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #174654;
+    color: #FFFEFB;
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 4px 12px;
+    border-radius: 999px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+.latest-prescription-body {
+    padding: 24px;
+}
+
+/* Specs Matrix Table */
+.prescription-specs-table-wrap {
+    overflow-x: auto;
+    margin: 16px 0;
+    border-radius: 10px;
+    border: 1px solid rgba(16, 36, 62, 0.1);
+}
+
+.prescription-specs-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #FFFEFB;
+    font-size: 0.9rem;
+    text-align: center;
+}
+
+.prescription-specs-table th {
+    background: #F7F4EE;
+    color: #10243E;
+    font-weight: 700;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 12px 14px;
+    border-bottom: 1px solid rgba(16, 36, 62, 0.1);
+}
+
+.prescription-specs-table td {
+    padding: 14px 14px;
+    color: #10243E;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    border-bottom: 1px solid rgba(16, 36, 62, 0.06);
+}
+
+.prescription-specs-table tr:last-child td {
+    border-bottom: none;
+}
+
+.prescription-eye-label {
+    font-weight: 800;
+    text-align: left;
+    padding-left: 18px !important;
+}
+
+.eye-od {
+    color: #174654;
+}
+
+.eye-os {
+    color: #B89562;
+}
+
+/* Prescription History Cards */
+.prescription-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+}
+
+@media (max-width: 768px) {
+    .prescription-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.prescription-card {
+    background: #FFFEFB;
+    border: 1px solid rgba(16, 36, 62, 0.08);
+    border-radius: 14px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(16, 36, 62, 0.03);
+    transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.prescription-card:hover {
+    transform: translateY(-2px);
+    border-color: #BFD9DF;
+    box-shadow: 0 6px 20px rgba(16, 36, 62, 0.06);
+}
+
+/* Prescription Detail Show */
+.prescription-detail-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1.4fr) minmax(280px, 0.8fr);
+    gap: 28px;
+    margin-top: 24px;
+}
+
+@media (max-width: 860px) {
+    .prescription-detail-layout {
+        grid-template-columns: 1fr;
+    }
+}
+
+.prescription-detail-card {
+    background: #FFFEFB;
+    border: 1px solid rgba(16, 36, 62, 0.08);
+    border-radius: 14px;
+    padding: 24px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 10px rgba(16, 36, 62, 0.03);
+}
+
+.prescription-detail-heading {
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid rgba(16, 36, 62, 0.06);
+}
+
+.prescription-detail-heading h2 {
+    color: #10243E;
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin: 4px 0 0;
+}
+
+.prescription-eye-panels {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+@media (max-width: 600px) {
+    .prescription-eye-panels {
+        grid-template-columns: 1fr;
+    }
+}
+
+.prescription-eye-panel {
+    background: #F7F4EE;
+    border: 1px solid rgba(16, 36, 62, 0.06);
+    border-radius: 12px;
+    padding: 16px;
+}
+
+.prescription-eye-panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(16, 36, 62, 0.08);
+}
+
+.prescription-eye-panel-header strong {
+    color: #10243E;
+    font-size: 1rem;
+    font-weight: 700;
+}
+
+.prescription-eye-metric-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 6px 0;
+    border-bottom: 1px dashed rgba(16, 36, 62, 0.06);
+    font-size: 0.88rem;
+}
+
+.prescription-eye-metric-row:last-child {
+    border-bottom: none;
+}
+
+.prescription-eye-metric-row span {
+    color: #5B6878;
+}
+
+.prescription-eye-metric-row strong {
+    color: #10243E;
+    font-weight: 700;
+}
+
+/* ---------------------------------------------------------
+   4. ELECTRONIC WARRANTY (Lookup Form, Result, Customer List)
+--------------------------------------------------------- */
+.warranty-lookup-section {
+    padding: 64px 0 80px;
+}
+
+.warranty-lookup-wrapper {
+    display: grid;
+    grid-template-columns: minmax(280px, 1fr) minmax(320px, 1.2fr);
+    gap: 48px;
+    align-items: center;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+@media (max-width: 768px) {
+    .warranty-lookup-wrapper {
+        grid-template-columns: 1fr;
+        gap: 32px;
+    }
+}
+
+.warranty-lookup-example {
+    margin-top: 24px;
+    padding: 14px 18px;
+    background: #FFFEFB;
+    border: 1px solid rgba(16, 36, 62, 0.08);
+    border-radius: 10px;
+    display: inline-flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.warranty-lookup-example span {
+    color: #5B6878;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+.warranty-lookup-example strong {
+    color: #B89562;
+    font-family: var(--vl-font-sans);
+    font-size: 1.1rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+}
+
+.warranty-lookup-card {
+    background: #FFFEFB;
+    border: 1px solid rgba(16, 36, 62, 0.1);
+    border-radius: 16px;
+    padding: 36px 40px;
+    box-shadow: 0 8px 30px rgba(16, 36, 62, 0.05);
+}
+
+@media (max-width: 480px) {
+    .warranty-lookup-card {
+        padding: 24px 20px;
+    }
+}
+
+.warranty-lookup-card h2 {
+    color: #10243E;
+    font-size: 1.45rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.warranty-lookup-card p {
+    color: #5B6878;
+    font-size: 0.9rem;
+    line-height: 1.6;
+    margin-bottom: 24px;
+}
+
+/* Warranty Result Certificate */
+.warranty-result-wrapper {
+    max-width: 720px;
+    margin: 40px auto;
+}
+
+.warranty-result-success {
+    text-align: center;
+    margin-bottom: 28px;
+}
+
+.warranty-result-check {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: #ECFDF5;
+    color: #15803D;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.6rem;
+    font-weight: 800;
+    border: 2px solid #A7F3D0;
+    margin-bottom: 14px;
+}
+
+.warranty-public-card {
+    background: #FFFEFB;
+    border: 1.5px solid #BFD9DF;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 10px 36px rgba(23, 70, 84, 0.08);
+    position: relative;
+}
+
+.warranty-public-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #174654 0%, #B89562 100%);
+}
+
+.warranty-public-header {
+    padding: 20px 28px;
+    background: #F7F4EE;
+    border-bottom: 1px solid rgba(16, 36, 62, 0.08);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.warranty-public-header strong {
+    color: #10243E;
+    font-size: 1.25rem;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+}
+
+.warranty-status {
+    display: inline-flex;
+    align-items: center;
+    padding: 5px 14px;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+}
+
+.warranty-active {
+    background: #ECFDF5;
+    color: #15803D;
+    border: 1px solid #A7F3D0;
+}
+
+.warranty-expired {
+    background: #FEF2F2;
+    color: #991B1B;
+    border: 1px solid #FECACA;
+}
+
+.warranty-cancelled {
+    background: #F1F5F9;
+    color: #5B6878;
+    border: 1px solid #CBD5E1;
+}
+
+.warranty-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+}
+
+@media (max-width: 768px) {
+    .warranty-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.warranty-card {
+    background: #FFFEFB;
+    border: 1px solid rgba(16, 36, 62, 0.08);
+    border-radius: 14px;
+    padding: 22px;
+    box-shadow: 0 2px 10px rgba(16, 36, 62, 0.03);
+    transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.warranty-card:hover {
+    transform: translateY(-2px);
+    border-color: #BFD9DF;
+    box-shadow: 0 6px 20px rgba(16, 36, 62, 0.06);
+}
+
+/* ---------------------------------------------------------
+   5. AUTHENTICATION (Login, Register, Forgot, Reset)
+--------------------------------------------------------- */
+.auth-section {
+    padding: 56px 0 72px;
+    background: #F7F4EE;
+    min-height: calc(100vh - 120px);
+    display: flex;
+    align-items: center;
+}
+
+.auth-layout {
+    display: grid;
+    grid-template-columns: minmax(320px, 1fr) minmax(360px, 480px);
+    gap: 56px;
+    align-items: center;
+    max-width: 1040px;
+    margin: 0 auto;
+}
+
+@media (max-width: 860px) {
+    .auth-layout {
+        grid-template-columns: 1fr;
+        gap: 32px;
+    }
+}
+
+.auth-intro h1 {
+    color: #10243E;
+    font-family: var(--vl-font-serif, "Noto Serif", Georgia, serif);
+    font-size: clamp(2.2rem, 3.8vw, 3.2rem);
+    font-weight: 700;
+    line-height: 1.12;
+    letter-spacing: -0.02em;
+    margin: 12px 0 16px;
+}
+
+.auth-intro p {
+    color: #5B6878;
+    font-size: 1rem;
+    line-height: 1.7;
+    margin-bottom: 32px;
+    max-width: 460px;
+}
+
+.auth-benefits {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.auth-benefits > div {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 14px 18px;
+    background: #FFFEFB;
+    border: 1px solid rgba(16, 36, 62, 0.08);
+    border-radius: 12px;
+    transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.auth-benefits > div:hover {
+    transform: translateX(4px);
+    border-color: #BFD9DF;
+}
+
+.auth-benefits strong {
+    color: #B89562;
+    font-size: 0.85rem;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    background: rgba(184, 149, 98, 0.12);
+    padding: 5px 9px;
+    border-radius: 6px;
+}
+
+.auth-benefits span {
+    color: #10243E;
+    font-size: 0.92rem;
+    font-weight: 600;
+}
+
+/* Auth Card */
+.auth-card {
+    background: #FFFEFB;
+    border: 1px solid rgba(16, 36, 62, 0.1);
+    border-radius: 18px;
+    padding: 36px 40px;
+    box-shadow: 0 10px 40px rgba(16, 36, 62, 0.06);
+}
+
+@media (max-width: 480px) {
+    .auth-card {
+        padding: 28px 20px;
+    }
+}
+
+.auth-card-heading {
+    margin-bottom: 24px;
+    text-align: center;
+}
+
+.auth-card-heading h2 {
+    color: #10243E;
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 6px;
+}
+
+.auth-card-heading p {
+    color: #5B6878;
+    font-size: 0.9rem;
+    margin: 0;
+}
+
+.auth-form-footer {
+    margin-top: 24px;
+    text-align: center;
+    color: #5B6878;
+    font-size: 0.88rem;
+    padding-top: 18px;
+    border-top: 1px solid rgba(16, 36, 62, 0.08);
+}
+
+.auth-form-footer a {
+    color: #174654;
+    font-weight: 700;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.auth-form-footer a:hover {
+    color: #10243E;
+    text-decoration: underline;
+}
+
+/* ---------------------------------------------------------
+   6. CUSTOMER ACCOUNT & ADDRESSES
+--------------------------------------------------------- */
+.profile-layout {
+    display: grid;
+    grid-template-columns: minmax(260px, 320px) minmax(0, 1fr);
+    gap: 32px;
+    align-items: start;
+}
+
+@media (max-width: 860px) {
+    .profile-layout {
+        grid-template-columns: 1fr;
+        gap: 24px;
+    }
+}
+
+.profile-sidebar {
+    position: sticky;
+    top: 90px;
+}
+
+.profile-user-card {
+    background: #FFFEFB;
+    border: 1px solid rgba(16, 36, 62, 0.08);
+    border-radius: 16px;
+    padding: 28px 24px;
+    text-align: center;
+    box-shadow: 0 2px 12px rgba(16, 36, 62, 0.03);
+    margin-bottom: 20px;
+}
+
+.profile-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    margin: 0 auto 16px;
+    object-fit: cover;
+    border: 3px solid #BFD9DF;
+    box-shadow: 0 4px 12px rgba(16, 36, 62, 0.08);
+}
+
+.profile-avatar-fallback {
+    background: #174654;
+    color: #FFFEFB;
+    font-size: 2rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.profile-user-card h2 {
+    color: #10243E;
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 4px;
+}
+
+.profile-user-card p {
+    color: #5B6878;
+    font-size: 0.88rem;
+    margin-bottom: 14px;
+    word-break: break-word;
+}
+
+.profile-account-status {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 12px;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    margin-bottom: 20px;
+}
+
+.profile-account-status.active {
+    background: #ECFDF5;
+    color: #15803D;
+    border: 1px solid #A7F3D0;
+}
+
+.profile-account-status.inactive {
+    background: #FEF2F2;
+    color: #991B1B;
+    border: 1px solid #FECACA;
+}
+
+.profile-user-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.profile-card {
+    background: #FFFEFB;
+    border: 1px solid rgba(16, 36, 62, 0.08);
+    border-radius: 16px;
+    padding: 28px 32px;
+    margin-bottom: 24px;
+    box-shadow: 0 2px 12px rgba(16, 36, 62, 0.03);
+}
+
+@media (max-width: 480px) {
+    .profile-card {
+        padding: 20px 16px;
+    }
+}
+
+.profile-card-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid rgba(16, 36, 62, 0.06);
+}
+
+.profile-card-heading h2 {
+    color: #10243E;
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin: 4px 0 0;
+}
+
+.profile-info-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+}
+
+@media (max-width: 540px) {
+    .profile-info-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.profile-info-grid > div {
+    background: #F7F4EE;
+    border: 1px solid rgba(16, 36, 62, 0.04);
+    border-radius: 10px;
+    padding: 14px 16px;
+}
+
+.profile-info-grid span {
+    display: block;
+    color: #5B6878;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-bottom: 4px;
+}
+
+.profile-info-grid strong {
+    color: #10243E;
+    font-size: 0.95rem;
+    font-weight: 600;
+}
+
+.profile-info-full {
+    grid-column: 1 / -1;
+}
+
+/* Services Grid in Profile */
+.profile-service-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+}
+
+@media (max-width: 680px) {
+    .profile-service-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.profile-service-card {
+    background: #F7F4EE;
+    border: 1px solid rgba(16, 36, 62, 0.06);
+    border-radius: 12px;
+    padding: 18px 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    text-decoration: none;
+    transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+}
+
+.profile-service-card:hover {
+    transform: translateY(-2px);
+    background: #E8F1F3;
+    border-color: #BFD9DF;
+}
+
+.profile-service-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    background: #FFFEFB;
+    border: 1px solid rgba(16, 36, 62, 0.1);
+    color: #174654;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    flex-shrink: 0;
+}
+
+.profile-service-card strong {
+    display: block;
+    color: #10243E;
+    font-size: 0.95rem;
+    font-weight: 700;
+    margin-bottom: 2px;
+}
+
+.profile-service-card span {
+    color: #5B6878;
+    font-size: 0.8rem;
+}
+
+/* Addresses (Index, Cards, GHN Selector) */
+.address-page-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid rgba(16, 36, 62, 0.06);
+}
+
+.address-page-heading strong {
+    color: #10243E;
+    font-size: 1.25rem;
+    font-weight: 700;
+}
+
+.address-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+}
+
+@media (max-width: 768px) {
+    .address-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.address-card {
+    background: #FFFEFB;
+    border: 1px solid rgba(16, 36, 62, 0.08);
+    border-radius: 14px;
+    padding: 22px;
+    box-shadow: 0 2px 8px rgba(16, 36, 62, 0.03);
+    position: relative;
+    transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.address-card:hover {
+    transform: translateY(-2px);
+    border-color: #BFD9DF;
+    box-shadow: 0 6px 20px rgba(16, 36, 62, 0.06);
+}
+
+.address-card-default {
+    border-color: #B89562;
+    background: linear-gradient(180deg, #FFFEFB 0%, #FAF8F3 100%);
+}
+
+.address-badge-default {
+    display: inline-flex;
+    align-items: center;
+    background: rgba(184, 149, 98, 0.14);
+    color: #9C7B50;
+    border: 1px solid rgba(184, 149, 98, 0.3);
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 999px;
+    margin-bottom: 10px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.address-card h3 {
+    color: #10243E;
+    font-size: 1.05rem;
+    font-weight: 700;
+    margin-bottom: 6px;
+}
+
+.address-card p {
+    color: #5B6878;
+    font-size: 0.88rem;
+    line-height: 1.6;
+    margin-bottom: 16px;
+}
+
+.address-card-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding-top: 14px;
+    border-top: 1px solid rgba(16, 36, 62, 0.06);
+}
+
+/* Address Form */
+.address-form-section {
+    padding: 48px 0 64px;
+    background: #F7F4EE;
+}
+
+.address-form-wrapper {
+    display: grid;
+    grid-template-columns: minmax(280px, 1fr) minmax(340px, 1.4fr);
+    gap: 40px;
+    align-items: start;
+}
+
+@media (max-width: 860px) {
+    .address-form-wrapper {
+        grid-template-columns: 1fr;
+        gap: 28px;
+    }
+}
+
+.address-form-card {
+    background: #FFFEFB;
+    border: 1px solid rgba(16, 36, 62, 0.1);
+    border-radius: 16px;
+    padding: 32px 36px;
+    box-shadow: 0 4px 20px rgba(16, 36, 62, 0.04);
+}
+
+.address-form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+}
+
+@media (max-width: 540px) {
+    .address-form-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Profile Form & Password Change Layouts */
+.profile-form-section {
+    padding: 48px 0 64px;
+    background: #F7F4EE;
+}
+
+.profile-form-layout,
+.password-page-layout {
+    display: grid;
+    grid-template-columns: minmax(280px, 1fr) minmax(340px, 1.4fr);
+    gap: 40px;
+    align-items: start;
+}
+
+@media (max-width: 860px) {
+    .profile-form-layout,
+    .password-page-layout {
+        grid-template-columns: 1fr;
+        gap: 28px;
+    }
+}
+
+.profile-form-intro h1 {
+    color: #10243E;
+    font-family: var(--vl-font-serif, "Noto Serif", Georgia, serif);
+    font-size: clamp(2rem, 3.2vw, 2.75rem);
+    font-weight: 700;
+    margin: 8px 0 14px;
+}
+
+.profile-form-intro > p {
+    color: #5B6878;
+    font-size: 1rem;
+    line-height: 1.65;
+    margin-bottom: 24px;
+}
+
+.profile-back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: #174654;
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: color 0.2s ease, transform 0.2s ease;
+    margin-top: 14px;
+}
+
+.profile-back-link:hover {
+    color: #10243E;
+    transform: translateX(-3px);
+}
+
+.profile-form-card {
+    background: #FFFEFB;
+    border: 1px solid rgba(16, 36, 62, 0.1);
+    border-radius: 16px;
+    padding: 32px 36px;
+    box-shadow: 0 4px 20px rgba(16, 36, 62, 0.04);
+}
+
+@media (max-width: 540px) {
+    .profile-form-card {
+        padding: 24px 18px;
+    }
+}
+
+.password-security-tip {
+    background: #E8F1F3;
+    border: 1px solid #BFD9DF;
+    border-radius: 10px;
+    padding: 14px 18px;
+    margin-bottom: 24px;
+}
+
+.password-security-tip strong {
+    display: block;
+    color: #174654;
+    font-size: 0.9rem;
+    font-weight: 700;
+    margin-bottom: 4px;
+}
+
+.password-security-tip span {
+    color: #5B6878;
+    font-size: 0.85rem;
+    line-height: 1.5;
+}

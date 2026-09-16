@@ -1,0 +1,753 @@
+/* =========================================================
+   VELORA EYES — ENHANCED HOMEPAGE MOTION SYSTEM
+   Refined, luxurious, stutter-free scroll reveals & micro-interactions.
+   Only animates transform & opacity. Zero layout shifts.
+   ========================================================= */
+
+/* ---------------------------------------------------------
+   1. PROGRESSIVE ENHANCEMENT & BASE REVEAL
+   If JS is disabled or not loaded, everything remains 100% visible!
+   --------------------------------------------------------- */
+.vl-home-page .vl-reveal,
+.vl-home-page [data-home-reveal],
+.vl-home-page [data-home-reveal-item] {
+    opacity: 1;
+    transform: none;
+}
+
+html.vl-motion-ready .vl-home-page .vl-reveal,
+html.vl-motion-ready .vl-home-page [data-home-reveal],
+html.vl-motion-ready .vl-home-page [data-home-reveal-item] {
+    opacity: 0;
+    will-change: opacity, transform;
+    transition:
+        opacity 0.58s cubic-bezier(0.16, 1, 0.3, 1),
+        transform 0.58s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Directional entrance offsets (subtle & elegant) */
+html.vl-motion-ready .vl-home-page .vl-reveal-up,
+html.vl-motion-ready .vl-home-page [data-home-reveal="up"] {
+    transform: translateY(18px);
+}
+
+html.vl-motion-ready .vl-home-page .vl-reveal-fade,
+html.vl-motion-ready .vl-home-page [data-home-reveal="fade"] {
+    transform: none;
+}
+
+html.vl-motion-ready .vl-home-page .vl-reveal-left,
+html.vl-motion-ready .vl-home-page [data-home-reveal="left"] {
+    transform: translateX(-16px);
+}
+
+html.vl-motion-ready .vl-home-page .vl-reveal-right,
+html.vl-motion-ready .vl-home-page [data-home-reveal="right"] {
+    transform: translateX(16px);
+}
+
+/* Revealed State */
+html.vl-motion-ready .vl-home-page .vl-reveal.is-revealed,
+html.vl-motion-ready .vl-home-page [data-home-reveal].is-revealed,
+html.vl-motion-ready .vl-home-page [data-home-reveal-item].is-revealed {
+    opacity: 1;
+    transform: translateY(0) translateX(0);
+}
+
+/* Custom CSS variable delay support */
+html.vl-motion-ready .vl-home-page [style*="--reveal-delay"] {
+    transition-delay: var(--reveal-delay, 0ms);
+}
+
+/* Standard Stagger Delays (capped under 300ms) */
+html.vl-motion-ready .vl-home-page .vl-delay-1 {
+    transition-delay: 70ms;
+}
+html.vl-motion-ready .vl-home-page .vl-delay-2 {
+    transition-delay: 140ms;
+}
+html.vl-motion-ready .vl-home-page .vl-delay-3 {
+    transition-delay: 210ms;
+}
+html.vl-motion-ready .vl-home-page .vl-delay-4 {
+    transition-delay: 280ms;
+}
+
+
+/* ---------------------------------------------------------
+   2. HERO ENTRANCE (Text & CTAs only, no video / container animation)
+   --------------------------------------------------------- */
+html.vl-motion-ready .vl-home-page .vl-hero-badge {
+    opacity: 0;
+    transform: translateY(14px);
+    transition:
+        opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+        transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+html.vl-motion-ready .vl-home-page .vl-hero-badge.is-revealed {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+html.vl-motion-ready .vl-home-page .vl-hero-title {
+    opacity: 0;
+    transform: translateY(18px);
+    transition:
+        opacity 0.65s cubic-bezier(0.16, 1, 0.3, 1) 80ms,
+        transform 0.65s cubic-bezier(0.16, 1, 0.3, 1) 80ms;
+}
+
+html.vl-motion-ready .vl-home-page .vl-hero-title.is-revealed {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Champagne accent text subtle entrance */
+.vl-home-page .vl-hero-accent {
+    display: inline-block;
+    transition: color 0.4s ease 180ms;
+}
+
+html.vl-motion-ready .vl-home-page .vl-hero-description {
+    opacity: 0;
+    transform: translateY(16px);
+    transition:
+        opacity 0.65s cubic-bezier(0.16, 1, 0.3, 1) 160ms,
+        transform 0.65s cubic-bezier(0.16, 1, 0.3, 1) 160ms;
+}
+
+html.vl-motion-ready .vl-home-page .vl-hero-description.is-revealed {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+html.vl-motion-ready .vl-home-page .vl-hero-actions {
+    opacity: 0;
+    transform: translateY(16px);
+    transition:
+        opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1) 240ms,
+        transform 0.6s cubic-bezier(0.16, 1, 0.3, 1) 240ms;
+}
+
+html.vl-motion-ready .vl-home-page .vl-hero-actions.is-revealed {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+
+/* ---------------------------------------------------------
+   3. SECTION HEADINGS (Consistent, elegant cascade)
+   Containers stay stable; child typography cascades smoothly.
+   --------------------------------------------------------- */
+html.vl-motion-ready .vl-home-page .vl-section-header.vl-reveal,
+html.vl-motion-ready .vl-home-page .vl-section-header-row.vl-reveal {
+    opacity: 1 !important;
+    transform: none !important;
+    will-change: auto;
+    transition: none;
+}
+
+.vl-home-page .vl-kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+html.vl-motion-ready .vl-home-page .vl-kicker,
+html.vl-motion-ready .vl-home-page .vl-sale-badge-header {
+    opacity: 0;
+    transform: translateY(10px);
+    transition:
+        opacity 0.48s cubic-bezier(0.16, 1, 0.3, 1),
+        transform 0.48s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+html.vl-motion-ready .vl-home-page .vl-section-header.is-revealed .vl-kicker,
+html.vl-motion-ready .vl-home-page .vl-section-header-row.is-revealed .vl-kicker,
+html.vl-motion-ready .vl-home-page .vl-section-header-row.is-revealed .vl-sale-badge-header {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Champagne decorative bar expands left to right */
+.vl-home-page .vl-kicker::after {
+    content: '';
+    display: inline-block;
+    width: 24px;
+    height: 1.5px;
+    background: currentColor;
+    opacity: 0.6;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1) 120ms;
+}
+
+html.vl-motion-ready .vl-home-page .vl-section-header.is-revealed .vl-kicker::after,
+html.vl-motion-ready .vl-home-page .vl-section-header-row.is-revealed .vl-kicker::after {
+    transform: scaleX(1);
+}
+
+/* Heading texts inside header */
+html.vl-motion-ready .vl-home-page .vl-section-title {
+    opacity: 0;
+    transform: translateY(14px);
+    transition:
+        opacity 0.52s cubic-bezier(0.16, 1, 0.3, 1) 70ms,
+        transform 0.52s cubic-bezier(0.16, 1, 0.3, 1) 70ms;
+}
+
+html.vl-motion-ready .vl-home-page .vl-section-header.is-revealed .vl-section-title,
+html.vl-motion-ready .vl-home-page .vl-section-header-row.is-revealed .vl-section-title {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+html.vl-motion-ready .vl-home-page .vl-section-subtitle {
+    opacity: 0;
+    transform: translateY(14px);
+    transition:
+        opacity 0.52s cubic-bezier(0.16, 1, 0.3, 1) 130ms,
+        transform 0.52s cubic-bezier(0.16, 1, 0.3, 1) 130ms;
+}
+
+html.vl-motion-ready .vl-home-page .vl-section-header.is-revealed .vl-section-subtitle,
+html.vl-motion-ready .vl-home-page .vl-section-header-row.is-revealed .vl-section-subtitle {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Header "Xem tất cả" CTA */
+html.vl-motion-ready .vl-home-page .vl-section-header-row .vl-btn-outline {
+    opacity: 0;
+    transform: translateX(12px);
+    transition:
+        opacity 0.48s cubic-bezier(0.16, 1, 0.3, 1) 180ms,
+        transform 0.48s cubic-bezier(0.16, 1, 0.3, 1) 180ms;
+}
+
+html.vl-motion-ready .vl-home-page .vl-section-header-row.is-revealed .vl-btn-outline {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+
+/* ---------------------------------------------------------
+   4. SECTION CATEGORIES (1 Featured 9:16 + 4 Secondary 1:1)
+   --------------------------------------------------------- */
+/* Card Entrance Transitions */
+html.vl-motion-ready .vl-home-page .home-category-featured {
+    opacity: 0;
+    transform: translateY(20px);
+    transition:
+        opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+        transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+html.vl-motion-ready .vl-home-page .home-category-featured.is-revealed {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+html.vl-motion-ready .vl-home-page .home-category-secondary {
+    opacity: 0;
+    transform: translateY(20px);
+    transition:
+        opacity 0.55s cubic-bezier(0.16, 1, 0.3, 1),
+        transform 0.55s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+html.vl-motion-ready .vl-home-page .home-category-secondary.is-revealed {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Stagger secondary cards */
+html.vl-motion-ready .vl-home-page .home-categories__secondary-grid .home-category-secondary:nth-child(1) {
+    transition-delay: 70ms;
+}
+html.vl-motion-ready .vl-home-page .home-categories__secondary-grid .home-category-secondary:nth-child(2) {
+    transition-delay: 140ms;
+}
+html.vl-motion-ready .vl-home-page .home-categories__secondary-grid .home-category-secondary:nth-child(3) {
+    transition-delay: 210ms;
+}
+html.vl-motion-ready .vl-home-page .home-categories__secondary-grid .home-category-secondary:nth-child(4) {
+    transition-delay: 280ms;
+}
+
+/* Mouse Hover Micro-Interactions (Only for devices with fine pointer) */
+@media (hover: hover) and (pointer: fine) {
+    .vl-home-page .home-category-featured,
+    .vl-home-page .home-category-secondary {
+        transition:
+            box-shadow 0.35s ease,
+            border-color 0.35s ease;
+    }
+
+    .vl-home-page .home-category-featured:hover {
+        box-shadow: 0 20px 48px -8px rgba(16, 40, 59, 0.22);
+    }
+
+    .vl-home-page .home-category-secondary:hover {
+        box-shadow: 0 14px 34px -6px rgba(16, 40, 59, 0.16);
+    }
+
+    /* Image scale strictly capped at 1.025 */
+    .vl-home-page .home-category-card__media img {
+        transition: transform 0.55s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .vl-home-page .home-category-featured:hover .home-category-card__media img,
+    .vl-home-page .home-category-secondary:hover .home-category-card__media img {
+        transform: scale(1.025);
+    }
+
+    /* Title shifts up 3px */
+    .vl-home-page .home-category-title {
+        transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .vl-home-page .home-category-featured:hover .home-category-title,
+    .vl-home-page .home-category-secondary:hover .home-category-title {
+        transform: translateY(-3px);
+    }
+
+    /* CTA Arrow shifts right 5px */
+    .vl-home-page .home-category-cta span[aria-hidden="true"] {
+        display: inline-block;
+        transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .vl-home-page .home-category-cta:hover span[aria-hidden="true"] {
+        transform: translateX(5px);
+    }
+}
+
+
+/* ---------------------------------------------------------
+   5. SECTION NEW PRODUCTS (1 Primary + 4 Secondary 2x2)
+   --------------------------------------------------------- */
+/* Entrance Transitions (Decoupled reveal wrapper) */
+html.vl-motion-ready .vl-home-page .home-new-product-reveal {
+    opacity: 0;
+    transform: translateY(20px);
+    transition:
+        opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+        transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    will-change: opacity, transform;
+}
+
+html.vl-motion-ready .vl-home-page .home-new-product-reveal.is-revealed {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Secondary grid cards stagger (max 280ms) */
+html.vl-motion-ready .vl-home-page .home-new-products__secondary-grid > .home-new-product-reveal:nth-child(1),
+html.vl-motion-ready .vl-home-page .home-new-products__secondary-grid > *:nth-child(1) {
+    transition-delay: 70ms;
+}
+html.vl-motion-ready .vl-home-page .home-new-products__secondary-grid > .home-new-product-reveal:nth-child(2),
+html.vl-motion-ready .vl-home-page .home-new-products__secondary-grid > *:nth-child(2) {
+    transition-delay: 140ms;
+}
+html.vl-motion-ready .vl-home-page .home-new-products__secondary-grid > .home-new-product-reveal:nth-child(3),
+html.vl-motion-ready .vl-home-page .home-new-products__secondary-grid > *:nth-child(3) {
+    transition-delay: 210ms;
+}
+html.vl-motion-ready .vl-home-page .home-new-products__secondary-grid > .home-new-product-reveal:nth-child(4),
+html.vl-motion-ready .vl-home-page .home-new-products__secondary-grid > *:nth-child(4) {
+    transition-delay: 280ms;
+}
+
+/* Mouse Hover Micro-Interactions */
+@media (hover: hover) and (pointer: fine) {
+    .vl-home-page .home-new-products__primary {
+        transition:
+            border-color 0.3s ease,
+            box-shadow 0.3s ease;
+    }
+
+    .vl-home-page .home-new-products__primary:hover {
+        border-color: rgba(197, 160, 89, 0.35);
+        box-shadow: 0 16px 44px -8px rgba(16, 40, 59, 0.12);
+    }
+
+    /* Primary product image scale max 1.02 */
+    .vl-home-page .home-new-products__primary-img {
+        transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .vl-home-page .home-new-products__primary:hover .home-new-products__primary-img {
+        transform: scale(1.02);
+    }
+
+    /* Product Title champagne tint on hover */
+    .vl-home-page .home-new-products__title a {
+        transition: color 0.25s ease;
+    }
+
+    .vl-home-page .home-new-products__title a:hover {
+        color: #c5a059;
+    }
+
+    /* Primary CTA Button: One-time sweep shimmer on hover (non-looping) */
+    .vl-home-page .home-new-products__primary .vl-btn-primary {
+        position: relative;
+        overflow: hidden;
+        transition:
+            background-color 0.25s ease,
+            transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .vl-home-page .home-new-products__primary .vl-btn-primary::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -120%;
+        width: 60%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.28) 50%, transparent 100%);
+        transform: skewX(-20deg);
+        transition: transform 0.65s cubic-bezier(0.16, 1, 0.3, 1);
+        pointer-events: none;
+    }
+
+    .vl-home-page .home-new-products__primary .vl-btn-primary:hover::after {
+        transform: translateX(400%) skewX(-20deg);
+    }
+
+    /* Secondary product card hover */
+    .vl-home-page .home-new-products__secondary-grid .product-card {
+        transition:
+            transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+            box-shadow 0.3s ease,
+            border-color 0.3s ease;
+    }
+
+    .vl-home-page .home-new-products__secondary-grid .product-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 30px -4px rgba(16, 40, 59, 0.1);
+        border-color: rgba(197, 160, 89, 0.3);
+    }
+
+    .vl-home-page .home-new-products__secondary-grid .product-card-image img {
+        transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .vl-home-page .home-new-products__secondary-grid .product-card:hover .product-card-image img {
+        transform: scale(1.025);
+    }
+}
+
+
+/* ---------------------------------------------------------
+   6. BENEFITS STRIP (Section 2)
+   --------------------------------------------------------- */
+html.vl-motion-ready .vl-home-page .vl-strip-item {
+    opacity: 0;
+    transform: translateY(16px);
+    transition:
+        opacity 0.52s cubic-bezier(0.16, 1, 0.3, 1),
+        transform 0.52s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+html.vl-motion-ready .vl-home-page .vl-strip-item.is-revealed,
+html.vl-motion-ready .vl-home-page .vl-strip-card.is-revealed .vl-strip-item {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+html.vl-motion-ready .vl-home-page .vl-strip-item:nth-child(1) {
+    transition-delay: 0ms;
+}
+html.vl-motion-ready .vl-home-page .vl-strip-item:nth-child(2) {
+    transition-delay: 80ms;
+}
+html.vl-motion-ready .vl-home-page .vl-strip-item:nth-child(3) {
+    transition-delay: 160ms;
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .vl-home-page .vl-strip-icon {
+        transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .vl-home-page .vl-strip-item:hover .vl-strip-icon {
+        transform: translateY(-3px) scale(1.06);
+    }
+}
+
+
+/* ---------------------------------------------------------
+   7. VISION CARE & OPTICAL JOURNEY
+   --------------------------------------------------------- */
+/* Vision Care Split Reveal */
+html.vl-motion-ready .vl-home-page .vl-vision-spec-item {
+    opacity: 0;
+    transform: translateX(16px);
+    transition:
+        opacity 0.52s cubic-bezier(0.16, 1, 0.3, 1),
+        transform 0.52s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+html.vl-motion-ready .vl-home-page .vl-vision-spec-item.is-revealed {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+html.vl-motion-ready .vl-home-page .vl-vision-card-box .vl-vision-spec-item:nth-child(1) {
+    transition-delay: 0ms;
+}
+html.vl-motion-ready .vl-home-page .vl-vision-card-box .vl-vision-spec-item:nth-child(2) {
+    transition-delay: 80ms;
+}
+html.vl-motion-ready .vl-home-page .vl-vision-card-box .vl-vision-spec-item:nth-child(3) {
+    transition-delay: 160ms;
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .vl-home-page .vl-vision-spec-icon {
+        transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .vl-home-page .vl-vision-spec-item:hover .vl-vision-spec-icon {
+        transform: translateY(-2px) scale(1.06);
+    }
+}
+
+/* Optical Journey Timeline Steps */
+html.vl-motion-ready .vl-home-page .vl-step-card {
+    opacity: 0;
+    transform: translateY(18px);
+    transition:
+        opacity 0.54s cubic-bezier(0.16, 1, 0.3, 1),
+        transform 0.54s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+html.vl-motion-ready .vl-home-page .vl-step-card.is-revealed {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+html.vl-motion-ready .vl-home-page .vl-experience-timeline .vl-step-card:nth-child(1) {
+    transition-delay: 0ms;
+}
+html.vl-motion-ready .vl-home-page .vl-experience-timeline .vl-step-card:nth-child(2) {
+    transition-delay: 75ms;
+}
+html.vl-motion-ready .vl-home-page .vl-experience-timeline .vl-step-card:nth-child(3) {
+    transition-delay: 150ms;
+}
+html.vl-motion-ready .vl-home-page .vl-experience-timeline .vl-step-card:nth-child(4) {
+    transition-delay: 225ms;
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .vl-home-page .vl-step-card {
+        transition:
+            transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+            box-shadow 0.3s ease;
+    }
+
+    .vl-home-page .vl-step-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 24px -4px rgba(16, 40, 59, 0.08);
+    }
+
+    .vl-home-page .vl-step-badge {
+        transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .vl-home-page .vl-step-card:hover .vl-step-badge {
+        transform: scale(1.08);
+    }
+}
+
+
+/* ---------------------------------------------------------
+   8. SALE PRODUCTS (Private Collection Grid Reveal)
+   --------------------------------------------------------- */
+html.vl-motion-ready .vl-home-page .home-sale-product-reveal {
+    opacity: 0;
+    transform: translateY(20px);
+    transition:
+        opacity 0.55s cubic-bezier(0.16, 1, 0.3, 1),
+        transform 0.55s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+html.vl-motion-ready .vl-home-page .home-sale-product-reveal.is-revealed {
+    opacity: 1;
+    transform: none;
+}
+
+html.vl-motion-ready .vl-home-page .home-sale-products__grid > .home-sale-product-reveal:nth-child(1) {
+    transition-delay: 0ms;
+}
+html.vl-motion-ready .vl-home-page .home-sale-products__grid > .home-sale-product-reveal:nth-child(2) {
+    transition-delay: 70ms;
+}
+html.vl-motion-ready .vl-home-page .home-sale-products__grid > .home-sale-product-reveal:nth-child(3) {
+    transition-delay: 140ms;
+}
+html.vl-motion-ready .vl-home-page .home-sale-products__grid > .home-sale-product-reveal:nth-child(4) {
+    transition-delay: 210ms;
+}
+
+
+/* ---------------------------------------------------------
+   9. WARRANTY BANNER
+   --------------------------------------------------------- */
+html.vl-motion-ready .vl-home-page .vl-warranty-box {
+    opacity: 0;
+    transform: translateY(18px);
+    transition:
+        opacity 0.56s cubic-bezier(0.16, 1, 0.3, 1),
+        transform 0.56s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+html.vl-motion-ready .vl-home-page .vl-warranty-box.is-revealed {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+
+/* ---------------------------------------------------------
+   9. FLOATING CHAT BUTTON (One-time gentle arrival)
+   --------------------------------------------------------- */
+.customer-floating-chat {
+    opacity: 0;
+    transform: scale(0.92) translateY(10px);
+    transition:
+        opacity 0.5s ease,
+        transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.customer-floating-chat.is-entered {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .customer-floating-chat {
+        transition:
+            transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+            box-shadow 0.25s ease;
+    }
+
+    .customer-floating-chat:hover {
+        transform: translateY(-3px) scale(1.03);
+        box-shadow: 0 12px 28px -4px rgba(16, 40, 59, 0.28);
+    }
+}
+
+
+/* ---------------------------------------------------------
+   10. FOOTER COLUMNS STAGGER (Homepage only)
+   --------------------------------------------------------- */
+html.is-vl-home.vl-motion-ready .site-footer .footer-main > div {
+    opacity: 0;
+    transform: translateY(14px);
+    transition:
+        opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+        transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+html.is-vl-home.vl-motion-ready .site-footer .footer-main > div.is-revealed {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+html.is-vl-home.vl-motion-ready .site-footer .footer-main > div:nth-child(1) {
+    transition-delay: 0ms;
+}
+html.is-vl-home.vl-motion-ready .site-footer .footer-main > div:nth-child(2) {
+    transition-delay: 60ms;
+}
+html.is-vl-home.vl-motion-ready .site-footer .footer-main > div:nth-child(3) {
+    transition-delay: 120ms;
+}
+html.is-vl-home.vl-motion-ready .site-footer .footer-main > div:nth-child(4) {
+    transition-delay: 180ms;
+}
+
+
+/* ---------------------------------------------------------
+   11. MOBILE OPTIMIZATION (< 768px)
+   Reduced translation distances & snappier transitions.
+   Hover states strictly disabled on touch devices.
+   --------------------------------------------------------- */
+@media (max-width: 767px) {
+    html.vl-motion-ready .vl-home-page .vl-reveal-up,
+    html.vl-motion-ready .vl-home-page [data-home-reveal="up"],
+    html.vl-motion-ready .vl-home-page .home-category-featured,
+    html.vl-motion-ready .vl-home-page .home-category-secondary,
+    html.vl-motion-ready .vl-home-page .home-new-product-reveal,
+    html.vl-motion-ready .vl-home-page .home-new-products__primary,
+    html.vl-motion-ready .vl-home-page .home-new-products__secondary-item,
+    html.vl-motion-ready .vl-home-page .home-sale-product-reveal,
+    html.vl-motion-ready .vl-home-page .vl-strip-item,
+    html.vl-motion-ready .vl-home-page .vl-step-card,
+    html.vl-motion-ready .vl-home-page .vl-warranty-box,
+    html.is-vl-home.vl-motion-ready .site-footer .footer-main > div {
+        transform: translateY(12px);
+        transition-duration: 0.44s;
+    }
+
+    html.vl-motion-ready .vl-home-page .vl-reveal-left,
+    html.vl-motion-ready .vl-home-page [data-home-reveal="left"] {
+        transform: translateX(-10px);
+        transition-duration: 0.44s;
+    }
+
+    html.vl-motion-ready .vl-home-page .vl-reveal-right,
+    html.vl-motion-ready .vl-home-page [data-home-reveal="right"] {
+        transform: translateX(10px);
+        transition-duration: 0.44s;
+    }
+}
+
+
+/* ---------------------------------------------------------
+   12. ACCESSIBILITY: PREFERS-REDUCED-MOTION
+   Turns off all transitions, staggers, and animations.
+   Guarantees immediate visibility with zero opacity.
+   --------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.001ms !important;
+        transition-delay: 0ms !important;
+        scroll-behavior: auto !important;
+    }
+
+    html.vl-motion-ready .vl-home-page .vl-reveal,
+    html.vl-motion-ready .vl-home-page [data-home-reveal],
+    html.vl-motion-ready .vl-home-page [data-home-reveal-item],
+    html.vl-motion-ready .vl-home-page .home-category-featured,
+    html.vl-motion-ready .vl-home-page .home-category-secondary,
+    html.vl-motion-ready .vl-home-page .home-new-product-reveal,
+    html.vl-motion-ready .vl-home-page .home-new-products__primary,
+    html.vl-motion-ready .vl-home-page .home-new-products__secondary-item,
+    html.vl-motion-ready .vl-home-page .home-new-products__secondary-grid .product-card,
+    html.vl-motion-ready .vl-home-page .home-sale-product-reveal,
+    html.vl-motion-ready .vl-home-page .home-sale-product-card,
+    html.vl-motion-ready .vl-home-page .vl-strip-item,
+    html.vl-motion-ready .vl-home-page .vl-step-card,
+    html.vl-motion-ready .vl-home-page .vl-warranty-box,
+    html.is-vl-home.vl-motion-ready .site-footer .footer-main > div,
+    .customer-floating-chat {
+        opacity: 1 !important;
+        transform: none !important;
+        transition: none !important;
+    }
+
+    .vl-home-page .home-new-products__primary .vl-btn-primary::after,
+    .vl-home-page .vl-kicker::after {
+        display: none !important;
+    }
+}

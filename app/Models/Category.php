@@ -16,12 +16,15 @@ class Category extends Model
         'description',
         'image',
         'is_active',
+        'is_home_featured',
+        'homepage_image_path',
     ];
 
     protected function casts(): array
     {
         return [
             'is_active' => 'boolean',
+            'is_home_featured' => 'boolean',
         ];
     }
 

@@ -13,29 +13,42 @@
 
 @section('content')
 
-<section class="checkout-hero">
-
+<section class="checkout-intro-pearl">
   <div class="velora-container">
-
-    <span class="hero-kicker">
-      SECURE CHECKOUT
-    </span>
-
-    <h1>
-      Thanh toán
-    </h1>
-
-    <p class="text-muted mb-0">
-      Kiểm tra thông tin nhận hàng và
-      hoàn tất đơn hàng của bạn.
-    </p>
-
+    <div class="checkout-intro-inner">
+      <div class="checkout-intro-main">
+        <nav class="checkout-breadcrumb" aria-label="Breadcrumb">
+          <a href="{{ route('home') }}">Trang chủ</a>
+          <span class="breadcrumb-separator">›</span>
+          <a href="{{ route('cart.index') }}">Giỏ hàng</a>
+          <span class="breadcrumb-separator">›</span>
+          <span class="breadcrumb-current">Thanh toán</span>
+        </nav>
+        <h1 class="checkout-pearl-title">Hoàn tất đơn hàng</h1>
+        <p class="checkout-pearl-subtitle">Kiểm tra thông tin nhận hàng, chọn phương thức thanh toán và xác nhận đơn hàng của bạn.</p>
+      </div>
+      <div class="checkout-step-indicator" aria-label="Tiến trình đặt hàng">
+        <div class="step-badge is-done">
+          <span class="step-num">01</span>
+          <span class="step-name">Giỏ hàng</span>
+        </div>
+        <span class="step-divider"></span>
+        <div class="step-badge is-active">
+          <span class="step-num">02</span>
+          <span class="step-name">Thanh toán</span>
+        </div>
+        <span class="step-divider"></span>
+        <div class="step-badge">
+          <span class="step-num">03</span>
+          <span class="step-name">Hoàn tất</span>
+        </div>
+      </div>
+    </div>
   </div>
-
 </section>
 
 
-<section class="section">
+<section class="section checkout-section-luxury">
 
   <div class="velora-container">
 

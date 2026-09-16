@@ -1,0 +1,186 @@
+/* =========================================================
+   VELORA EYES - MOTION SYSTEM
+   Scroll Reveals, Hero Entrance, Micro-Interactions
+   Progressive Enhancement & Accessibility First
+========================================================= */
+
+/* =========================================================
+   1. PROGRESSIVE ENHANCEMENT BASE
+   If JS is disabled or not loaded, all elements stay visible!
+   Only when html has .vl-motion-ready will hidden states apply.
+========================================================= */
+
+.vl-reveal {
+  opacity: 1;
+  transform: none;
+}
+
+html.vl-motion-ready .vl-reveal {
+  opacity: 0;
+  will-change: opacity, transform;
+  transition:
+    opacity 0.65s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.65s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Fade Up */
+html.vl-motion-ready .vl-reveal-up {
+  transform: translateY(28px);
+}
+
+/* Fade In */
+html.vl-motion-ready .vl-reveal-fade {
+  transform: none;
+}
+
+/* Subtle Scale */
+html.vl-motion-ready .vl-reveal-scale {
+  transform: scale(0.97);
+}
+
+/* Slide Left / Right */
+html.vl-motion-ready .vl-reveal-left {
+  transform: translateX(-30px);
+}
+html.vl-motion-ready .vl-reveal-right {
+  transform: translateX(30px);
+}
+
+/* REVEALED STATE */
+html.vl-motion-ready .vl-reveal.is-revealed {
+  opacity: 1;
+  transform: translateY(0) translateX(0) scale(1);
+}
+
+/* =========================================================
+   2. STAGGER DELAYS
+========================================================= */
+
+html.vl-motion-ready .vl-delay-1 {
+  transition-delay: 80ms;
+}
+html.vl-motion-ready .vl-delay-2 {
+  transition-delay: 160ms;
+}
+html.vl-motion-ready .vl-delay-3 {
+  transition-delay: 240ms;
+}
+html.vl-motion-ready .vl-delay-4 {
+  transition-delay: 320ms;
+}
+html.vl-motion-ready .vl-delay-5 {
+  transition-delay: 400ms;
+}
+
+/* =========================================================
+   3. HERO ENTRANCE KEYFRAMES
+========================================================= */
+
+@keyframes vlHeroKickerIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes vlHeroTitleIn {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes vlHeroVideoReveal {
+  from {
+    opacity: 0;
+    clip-path: inset(0 0 0 12%);
+  }
+  to {
+    opacity: 1;
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+@keyframes vlGlowPulse {
+  0%, 100% {
+    opacity: 0.5;
+    transform: translateY(-50%) scale(1);
+  }
+  50% {
+    opacity: 0.85;
+    transform: translateY(-50%) scale(1.08);
+  }
+}
+
+.vl-hero-glow-animated {
+  animation: vlGlowPulse 8s ease-in-out infinite;
+}
+
+/* =========================================================
+   4. MICRO INTERACTIONS (Hover, Focus, Press)
+========================================================= */
+
+.vl-hover-lift {
+  transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.22s ease;
+}
+
+.vl-hover-lift:hover {
+  transform: translateY(-4px);
+}
+
+.vl-hover-zoom {
+  overflow: hidden;
+}
+
+.vl-hover-zoom img {
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.vl-hover-zoom:hover img {
+  transform: scale(1.035);
+}
+
+/* Arrow Slide */
+.vl-arrow-slide {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: gap 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.vl-arrow-slide:hover {
+  gap: 10px;
+}
+
+/* =========================================================
+   5. ACCESSIBILITY: PREFERS-REDUCED-MOTION
+========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  html.vl-motion-ready .vl-reveal {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+
+  .vl-hero-glow-animated {
+    animation: none !important;
+  }
+}

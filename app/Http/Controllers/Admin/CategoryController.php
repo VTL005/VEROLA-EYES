@@ -7,6 +7,7 @@ use App\Http\Requests\Category\StoreCategoryRequest;
 use App\Http\Requests\Category\UpdateCategoryRequest;
 use App\Models\Category;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 
@@ -28,10 +29,9 @@ class CategoryController extends Controller
         $status =
             $request->query('status');
 
-
         if (
             $status
-            && !in_array(
+            && ! in_array(
                 $status,
                 [
                     'active',
@@ -42,7 +42,6 @@ class CategoryController extends Controller
         ) {
             $status = null;
         }
-
 
         $categories =
             Category::query()
@@ -74,20 +73,18 @@ class CategoryController extends Controller
 
                 ->when(
                     $status === 'active',
-                    fn ($query) =>
-                        $query->where(
-                            'is_active',
-                            true
-                        )
+                    fn ($query) => $query->where(
+                        'is_active',
+                        true
+                    )
                 )
 
                 ->when(
                     $status === 'inactive',
-                    fn ($query) =>
-                        $query->where(
-                            'is_active',
-                            false
-                        )
+                    fn ($query) => $query->where(
+                        'is_active',
+                        false
+                    )
                 )
 
                 ->latest()
@@ -95,7 +92,6 @@ class CategoryController extends Controller
                 ->paginate(10)
 
                 ->withQueryString();
-
 
         /*
         |--------------------------------------------------------------------------
@@ -123,7 +119,6 @@ class CategoryController extends Controller
                 )
                 ->count();
 
-
         return view(
             'admin.categories.index',
             compact(
@@ -137,7 +132,6 @@ class CategoryController extends Controller
         );
     }
 
-
     /**
      * Form thêm Category.
      */
@@ -147,7 +141,6 @@ class CategoryController extends Controller
             'admin.categories.create'
         );
     }
-
 
     /**
      * Lưu Category.
@@ -160,26 +153,22 @@ class CategoryController extends Controller
                 $request->name
             );
 
-
         $imagePath = null;
-
 
         if ($request->hasFile('image')) {
 
             $image =
                 $request->file('image');
 
-
             $fileName =
                 time()
-                . '-'
-                . Str::random(8)
-                . '.'
-                . strtolower(
+                .'-'
+                .Str::random(8)
+                .'.'
+                .strtolower(
                     $image
                         ->getClientOriginalExtension()
                 );
-
 
             $image->move(
                 public_path(
@@ -188,32 +177,37 @@ class CategoryController extends Controller
                 $fileName
             );
 
-
             $imagePath =
                 'images/categories/'
-                . $fileName;
+                .$fileName;
         }
 
+        $homepageImagePath = null;
 
-        Category::create([
-            'name' =>
-                trim($request->name),
+        if ($request->hasFile('homepage_image')) {
+            $homepageImage = $request->file('homepage_image');
+            $hpFileName = time().'-hp-'.Str::random(8).'.'.strtolower($homepageImage->getClientOriginalExtension());
+            $homepageImage->move(public_path('images/categories'), $hpFileName);
+            $homepageImagePath = 'images/categories/'.$hpFileName;
+        }
 
-            'slug' =>
-                $slug,
+        DB::transaction(function () use ($request, $slug, $imagePath, $homepageImagePath) {
+            $isFeatured = $request->boolean('is_home_featured');
 
-            'description' =>
-                $request->description,
+            if ($isFeatured) {
+                Category::query()->update(['is_home_featured' => false]);
+            }
 
-            'image' =>
-                $imagePath,
-
-            'is_active' =>
-                $request->boolean(
-                    'is_active'
-                ),
-        ]);
-
+            Category::create([
+                'name' => trim($request->name),
+                'slug' => $slug,
+                'description' => $request->description,
+                'image' => $imagePath,
+                'is_active' => $request->boolean('is_active'),
+                'is_home_featured' => $isFeatured,
+                'homepage_image_path' => $homepageImagePath,
+            ]);
+        });
 
         return redirect()
             ->route(
@@ -224,7 +218,6 @@ class CategoryController extends Controller
                 'Thêm danh mục thành công.'
             );
     }
-
 
     /**
      * Form sửa Category.
@@ -238,7 +231,6 @@ class CategoryController extends Controller
         );
     }
 
-
     /**
      * Cập nhật Category.
      */
@@ -248,7 +240,6 @@ class CategoryController extends Controller
     ) {
         $slug =
             $category->slug;
-
 
         if (
             trim($request->name)
@@ -261,10 +252,8 @@ class CategoryController extends Controller
                 );
         }
 
-
         $imagePath =
             $category->image;
-
 
         if ($request->hasFile('image')) {
 
@@ -272,21 +261,18 @@ class CategoryController extends Controller
                 $category->image
             );
 
-
             $image =
                 $request->file('image');
 
-
             $fileName =
                 time()
-                . '-'
-                . Str::random(8)
-                . '.'
-                . strtolower(
+                .'-'
+                .Str::random(8)
+                .'.'
+                .strtolower(
                     $image
                         ->getClientOriginalExtension()
                 );
-
 
             $image->move(
                 public_path(
@@ -295,32 +281,38 @@ class CategoryController extends Controller
                 $fileName
             );
 
-
             $imagePath =
                 'images/categories/'
-                . $fileName;
+                .$fileName;
         }
 
+        $homepageImagePath = $category->homepage_image_path;
 
-        $category->update([
-            'name' =>
-                trim($request->name),
+        if ($request->hasFile('homepage_image')) {
+            $this->deleteCategoryImage($category->homepage_image_path);
+            $homepageImage = $request->file('homepage_image');
+            $hpFileName = time().'-hp-'.Str::random(8).'.'.strtolower($homepageImage->getClientOriginalExtension());
+            $homepageImage->move(public_path('images/categories'), $hpFileName);
+            $homepageImagePath = 'images/categories/'.$hpFileName;
+        }
 
-            'slug' =>
-                $slug,
+        DB::transaction(function () use ($request, $category, $slug, $imagePath, $homepageImagePath) {
+            $isFeatured = $request->boolean('is_home_featured');
 
-            'description' =>
-                $request->description,
+            if ($isFeatured && ! $category->is_home_featured) {
+                Category::query()->where('id', '!=', $category->id)->update(['is_home_featured' => false]);
+            }
 
-            'image' =>
-                $imagePath,
-
-            'is_active' =>
-                $request->boolean(
-                    'is_active'
-                ),
-        ]);
-
+            $category->update([
+                'name' => trim($request->name),
+                'slug' => $slug,
+                'description' => $request->description,
+                'image' => $imagePath,
+                'is_active' => $request->boolean('is_active'),
+                'is_home_featured' => $isFeatured,
+                'homepage_image_path' => $homepageImagePath,
+            ]);
+        });
 
         return redirect()
             ->route(
@@ -331,7 +323,6 @@ class CategoryController extends Controller
                 'Cập nhật danh mục thành công.'
             );
     }
-
 
     /**
      * Xóa Category.
@@ -356,14 +347,14 @@ class CategoryController extends Controller
             );
         }
 
-
         $this->deleteCategoryImage(
             $category->image
         );
-
+        $this->deleteCategoryImage(
+            $category->homepage_image_path
+        );
 
         $category->delete();
-
 
         return redirect()
             ->route(
@@ -375,7 +366,6 @@ class CategoryController extends Controller
             );
     }
 
-
     /**
      * Sinh slug duy nhất.
      */
@@ -386,13 +376,10 @@ class CategoryController extends Controller
         $baseSlug =
             Str::slug($name);
 
-
         $slug =
             $baseSlug;
 
-
         $counter = 1;
-
 
         while (
             Category::query()
@@ -402,27 +389,24 @@ class CategoryController extends Controller
                 )
                 ->when(
                     $ignoreId,
-                    fn ($query) =>
-                        $query->where(
-                            'id',
-                            '!=',
-                            $ignoreId
-                        )
+                    fn ($query) => $query->where(
+                        'id',
+                        '!=',
+                        $ignoreId
+                    )
                 )
                 ->exists()
         ) {
             $slug =
                 $baseSlug
-                . '-'
-                . $counter;
+                .'-'
+                .$counter;
 
             $counter++;
         }
 
-
         return $slug;
     }
-
 
     /**
      * Xóa ảnh Category.
@@ -430,16 +414,14 @@ class CategoryController extends Controller
     private function deleteCategoryImage(
         ?string $imagePath
     ): void {
-        if (!$imagePath) {
+        if (! $imagePath) {
             return;
         }
-
 
         $fullPath =
             public_path(
                 $imagePath
             );
-
 
         if (
             File::exists(

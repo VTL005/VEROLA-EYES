@@ -1,0 +1,674 @@
+/* =========================================================
+   VELORA EYES - SHARED UI COMPONENTS
+   Buttons, Badges, Header, Footer, Cards, Alerts, Chat Bubble
+========================================================= */
+
+/* =========================================================
+   1. BUTTON SYSTEM (Touch Target >= 44px)
+========================================================= */
+
+.vl-btn,
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 46px;
+  padding: 10px 22px;
+  border-radius: var(--vl-radius-sm);
+  font-family: var(--vl-font-sans);
+  font-weight: 600;
+  font-size: 0.94rem;
+  line-height: 1.2;
+  text-decoration: none;
+  border: 1px solid transparent;
+  cursor: pointer;
+  background-color: transparent;
+  color: var(--vl-ink);
+  transition:
+    transform var(--vl-duration-micro) var(--vl-ease-luxury),
+    box-shadow var(--vl-duration-micro) var(--vl-ease-luxury),
+    background-color var(--vl-duration-micro) var(--vl-ease-luxury),
+    border-color var(--vl-duration-micro) var(--vl-ease-luxury),
+    color var(--vl-duration-micro) var(--vl-ease-luxury);
+  user-select: none;
+  touch-action: manipulation;
+}
+
+.vl-btn:focus-visible,
+.btn:focus-visible {
+  outline: 2px solid var(--vl-optical-cyan);
+  outline-offset: 3px;
+}
+
+.vl-btn:active,
+.btn:active {
+  transform: translateY(1px);
+}
+
+/* Primary Navy Button */
+.vl-btn-primary,
+.btn-primary {
+  background: var(--vl-navy-midnight);
+  color: #ffffff !important;
+  border-color: var(--vl-navy-midnight);
+  box-shadow: 0 4px 14px rgba(8, 22, 40, 0.16);
+}
+
+.vl-btn-primary:hover,
+.btn-primary:hover {
+  background: var(--vl-navy-deep);
+  border-color: var(--vl-navy-deep);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 22px rgba(8, 22, 40, 0.24);
+  color: #ffffff !important;
+}
+
+/* Outline Button */
+.vl-btn-outline,
+.btn-outline {
+  background: var(--vl-surface-white);
+  color: var(--vl-navy-midnight) !important;
+  border-color: var(--vl-border-subtle);
+}
+
+.vl-btn-outline:hover,
+.btn-outline:hover {
+  background: var(--vl-ice-tint);
+  border-color: var(--vl-navy-midnight);
+  color: var(--vl-navy-deep) !important;
+  transform: translateY(-2px);
+}
+
+/* Light / Glass Button */
+.vl-btn-light,
+.btn-light {
+  background: rgba(255, 255, 255, 0.88);
+  color: var(--vl-navy-midnight) !important;
+  border-color: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.vl-btn-light:hover,
+.btn-light:hover {
+  background: #ffffff;
+  color: var(--vl-navy-deep) !important;
+  transform: translateY(-2px);
+  box-shadow: var(--vl-shadow-sm);
+}
+
+/* Accent White / Champagne Button */
+.vl-btn-accent {
+  background: var(--vl-surface-white);
+  color: var(--vl-navy-deep) !important;
+  border-color: var(--vl-surface-white);
+  font-weight: 700;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+}
+
+.vl-btn-accent:hover {
+  background: var(--vl-ice-tint);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.18);
+  color: var(--vl-navy-deep) !important;
+}
+
+/* Button Sizing */
+.vl-btn-sm,
+.btn-sm {
+  min-height: 40px;
+  padding: 6px 14px;
+  font-size: 0.86rem;
+}
+
+.vl-btn-lg,
+.btn-lg {
+  min-height: 52px;
+  padding: 12px 28px;
+  font-size: 1rem;
+}
+
+/* =========================================================
+   2. BADGES & KICKERS
+========================================================= */
+
+.badge,
+.vl-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: var(--vl-radius-full);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  line-height: 1;
+  background: var(--vl-soft-stone);
+  color: var(--vl-navy-midnight);
+  border: 1px solid transparent;
+}
+
+.badge-blue,
+.vl-badge-blue {
+  background: var(--vl-ice-blue);
+  color: #0369a1;
+  border-color: var(--vl-ice-border);
+}
+
+.badge-success,
+.vl-badge-success {
+  background: var(--vl-success-bg);
+  color: var(--vl-success);
+  border-color: var(--vl-success-border);
+}
+
+.badge-danger,
+.badge-error,
+.vl-badge-danger {
+  background: var(--vl-error-bg);
+  color: var(--vl-error);
+  border-color: var(--vl-error-border);
+}
+
+.badge-warning,
+.vl-badge-warning {
+  background: var(--vl-warning-bg);
+  color: var(--vl-warning);
+  border-color: var(--vl-warning-border);
+}
+
+.vl-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--vl-champagne-dark);
+  margin-bottom: 12px;
+}
+
+.vl-kicker::before {
+  content: "";
+  display: inline-block;
+  width: 16px;
+  height: 1.5px;
+  background: var(--vl-champagne);
+}
+
+/* =========================================================
+   3. REFINED SITE HEADER (Role-Aware & Responsive)
+========================================================= */
+
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 999;
+  background: rgba(255, 255, 255, 0.98);
+  /* backdrop-filter removed for performance (replaced with high opacity white) */
+  border-bottom: 1px solid var(--vl-border-subtle);
+  transition: box-shadow var(--vl-duration-standard) ease, background-color var(--vl-duration-standard) ease;
+}
+
+.site-header .vl-container {
+  width: min(calc(100% - (var(--vl-gutter) * 2)), 1520px) !important;
+  max-width: 1520px !important;
+}
+
+.header-inner {
+  min-height: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: clamp(16px, 2vw, 36px);
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  flex-shrink: 0;
+}
+
+.brand-name {
+  font-family: var(--vl-font-serif);
+  font-size: 1.42rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  color: var(--vl-navy-deep);
+}
+
+.brand-name span {
+  font-family: var(--vl-font-sans);
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  color: var(--vl-champagne-dark);
+  margin-left: 3px;
+  vertical-align: middle;
+}
+
+.main-nav {
+  display: flex;
+  align-items: center;
+  gap: clamp(3px, 0.65vw, 10px);
+  flex-wrap: nowrap;
+  min-width: 0;
+  flex-shrink: 1;
+}
+
+.main-nav a {
+  padding: 6px clamp(6px, 0.65vw, 11px);
+  border-radius: var(--vl-radius-sm);
+  color: var(--vl-body-text);
+  font-size: 0.86rem;
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: all var(--vl-duration-micro) ease;
+  position: relative;
+}
+
+.main-nav a:hover {
+  color: var(--vl-navy-midnight);
+  background: var(--vl-ice-tint);
+}
+
+.main-nav a.active {
+  color: var(--vl-navy-midnight);
+  background: var(--vl-ice-blue);
+  font-weight: 700;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: clamp(6px, 0.8vw, 12px);
+  flex-shrink: 0;
+  white-space: nowrap;
+  margin-left: 12px;
+}
+
+.header-actions .vl-btn-sm {
+  min-height: 38px;
+  padding: 5px 12px;
+  font-size: 0.83rem;
+}
+
+@media (max-width: 1023px) {
+  .header-inner {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+  }
+  .main-nav {
+    order: 3;
+    width: 100%;
+    overflow-x: auto;
+    padding-bottom: 4px;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+.header-cart-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: var(--vl-navy-midnight);
+  color: #ffffff;
+  font-size: 0.74rem;
+  font-weight: 700;
+  margin-left: 6px;
+}
+
+/* Customer Account Dropdown */
+.header-account {
+  position: relative;
+  display: inline-block;
+}
+
+.header-account-toggle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 4px 10px;
+  border-radius: var(--vl-radius-full);
+  background: var(--vl-soft-stone);
+  border: 1px solid var(--vl-border-subtle);
+  cursor: pointer;
+  list-style: none;
+  user-select: none;
+  transition: all var(--vl-duration-micro) ease;
+}
+
+.header-account-toggle::-webkit-details-marker {
+  display: none;
+}
+
+.header-account-toggle:hover {
+  background: var(--vl-ice-tint);
+  border-color: var(--vl-ice-border);
+}
+
+.header-account-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--vl-navy-midnight);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+
+.header-account-name {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+  text-align: left;
+}
+
+.header-account-name small {
+  font-size: 0.68rem;
+  color: var(--vl-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.header-account-name strong {
+  font-size: 0.86rem;
+  color: var(--vl-navy-deep);
+  max-width: 110px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.header-account-arrow {
+  font-size: 0.75rem;
+  color: var(--vl-text-muted);
+  transition: transform var(--vl-duration-micro) ease;
+}
+
+.header-account[open] .header-account-arrow {
+  transform: rotate(180deg);
+}
+
+.header-account-menu {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  width: 250px;
+  background: #ffffff;
+  border-radius: var(--vl-radius-md);
+  border: 1px solid var(--vl-border-subtle);
+  box-shadow: var(--vl-shadow-lg);
+  padding: 8px;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.header-account-menu a,
+.header-logout-button {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: var(--vl-radius-sm);
+  color: var(--vl-body-text);
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-decoration: none;
+  background: transparent;
+  border: none;
+  width: 100%;
+  box-sizing: border-box;
+  text-align: left;
+  cursor: pointer;
+  transition: all var(--vl-duration-micro) ease;
+}
+
+.header-account-menu a:hover,
+.header-logout-button:hover {
+  background: var(--vl-ice-tint);
+  color: var(--vl-navy-midnight);
+}
+
+.header-account-menu a.active {
+  background: var(--vl-ice-blue);
+  color: var(--vl-navy-midnight);
+}
+
+.account-menu-icon {
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--vl-champagne-dark);
+  flex-shrink: 0;
+}
+
+.account-menu-icon svg {
+  width: 16px;
+  height: 16px;
+  stroke: currentColor;
+}
+
+.account-menu-divider {
+  height: 1px;
+  background: var(--vl-border-subtle);
+  margin: 6px 0;
+}
+
+.header-logout-form {
+  margin: 0;
+}
+
+.header-logout-button {
+  color: var(--vl-error);
+}
+
+.header-logout-button:hover {
+  background: var(--vl-error-bg);
+  color: var(--vl-error);
+}
+
+/* =========================================================
+   4. REFINED SITE FOOTER
+========================================================= */
+
+.site-footer {
+  background: var(--vl-navy-deep);
+  color: #ffffff;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 72px 0 0;
+  margin-top: auto;
+}
+
+.footer-main {
+  display: grid;
+  grid-template-columns: minmax(260px, 1.4fr) repeat(3, minmax(150px, 1fr));
+  gap: clamp(32px, 4vw, 64px);
+  padding-bottom: 56px;
+}
+
+.footer-title {
+  font-family: var(--vl-font-serif);
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0 0 20px;
+  letter-spacing: 0.02em;
+}
+
+.footer-links {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.footer-links a,
+.footer-links span {
+  font-size: 0.92rem;
+  color: #cbd5e1;
+  text-decoration: none;
+  transition: color var(--vl-duration-micro) ease;
+}
+
+.footer-links a:hover {
+  color: var(--vl-optical-cyan);
+}
+
+.footer-address {
+  color: #94a3b8;
+  font-style: normal;
+  font-size: 0.88rem;
+  line-height: 1.6;
+  margin-top: 6px;
+}
+
+.footer-bottom {
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 24px 0;
+  text-align: center;
+  font-size: 0.84rem;
+  color: #94a3b8;
+}
+
+/* =========================================================
+   5. ALERTS & NOTIFICATIONS
+========================================================= */
+
+.alert {
+  padding: 14px 18px;
+  border-radius: var(--vl-radius-sm);
+  font-size: 0.92rem;
+  line-height: 1.5;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  border: 1px solid transparent;
+}
+
+.alert-success {
+  background: var(--vl-success-bg);
+  color: var(--vl-success);
+  border-color: var(--vl-success-border);
+}
+
+.alert-danger {
+  background: var(--vl-error-bg);
+  color: var(--vl-error);
+  border-color: var(--vl-error-border);
+}
+
+.alert-warning {
+  background: var(--vl-warning-bg);
+  color: var(--vl-warning);
+  border-color: var(--vl-warning-border);
+}
+
+/* Wishlist Toast handled in style.css */
+
+/* Customer Floating Chat */
+.customer-floating-chat {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  z-index: 998;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 48px;
+  padding: 0 18px;
+  border-radius: var(--vl-radius-full);
+  background: var(--vl-navy-midnight);
+  color: #ffffff !important;
+  text-decoration: none;
+  box-shadow: 0 10px 28px rgba(8, 22, 40, 0.28);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  transition: transform var(--vl-duration-micro) ease, box-shadow var(--vl-duration-micro) ease;
+}
+
+.customer-floating-chat:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 14px 36px rgba(8, 22, 40, 0.35);
+  background: var(--vl-navy-deep);
+}
+
+.customer-floating-chat-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.customer-floating-chat-icon svg {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: #ffffff;
+}
+
+.customer-floating-chat-text {
+  font-size: 0.88rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+/* =========================================================
+   6. RESPONSIVE BREAKPOINTS (Header & Footer)
+========================================================= */
+
+@media (max-width: 992px) {
+  .header-inner {
+    flex-wrap: wrap;
+    padding: 12px 0;
+  }
+  .main-nav {
+    order: 3;
+    width: 100%;
+    overflow-x: auto;
+    white-space: nowrap;
+    padding-bottom: 4px;
+  }
+  .footer-main {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .header-inner {
+    gap: 12px;
+  }
+  .footer-main {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+  .customer-floating-chat {
+    right: 16px;
+    bottom: 16px;
+    width: 48px;
+    height: 48px;
+    padding: 0;
+    justify-content: center;
+  }
+  .customer-floating-chat-text {
+    display: none;
+  }
+}

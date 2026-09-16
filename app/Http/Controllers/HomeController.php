@@ -12,70 +12,41 @@ class HomeController extends Controller
      */
     public function index()
     {
-        /*
-         * Danh mục đang hoạt động.
-         */
-        $categories = Category::query()
-            ->where(
-                'is_active',
-                true
-            )
-            ->orderBy('name')
-            ->limit(6)
+        $primaryCategory = Category::query()
+            ->where('is_active', true)
+            ->where('is_home_featured', true)
+            ->first();
+
+        if (! $primaryCategory) {
+            $primaryCategory = Category::query()
+                ->where('is_active', true)
+                ->first();
+        }
+
+        $secondaryCategories = Category::query()
+            ->where('is_active', true)
+            ->when($primaryCategory, function ($query) use ($primaryCategory) {
+                $query->where('id', '!=', $primaryCategory->id);
+            })
+            ->limit(4)
             ->get();
 
-
-        /*
-         * Sản phẩm mới.
-         *
-         * Chỉ hiển thị Product thực sự
-         * sẵn sàng kinh doanh.
-         */
-        $newProducts = Product::query()
-
-            ->where(
-                'is_active',
-                true
-            )
-
-            /*
-             * Phải có ảnh thật.
-             */
-            ->whereHas(
-                'images',
-                function ($query) {
-                    $query->where(
-                        'image_path',
-                        '!=',
-                        'images/no-image.png'
-                    );
-                }
-            )
-
-            /*
-             * Phải có Variant active.
-             */
-            ->whereHas(
-                'variants',
-                function ($query) {
-                    $query->where(
-                        'is_active',
-                        true
-                    );
-                }
-            )
-
-            ->with([
-                'category',
-                'primaryImage',
-            ])
-
-            ->latest()
-
-            ->limit(8)
-
+        $newProductsRaw = Product::query()
+            ->where('is_active', true)
+            ->whereHas('images', function ($query) {
+                $query->where('image_path', '!=', 'images/no-image.png');
+            })
+            ->whereHas('variants', function ($query) {
+                $query->where('is_active', true);
+            })
+            ->with(['category', 'primaryImage'])
+            ->orderByDesc('created_at')
+            ->orderByDesc('id')
+            ->limit(5)
             ->get();
 
+        $primaryProduct = $newProductsRaw->first();
+        $secondaryProducts = $newProductsRaw->skip(1)->take(4);
 
         /*
          * Sản phẩm đang giảm giá.
@@ -129,12 +100,13 @@ class HomeController extends Controller
 
             ->get();
 
-
         return view(
             'home',
             compact(
-                'categories',
-                'newProducts',
+                'primaryCategory',
+                'secondaryCategories',
+                'primaryProduct',
+                'secondaryProducts',
                 'saleProducts'
             )
         );

@@ -17,10 +17,12 @@
   </title>
 
   <link rel="stylesheet" href="{{ asset('css/style.css') }}">
-  <link rel="stylesheet" href="{{ asset('css/style.css') }}">
+  <link rel="stylesheet" href="{{ asset('css/velora-design-system.css') }}">
+  <link rel="stylesheet" href="{{ asset('css/velora-components.css') }}">
+  <link rel="stylesheet" href="{{ asset('css/velora-motion.css') }}">
   <link rel="stylesheet" href="{{ asset('css/footer.css') }}">
+  <link rel="stylesheet" href="{{ asset('css/velora-vision-care.css') }}">
 
-  @stack('styles')
   @stack('styles')
 
 </head>
@@ -194,6 +196,9 @@
 
   @endauth
 
+
+  <script src="{{ asset('js/velora-motion.js') }}" defer></script>
+  <script src="{{ asset('js/adaptive-images.js') }}" defer></script>
 
   @vite('resources/js/app.js')
 

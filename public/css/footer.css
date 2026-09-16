@@ -1,38 +1,261 @@
 /* =========================================================
-   VELORA FOOTER
+   VELORA FOOTER - ULTRA-COMPACT LUXURY
+   Height reduced an additional ~18% (total ~42% from original)
+   Cinematic Ink Surface | Micro-interactions: Story & Hotline
 ========================================================= */
 
+.site-footer {
+  background: #071525; /* Cinematic Ink */
+  color: #ffffff;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 38px 0 0; /* Reduced to 38px (in 36-44px range) */
+  margin-top: auto;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Subtle top edge optical sheen */
+.site-footer::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 10%;
+  right: 10%;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(185, 150, 98, 0.25) 30%,
+    rgba(226, 192, 125, 0.45) 50%,
+    rgba(185, 150, 98, 0.25) 70%,
+    transparent 100%
+  );
+  pointer-events: none;
+}
+
 .footer-main {
-    grid-template-columns:
-        minmax(260px, 1.45fr)
-        repeat(3, minmax(150px, 1fr));
-    gap: clamp(32px, 4vw, 58px);
+  display: grid;
+  grid-template-columns: minmax(240px, 1.35fr) repeat(3, minmax(130px, 1fr));
+  gap: clamp(20px, 3vw, 44px);
+  padding-bottom: 26px; /* Reduced to 26px (in 24-30px range) */
 }
 
-.footer-contact-links {
-    line-height: 1.6;
+.footer-title {
+  font-family: var(--vl-font-serif, "Playfair Display", Georgia, serif);
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0 0 12px; /* Gap between title and content: 12px (in 10-14px range) */
+  letter-spacing: 0.03em;
 }
 
+.footer-main p {
+  color: #cbd5e1;
+  line-height: 1.55;
+  font-size: 0.88rem;
+  margin-bottom: 6px; /* Reduced paragraph gap: 6px (in 6-10px range) */
+}
+
+.footer-links {
+  display: flex;
+  flex-direction: column;
+  gap: 8px; /* Gap between links: 8px (in 7-9px range) */
+}
+
+.footer-links a,
+.footer-links span {
+  font-size: 0.88rem;
+  color: #cbd5e1;
+  text-decoration: none;
+  transition: color 360ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.footer-links a:hover {
+  color: #E2C07D; /* Champagne accent */
+}
+
+.footer-links a:focus-visible {
+  outline: 2px solid rgba(212, 175, 55, 0.6);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+/* ---------------------------------------------------------
+   HOVER: "Câu chuyện VELORA"
+   360ms cubic-bezier(0.16, 1, 0.3, 1), translateX(3.5px),
+   Champagne text, expanding left-to-right underline
+--------------------------------------------------------- */
+.footer-story-link {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  text-decoration: none;
+  color: #cbd5e1;
+  transition:
+    color 360ms cubic-bezier(0.16, 1, 0.3, 1),
+    transform 360ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.footer-story-text {
+  position: relative;
+  display: inline-block;
+  transition: color 360ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.footer-story-link::after {
+  content: "";
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background: #E2C07D; /* Bright Champagne */
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 360ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.footer-story-link:hover,
+.footer-story-link:focus-visible {
+  color: #E2C07D !important;
+  transform: translateX(3.5px);
+}
+
+.footer-story-link:hover::after,
+.footer-story-link:focus-visible::after {
+  transform: scaleX(1);
+}
+
+.footer-story-link:focus-visible {
+  outline: 2px solid rgba(212, 175, 55, 0.6);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+/* ---------------------------------------------------------
+   HOVER: Hotline
+   360ms cubic-bezier(0.16, 1, 0.3, 1), subtle icon shift,
+   gentle letter-spacing & Champagne tone, no jarring scale
+--------------------------------------------------------- */
+.footer-hotline-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  width: fit-content;
+  text-decoration: none;
+  font-weight: 600;
+  color: #e2e8f0;
+  font-size: 0.9rem;
+  position: relative;
+  transition:
+    color 360ms cubic-bezier(0.16, 1, 0.3, 1),
+    letter-spacing 360ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.footer-hotline-icon {
+  width: 14px;
+  height: 14px;
+  stroke: #cbd5e1;
+  flex-shrink: 0;
+  transition:
+    stroke 360ms cubic-bezier(0.16, 1, 0.3, 1),
+    transform 360ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.footer-hotline-text {
+  position: relative;
+  display: inline-block;
+  transition: color 360ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.footer-hotline-text::after {
+  content: "";
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background: #E2C07D;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 360ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.footer-hotline-link:hover,
+.footer-hotline-link:focus-visible {
+  color: #E2C07D !important;
+  letter-spacing: 0.015em;
+}
+
+.footer-hotline-link:hover .footer-hotline-icon,
+.footer-hotline-link:focus-visible .footer-hotline-icon {
+  stroke: #E2C07D;
+  transform: translateX(2.5px);
+}
+
+.footer-hotline-link:hover .footer-hotline-text::after,
+.footer-hotline-link:focus-visible .footer-hotline-text::after {
+  transform: scaleX(1);
+}
+
+.footer-hotline-link:focus-visible {
+  outline: 2px solid rgba(212, 175, 55, 0.6);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+/* ---------------------------------------------------------
+   Address & Bottom Bar
+--------------------------------------------------------- */
 .footer-address {
-    max-width: 290px;
-    margin: 0;
-    color: #cbd5e1;
-    font-style: normal;
+  max-width: 290px;
+  margin: 2px 0 0;
+  color: #94a3b8;
+  font-style: normal;
+  font-size: 0.84rem;
+  line-height: 1.5;
 }
 
-@media (max-width: 900px) {
-    .footer-main {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
+.footer-bottom {
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+  padding: 14px 0; /* Reduced to 14px (in 12-16px range) */
+  text-align: center;
+  font-size: 0.8rem;
+  color: #94a3b8;
+}
+
+/* ---------------------------------------------------------
+   RESPONSIVE
+--------------------------------------------------------- */
+@media (max-width: 992px) {
+  .site-footer {
+    padding-top: 32px;
+  }
+
+  .footer-main {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 24px;
+    padding-bottom: 22px;
+  }
 }
 
 @media (max-width: 640px) {
-    .footer-main {
-        grid-template-columns: 1fr;
-        gap: 26px;
-    }
+  .site-footer {
+    padding-top: 28px;
+  }
 
-    .footer-address {
-        max-width: none;
-    }
+  .footer-main {
+    grid-template-columns: 1fr;
+    gap: 20px;
+    padding-bottom: 18px;
+  }
+
+  .footer-address {
+    max-width: none;
+  }
+
+  .footer-bottom {
+    padding: 12px 0;
+  }
 }

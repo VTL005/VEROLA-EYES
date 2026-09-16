@@ -606,3 +606,550 @@
         max-width: none;
     }
 }
+
+/* =========================================================
+   VELORA OPTICAL PEARL COMMERCE: CART SYSTEM
+   ========================================================= */
+
+:root {
+  --vl-op-ink: #10243E;
+  --vl-op-petrol: #174654;
+  --vl-op-pearl: #F7F4EE;
+  --vl-op-porcelain: #FFFEFB;
+  --vl-op-mist: #E8F1F3;
+  --vl-op-glass: #BFD9DF;
+  --vl-op-champagne: #B89562;
+  --vl-op-terracotta: #C75A3B;
+  --vl-op-slate: #5B6878;
+  --vl-op-success: #2F765E;
+  --vl-op-warning: #A66A21;
+  --vl-op-error: #A33D3D;
+}
+
+/* Introduction Header - Optical Pearl */
+.cart-intro-pearl {
+  padding: 32px 0 28px !important;
+  background: var(--vl-op-pearl) !important;
+  border-bottom: 1px solid var(--vl-op-glass) !important;
+  position: relative !important;
+}
+
+.cart-intro-inner {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 8px !important;
+}
+
+.cart-breadcrumb {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  font-size: 0.82rem !important;
+  font-family: var(--vl-font-sans, 'Be Vietnam Pro', sans-serif) !important;
+}
+
+.cart-breadcrumb a {
+  color: var(--vl-op-slate) !important;
+  text-decoration: none !important;
+  transition: color 0.15s ease !important;
+}
+
+.cart-breadcrumb a:hover {
+  color: var(--vl-op-petrol) !important;
+}
+
+.breadcrumb-separator {
+  color: var(--vl-op-glass) !important;
+}
+
+.breadcrumb-current {
+  color: var(--vl-op-ink) !important;
+  font-weight: 600 !important;
+}
+
+.cart-pearl-title {
+  font-family: var(--vl-font-sans, 'Be Vietnam Pro', sans-serif) !important;
+  font-size: clamp(1.6rem, 2.8vw, 2.1rem) !important;
+  font-weight: 700 !important;
+  color: var(--vl-op-ink) !important;
+  letter-spacing: -0.02em !important;
+  margin: 0 !important;
+}
+
+/* Main Section Layout */
+.cart-section-luxury {
+  background: var(--vl-op-pearl) !important;
+  padding: 36px 0 68px !important;
+  min-height: 60vh !important;
+  position: relative !important;
+}
+
+.cart-page-grid {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1.55fr) minmax(320px, 0.65fr) !important;
+  gap: 32px !important;
+  align-items: start !important;
+}
+
+.cart-page-grid > * {
+  min-width: 0 !important;
+}
+
+/* Cart Header / Actions */
+.cart-list-heading {
+  background: var(--vl-op-porcelain) !important;
+  border: 1px solid var(--vl-op-glass) !important;
+  border-radius: 14px !important;
+  padding: 14px 18px !important;
+  margin-bottom: 16px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  box-shadow: 0 2px 8px rgba(16, 36, 62, 0.03) !important;
+}
+
+.cart-select-all {
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  font-size: 0.88rem !important;
+  font-weight: 600 !important;
+  color: var(--vl-op-ink) !important;
+  cursor: pointer !important;
+  font-family: var(--vl-font-sans, 'Be Vietnam Pro', sans-serif) !important;
+}
+
+.cart-select-all input {
+  width: 18px !important;
+  height: 18px !important;
+  accent-color: var(--vl-op-petrol) !important;
+  cursor: pointer !important;
+}
+
+/* Cart Item Card - Porcelain Surface */
+.cart-item-card {
+  background: var(--vl-op-porcelain) !important;
+  border: 1px solid var(--vl-op-glass) !important;
+  border-radius: 14px !important;
+  padding: 18px 20px !important;
+  margin-bottom: 14px !important;
+  display: grid !important;
+  grid-template-columns: 28px 104px minmax(0, 1fr) auto !important;
+  gap: 18px !important;
+  align-items: center !important;
+  box-shadow: 0 2px 10px rgba(16, 36, 62, 0.03) !important;
+  position: relative !important;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease !important;
+}
+
+.cart-item-card:hover {
+  border-color: rgba(23, 70, 84, 0.35) !important;
+  box-shadow: 0 6px 18px rgba(16, 36, 62, 0.06) !important;
+}
+
+.cart-select-item input {
+  width: 18px !important;
+  height: 18px !important;
+  accent-color: var(--vl-op-petrol) !important;
+  cursor: pointer !important;
+}
+
+.cart-item-image {
+  width: 104px !important;
+  height: 84px !important;
+  background: #FFFFFF !important;
+  border: 1px solid var(--vl-op-glass) !important;
+  border-radius: 10px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  overflow: hidden !important;
+  padding: 6px !important;
+}
+
+.cart-item-image img {
+  width: auto !important;
+  height: auto !important;
+  max-width: 90% !important;
+  max-height: 90% !important;
+  object-fit: contain !important;
+  mix-blend-mode: multiply !important;
+}
+
+.cart-item-info strong,
+.cart-item-info h3 {
+  font-family: var(--vl-font-sans, 'Be Vietnam Pro', sans-serif) !important;
+  font-size: 1.02rem !important;
+  font-weight: 700 !important;
+  color: var(--vl-op-ink) !important;
+  margin: 0 0 5px !important;
+  line-height: 1.35 !important;
+}
+
+.cart-item-info a {
+  color: inherit !important;
+  text-decoration: none !important;
+  transition: color 0.15s ease !important;
+}
+
+.cart-item-info a:hover {
+  color: var(--vl-op-petrol) !important;
+}
+
+.cart-variant-info {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 3px !important;
+  color: var(--vl-op-slate) !important;
+  font-size: 0.82rem !important;
+  font-family: var(--vl-font-sans, 'Be Vietnam Pro', sans-serif) !important;
+}
+
+.cart-item-controls {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: flex-end !important;
+  gap: 10px !important;
+}
+
+.cart-unit-price {
+  font-size: 0.86rem !important;
+  color: var(--vl-op-slate) !important;
+  font-family: var(--vl-font-sans, 'Be Vietnam Pro', sans-serif) !important;
+}
+
+.cart-quantity-form {
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+}
+
+.cart-quantity-form input {
+  width: 52px !important;
+  height: 36px !important;
+  text-align: center !important;
+  border: 1px solid var(--vl-op-glass) !important;
+  border-radius: 8px !important;
+  font-weight: 700 !important;
+  color: var(--vl-op-ink) !important;
+  background: var(--vl-op-porcelain) !important;
+  font-family: var(--vl-font-sans, 'Be Vietnam Pro', sans-serif) !important;
+}
+
+.cart-quantity-form input:focus {
+  outline: none !important;
+  border-color: var(--vl-op-petrol) !important;
+  box-shadow: 0 0 0 2px rgba(23, 70, 84, 0.15) !important;
+}
+
+.cart-quantity-form .btn {
+  height: 36px !important;
+  padding: 0 12px !important;
+  font-size: 0.8rem !important;
+  font-weight: 600 !important;
+  border-radius: 8px !important;
+  background: var(--vl-op-mist) !important;
+  border: 1px solid var(--vl-op-glass) !important;
+  color: var(--vl-op-ink) !important;
+  cursor: pointer !important;
+  transition: all 0.15s ease !important;
+  font-family: var(--vl-font-sans, 'Be Vietnam Pro', sans-serif) !important;
+}
+
+.cart-quantity-form .btn:hover {
+  background: var(--vl-op-petrol) !important;
+  color: #FFFFFF !important;
+  border-color: var(--vl-op-petrol) !important;
+}
+
+.cart-item-subtotal {
+  font-size: 0.82rem !important;
+  color: var(--vl-op-slate) !important;
+  text-align: right !important;
+  font-family: var(--vl-font-sans, 'Be Vietnam Pro', sans-serif) !important;
+}
+
+.cart-item-subtotal strong {
+  display: block !important;
+  color: var(--vl-op-ink) !important;
+  font-size: 1.1rem !important;
+  font-weight: 800 !important;
+}
+
+.cart-remove-button {
+  background: none !important;
+  border: none !important;
+  color: var(--vl-op-error) !important;
+  font-size: 0.8rem !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  padding: 2px 0 !important;
+  transition: opacity 0.15s ease !important;
+  font-family: var(--vl-font-sans, 'Be Vietnam Pro', sans-serif) !important;
+}
+
+.cart-remove-button:hover {
+  text-decoration: underline !important;
+  opacity: 0.8 !important;
+}
+
+/* =========================================================
+   CART SUMMARY CARD — OPTICAL PEARL LIGHT THEME
+   ========================================================= */
+.cart-summary-card {
+  background: var(--vl-op-porcelain) !important;
+  border: 1px solid var(--vl-op-glass) !important;
+  border-radius: 18px !important;
+  padding: 24px 26px !important;
+  color: var(--vl-op-ink) !important;
+  box-shadow: 0 8px 24px rgba(16, 36, 62, 0.05) !important;
+  position: relative !important;
+}
+
+.cart-summary-card h2 {
+  font-family: var(--vl-font-sans, 'Be Vietnam Pro', sans-serif) !important;
+  font-size: 1.15rem !important;
+  font-weight: 700 !important;
+  color: var(--vl-op-ink) !important;
+  margin: 0 0 16px !important;
+  padding-bottom: 12px !important;
+  border-bottom: 1px solid var(--vl-op-mist) !important;
+  letter-spacing: -0.01em !important;
+}
+
+/* Voucher box in cart summary */
+.cart-summary-card .cart-voucher {
+  background: var(--vl-op-mist) !important;
+  border: 1px solid var(--vl-op-glass) !important;
+  border-radius: 12px !important;
+  padding: 14px !important;
+  margin: 0 0 16px !important;
+}
+
+.cart-summary-card .cart-voucher-heading h3 {
+  color: var(--vl-op-ink) !important;
+  font-size: 0.94rem !important;
+  font-weight: 700 !important;
+  font-family: var(--vl-font-sans, 'Be Vietnam Pro', sans-serif) !important;
+}
+
+.cart-summary-card .cart-voucher-kicker {
+  color: var(--vl-op-champagne) !important;
+}
+
+.cart-summary-card .voucher-applied-card {
+  background: #EFF9F5 !important;
+  border: 1px solid #B8E0D2 !important;
+  border-radius: 8px !important;
+  padding: 10px 12px !important;
+}
+
+.cart-summary-card .voucher-code {
+  color: var(--vl-op-success) !important;
+}
+
+.cart-summary-card .voucher-status-label {
+  color: var(--vl-op-success) !important;
+}
+
+.cart-summary-card .voucher-saving {
+  color: var(--vl-op-slate) !important;
+}
+
+.cart-summary-card .voucher-saving strong {
+  color: var(--vl-op-success) !important;
+}
+
+.cart-summary-card .voucher-remove-button {
+  color: var(--vl-op-error) !important;
+}
+
+/* Summary Lines */
+.cart-summary-lines {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 10px !important;
+  padding: 14px 0 !important;
+  border-top: 1px solid var(--vl-op-mist) !important;
+  border-bottom: 1px solid var(--vl-op-mist) !important;
+}
+
+.cart-summary-lines > div {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  font-size: 0.88rem !important;
+  font-family: var(--vl-font-sans, 'Be Vietnam Pro', sans-serif) !important;
+}
+
+.cart-summary-lines span {
+  color: var(--vl-op-slate) !important;
+}
+
+.cart-summary-lines strong {
+  color: var(--vl-op-ink) !important;
+  font-weight: 700 !important;
+}
+
+.cart-total {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: flex-end !important;
+  padding: 16px 0 18px !important;
+  border-top: 1px solid var(--vl-op-champagne) !important;
+  margin-top: 8px !important;
+}
+
+.cart-total span {
+  color: var(--vl-op-ink) !important;
+  font-size: 0.95rem !important;
+  font-weight: 700 !important;
+  font-family: var(--vl-font-sans, 'Be Vietnam Pro', sans-serif) !important;
+}
+
+.cart-total strong {
+  color: var(--vl-op-ink) !important;
+  font-size: 1.65rem !important;
+  font-weight: 800 !important;
+  letter-spacing: -0.02em !important;
+  font-family: var(--vl-font-sans, 'Be Vietnam Pro', sans-serif) !important;
+}
+
+.cart-selected-summary {
+  background: var(--vl-op-mist) !important;
+  border: 1px solid var(--vl-op-glass) !important;
+  border-radius: 8px !important;
+  padding: 10px 12px !important;
+  margin-bottom: 16px !important;
+  font-size: 0.82rem !important;
+  color: var(--vl-op-slate) !important;
+  font-family: var(--vl-font-sans, 'Be Vietnam Pro', sans-serif) !important;
+}
+
+.cart-selected-summary strong {
+  color: var(--vl-op-ink) !important;
+}
+
+.cart-checkout-button {
+  width: 100% !important;
+  min-height: 48px !important;
+  background: var(--vl-op-ink) !important;
+  color: #FFFFFF !important;
+  border: none !important;
+  border-radius: 10px !important;
+  font-size: 0.95rem !important;
+  font-weight: 700 !important;
+  font-family: var(--vl-font-sans, 'Be Vietnam Pro', sans-serif) !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+  box-shadow: 0 4px 14px rgba(16, 36, 62, 0.2) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.cart-checkout-button:hover {
+  background: var(--vl-op-petrol) !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 6px 18px rgba(23, 70, 84, 0.25) !important;
+}
+
+.cart-continue-shopping {
+  display: block !important;
+  text-align: center !important;
+  color: var(--vl-op-slate) !important;
+  font-size: 0.84rem !important;
+  font-weight: 600 !important;
+  text-decoration: none !important;
+  margin-top: 14px !important;
+  font-family: var(--vl-font-sans, 'Be Vietnam Pro', sans-serif) !important;
+  transition: color 0.15s ease !important;
+}
+
+.cart-continue-shopping:hover {
+  color: var(--vl-op-petrol) !important;
+  text-decoration: underline !important;
+}
+
+/* Empty Cart */
+.cart-empty {
+  background: var(--vl-op-porcelain) !important;
+  border: 1px solid var(--vl-op-glass) !important;
+  border-radius: 18px !important;
+  padding: 60px 24px !important;
+  text-align: center !important;
+  box-shadow: 0 4px 20px rgba(16, 36, 62, 0.04) !important;
+}
+
+.cart-empty-icon {
+  width: 68px !important;
+  height: 68px !important;
+  border-radius: 50% !important;
+  background: var(--vl-op-mist) !important;
+  color: var(--vl-op-petrol) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  margin: 0 auto 18px !important;
+  font-size: 1.8rem !important;
+}
+
+.cart-empty h2 {
+  font-family: var(--vl-font-sans, 'Be Vietnam Pro', sans-serif) !important;
+  font-size: 1.45rem !important;
+  font-weight: 700 !important;
+  color: var(--vl-op-ink) !important;
+  margin: 0 0 8px !important;
+}
+
+.cart-empty p {
+  color: var(--vl-op-slate) !important;
+  font-size: 0.92rem !important;
+  max-width: 440px !important;
+  margin: 0 auto 22px !important;
+  font-family: var(--vl-font-sans, 'Be Vietnam Pro', sans-serif) !important;
+}
+
+.cart-empty .btn-primary {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background: var(--vl-op-ink) !important;
+  color: #FFFFFF !important;
+  padding: 12px 28px !important;
+  border-radius: 8px !important;
+  font-size: 0.9rem !important;
+  font-weight: 700 !important;
+  text-decoration: none !important;
+  font-family: var(--vl-font-sans, 'Be Vietnam Pro', sans-serif) !important;
+  transition: all 0.2s ease !important;
+}
+
+.cart-empty .btn-primary:hover {
+  background: var(--vl-op-petrol) !important;
+  transform: translateY(-1px) !important;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .cart-page-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .cart-item-card {
+    grid-template-columns: 24px 80px minmax(0, 1fr) !important;
+  }
+  .cart-item-image {
+    width: 80px !important;
+    height: 70px !important;
+  }
+  .cart-item-controls {
+    grid-column: 1 / -1 !important;
+    align-items: flex-start !important;
+    border-top: 1px solid var(--vl-op-mist) !important;
+    padding-top: 12px !important;
+    margin-top: 4px !important;
+  }
+}

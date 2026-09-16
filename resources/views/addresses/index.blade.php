@@ -6,13 +6,7 @@
 
 @section('content')
 
-<section
-    style="
-        padding:54px 0 42px;
-        background:linear-gradient(135deg,#f8fbff,#edf5fc);
-        border-bottom:1px solid var(--velora-border);
-    "
->
+<section class="address-hero">
 
     <div class="velora-container">
 

@@ -1,0 +1,139 @@
+/* =========================================================
+   VELORA EYES - GLOBAL DESIGN SYSTEM TOKENS
+   Haute Optique / Quiet Luxury / Editorial Eyewear
+   Encapsulated Custom Properties & Vietnamese Typography Guard
+========================================================= */
+
+:root {
+  /* Surface & Brand Palette */
+  --vl-navy-deep: #081628;
+  --vl-navy-midnight: #0e223d;
+  --vl-navy-elevated: #153454;
+  --vl-navy-glass: rgba(8, 22, 40, 0.78);
+  --vl-navy-border: rgba(255, 255, 255, 0.12);
+
+  --vl-ice-blue: #e5f3fc;
+  --vl-ice-tint: #f0f7fd;
+  --vl-ice-border: #bae6fd;
+  --vl-optical-cyan: #38bdf8;
+  --vl-optical-cyan-glow: rgba(56, 189, 248, 0.14);
+
+  --vl-warm-alabaster: #faf8f3;
+  --vl-alabaster-subtle: #f4f0e8;
+  --vl-soft-stone: #eef2f5;
+  --vl-surface-white: #ffffff;
+
+  --vl-champagne: #c5a880;
+  --vl-champagne-dark: #9c7b50;
+  --vl-champagne-light: #fbf7f0;
+  --vl-champagne-border: rgba(197, 168, 128, 0.38);
+
+  --vl-ink: #08182e;
+  --vl-body-text: #475569;
+  --vl-text-muted: #64748b;
+  --vl-text-light: #94a3b8;
+  --vl-border-subtle: #e2e8f0;
+  --vl-border-hairline: rgba(8, 22, 40, 0.08);
+
+  /* Status Colors */
+  --vl-success: #15803d;
+  --vl-success-bg: #ecfdf5;
+  --vl-success-border: #a7f3d0;
+
+  --vl-warning: #b45309;
+  --vl-warning-bg: #fffbeb;
+  --vl-warning-border: #fde68a;
+
+  --vl-error: #991b1b;
+  --vl-error-bg: #fef2f2;
+  --vl-error-border: #fecaca;
+
+  /* Typography Stacks — Safe Vietnamese rendering */
+  --vl-font-sans: "Segoe UI Variable", "Segoe UI", -apple-system, BlinkMacSystemFont, "SF Pro Text", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --vl-font-serif: "Noto Serif", "Times New Roman", Georgia, serif;
+
+  /* Typography Scale */
+  --vl-text-xs: 0.75rem;    /* 12px */
+  --vl-text-sm: 0.875rem;   /* 14px */
+  --vl-text-base: 1rem;     /* 16px */
+  --vl-text-lg: 1.125rem;   /* 18px */
+  --vl-text-xl: 1.25rem;    /* 20px */
+  --vl-text-2xl: 1.5rem;    /* 24px */
+  --vl-text-3xl: 1.875rem;  /* 30px */
+  --vl-text-4xl: 2.25rem;   /* 36px */
+  --vl-text-display: clamp(2.4rem, 4.4vw, 3.8rem);
+
+  /* Elevation Shadows (Navy-tinted, no flat muddy black) */
+  --vl-shadow-xs: 0 1px 3px rgba(8, 22, 40, 0.04);
+  --vl-shadow-sm: 0 2px 8px -2px rgba(8, 22, 40, 0.06);
+  --vl-shadow-md: 0 8px 24px -4px rgba(8, 22, 40, 0.08), 0 3px 8px -2px rgba(8, 22, 40, 0.04);
+  --vl-shadow-lg: 0 18px 42px -8px rgba(8, 22, 40, 0.12), 0 6px 16px -4px rgba(8, 22, 40, 0.05);
+  --vl-shadow-xl: 0 28px 64px -12px rgba(8, 22, 40, 0.16);
+
+  /* Radii */
+  --vl-radius-xs: 4px;
+  --vl-radius-sm: 8px;
+  --vl-radius-md: 12px;
+  --vl-radius-lg: 20px;
+  --vl-radius-xl: 28px;
+  --vl-radius-full: 9999px;
+
+  /* Container & Grid */
+  --vl-container-max: 1280px;
+  --vl-gutter: 24px;
+  --vl-ease-luxury: cubic-bezier(0.16, 1, 0.3, 1);
+  --vl-duration-micro: 180ms;
+  --vl-duration-standard: 320ms;
+}
+
+/* =========================================================
+   VIETNAMESE KERNING & TYPOGRAPHY INTEGRITY
+   Fixes "Kính mắ t", "Đo mắ t", "Số ng" character detachments
+========================================================= */
+
+body,
+button,
+input,
+select,
+textarea,
+p,
+a,
+span,
+li,
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--vl-font-sans);
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Never apply negative letter-spacing to Vietnamese sentences */
+h1, h2, h3, h4, h5, h6 {
+  letter-spacing: -0.01em;
+  word-spacing: normal;
+}
+
+p, span, a, label, input, button {
+  letter-spacing: normal;
+}
+
+/* Uppercase kickers can have gentle tracking */
+.vl-kicker,
+.hero-kicker,
+.admin-sidebar-brand small,
+.badge {
+  letter-spacing: 0.08em;
+}
+
+/* Global Container Utility */
+.vl-container {
+  width: min(calc(100% - (var(--vl-gutter) * 2)), var(--vl-container-max));
+  margin-left: auto;
+  margin-right: auto;
+}
+
+@media (max-width: 640px) {
+  :root {
+    --vl-gutter: 16px;
+  }
+}

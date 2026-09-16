@@ -1,69 +1,72 @@
-    /* =========================================================
-   VELORA EYES - SOCIAL AUTH
+/* =========================================================
+   VELORA EYES - SOCIAL AUTH (OPTICAL PEARL)
 ========================================================= */
-    
-    .social-auth-divider {
-        display: flex;
-        align-items: center;
-        gap: 14px;
-        margin: 22px 0;
-        color: #8a96a6;
-        font-size: 13px;
-        font-weight: 600;
-    }
-    
-    .social-auth-divider::before,
-    .social-auth-divider::after {
-        content: "";
-        flex: 1;
-        height: 1px;
-        background: rgba(15, 39, 71, 0.12);
-    }
-    
-    .social-auth-button {
-        width: 100%;
-        min-height: 48px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 11px;
-        padding: 11px 18px;
-        background: #ffffff;
-        color: #263238;
-        border: 1px solid rgba(15, 39, 71, 0.16);
-        border-radius: 10px;
-        font-size: 14px;
-        font-weight: 700;
-        text-decoration: none;
-        transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease, background 0.2s ease;
-    }
-    
-    .social-auth-button:hover {
-        background: #fafcff;
-        border-color: rgba(47, 111, 179, 0.38);
-        box-shadow: 0 8px 24px rgba(15, 39, 71, 0.08);
-        transform: translateY(-1px);
-    }
-    
-    .social-auth-button:focus-visible {
-        outline: 3px solid rgba(47, 111, 179, 0.18);
-        outline-offset: 2px;
-    }
-    
-    .social-auth-icon {
-        width: 20px;
-        height: 20px;
-        flex: 0 0 20px;
-    }
-    
-    .social-auth-error {
-        margin-bottom: 18px;
-        padding: 12px 14px;
-        border: 1px solid #f3c7c7;
-        border-radius: 10px;
-        background: #fff5f5;
-        color: #b42318;
-        font-size: 14px;
-        font-weight: 600;
-        line-height: 1.5;
-    }
+
+.social-auth-divider {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin: 22px 0;
+    color: #5B6878;
+    font-size: 0.82rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+.social-auth-divider::before,
+.social-auth-divider::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: rgba(16, 36, 62, 0.12);
+}
+
+.social-auth-button {
+    width: 100%;
+    min-height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 11px 18px;
+    background: #FFFEFB;
+    color: #10243E;
+    border: 1.5px solid #BFD9DF;
+    border-radius: 12px;
+    font-size: 0.92rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.social-auth-button:hover {
+    background: #E8F1F3;
+    border-color: #174654;
+    color: #174654;
+    box-shadow: 0 4px 16px rgba(16, 36, 62, 0.08);
+    transform: translateY(-1px);
+}
+
+.social-auth-button:focus-visible {
+    outline: 2px solid #174654;
+    outline-offset: 2px;
+}
+
+.social-auth-icon {
+    width: 20px;
+    height: 20px;
+    flex: 0 0 20px;
+}
+
+.social-auth-error {
+    margin-bottom: 18px;
+    padding: 12px 16px;
+    border: 1px solid #FECACA;
+    border-radius: 10px;
+    background: #FEF2F2;
+    color: #991B1B;
+    font-size: 0.88rem;
+    font-weight: 600;
+    line-height: 1.5;
+}

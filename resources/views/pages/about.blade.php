@@ -24,22 +24,22 @@
 
       <div class="about-hero-copy">
 
-        <span class="about-eyebrow">
+        <span class="about-eyebrow about-reveal about-reveal-kicker">
           CÂU CHUYỆN VELORA
         </span>
 
-        <h1>
-          Mỗi chiếc kính là một cách
-          nhìn thế giới rõ hơn.
+        <h1 class="about-hero-title">
+          <span class="about-reveal about-reveal-line" style="--reveal-delay: 100ms;">VELORA EYES</span>
+          <span class="about-reveal about-reveal-line" style="--reveal-delay: 240ms;">Rất là phong cách.</span>
         </h1>
 
-        <p>
+        <p class="about-reveal about-reveal-p" style="--reveal-delay: 380ms;">
           VELORA EYES tin rằng kính mắt không chỉ hỗ trợ
           thị lực mà còn thể hiện phong cách và cá tính
           riêng của mỗi người.
         </p>
 
-        <div class="about-hero-actions">
+        <div class="about-hero-actions about-reveal about-reveal-actions" style="--reveal-delay: 520ms;">
 
           <a href="{{ route('products.index') }}" class="btn btn-primary">
             Khám phá sản phẩm
@@ -54,7 +54,7 @@
       </div>
 
 
-      <div class="about-hero-mark" aria-hidden="true">
+      <div class="about-hero-mark about-reveal about-reveal-motif" aria-hidden="true" style="--reveal-delay: 180ms;">
 
         <span class="about-mark-letter">
           V
@@ -75,7 +75,7 @@
 
     <div class="velora-container about-story-grid">
 
-      <div>
+      <div class="about-reveal about-reveal-up">
 
         <span class="about-eyebrow">
           CHÚNG TÔI LÀ AI
@@ -90,14 +90,14 @@
 
       <div class="about-story-copy">
 
-        <p>
+        <p class="about-reveal about-reveal-p" style="--reveal-delay: 120ms;">
           Một chiếc kính phù hợp cần mang lại cả sự thoải mái,
           tầm nhìn tốt và cảm giác tự tin khi sử dụng mỗi ngày.
           Vì vậy, VELORA hướng đến trải nghiệm mua kính rõ ràng,
           thuận tiện và gần gũi hơn.
         </p>
 
-        <p>
+        <p class="about-reveal about-reveal-p" style="--reveal-delay: 260ms;">
           Từ lúc lựa chọn kiểu dáng, thông số phù hợp cho đến
           khi nhận hàng và sử dụng sản phẩm, chúng tôi mong muốn
           đồng hành cùng khách hàng bằng sự chỉn chu trong từng
@@ -115,7 +115,7 @@
 
     <div class="velora-container">
 
-      <div class="about-section-heading">
+      <div class="about-section-heading about-reveal about-reveal-up">
 
         <span class="about-eyebrow">
           GIÁ TRỊ VELORA
@@ -130,7 +130,7 @@
 
       <div class="about-values-grid">
 
-        <article class="about-value-card">
+        <article class="about-value-card about-reveal about-reveal-card" style="--reveal-delay: 100ms;">
 
           <span class="about-value-number">
             01
@@ -148,7 +148,7 @@
         </article>
 
 
-        <article class="about-value-card">
+        <article class="about-value-card about-reveal about-reveal-card" style="--reveal-delay: 240ms;">
 
           <span class="about-value-number">
             02
@@ -166,7 +166,7 @@
         </article>
 
 
-        <article class="about-value-card">
+        <article class="about-value-card about-reveal about-reveal-card" style="--reveal-delay: 380ms;">
 
           <span class="about-value-number">
             03
@@ -194,7 +194,7 @@
 
     <div class="velora-container">
 
-      <div class="about-contact-card">
+      <div class="about-contact-card about-reveal about-reveal-up">
 
         <div>
 
