@@ -43,7 +43,8 @@ class GhnShippingService
                 ),
             ])
             ->filter(
-                fn (array $province) => $province['id'] > 0
+                fn (array $province) =>
+                    $province['id'] > 0
                     && $province['name'] !== ''
             )
             ->sortBy('name')
@@ -77,7 +78,8 @@ class GhnShippingService
                 ),
             ])
             ->filter(
-                fn (array $district) => $district['id'] > 0
+                fn (array $district) =>
+                    $district['id'] > 0
                     && $district['name'] !== ''
             )
             ->sortBy('name')
@@ -113,7 +115,8 @@ class GhnShippingService
                 ),
             ])
             ->filter(
-                fn (array $ward) => $ward['code'] !== ''
+                fn (array $ward) =>
+                    $ward['code'] !== ''
                     && $ward['name'] !== ''
             )
             ->sortBy('name')
@@ -151,8 +154,7 @@ class GhnShippingService
                 'height' => $height,
                 'insurance_value' => $insuranceValue,
                 'coupon' => null,
-            ],
-            true
+            ]
         );
 
         if (! isset($data['total'])) {
@@ -163,12 +165,15 @@ class GhnShippingService
 
         return [
             'total' => (int) $data['total'],
+
             'service_fee' => (int) (
                 $data['service_fee'] ?? 0
             ),
+
             'insurance_fee' => (int) (
                 $data['insurance_fee'] ?? 0
             ),
+
             'details' => $data,
         ];
     }
@@ -179,22 +184,20 @@ class GhnShippingService
     private function request(
         string $method,
         string $endpoint,
-        array $data = [],
-        bool $requiresShopId = false
+        array $data = []
     ): array {
+        /*
+         * GHN yêu cầu Token + ShopId.
+         */
         $headers = [
             'Token' => $this->token(),
+            'ShopId' => (string) $this->shopId(),
             'Content-Type' => 'application/json',
         ];
 
-        if ($requiresShopId) {
-            $headers['ShopId'] = (string) $this->shopId();
-        }
-
         try {
             /*
-             * Ép PHP cURL sử dụng IPv4 để tránh lỗi
-             * SSL connection timeout trên mạng ưu tiên IPv6/NAT64.
+             * Ép cURL sử dụng IPv4.
              */
             $client = Http::withOptions([
                 'curl' => [
@@ -206,11 +209,19 @@ class GhnShippingService
                 ->connectTimeout(30)
                 ->timeout(45);
 
-            $url = $this->baseUrl().$endpoint;
+            $url = $this->baseUrl() . $endpoint;
 
-            $response = $method === 'get'
-                ? $client->get($url, $data)
-                : $client->post($url, $data);
+            if (strtolower($method) === 'get') {
+                $response = $client->get(
+                    $url,
+                    $data
+                );
+            } else {
+                $response = $client->post(
+                    $url,
+                    $data
+                );
+            }
 
             $response->throw();
 
@@ -223,19 +234,31 @@ class GhnShippingService
             }
 
             return $responseData;
+
         } catch (ConnectionException $exception) {
+
             throw new RuntimeException(
                 'Không thể kết nối đến GHN.',
                 previous: $exception
             );
+
         } catch (RequestException $exception) {
-            $message = $exception
-                ->response
-                ?->json('message')
-                ?? 'GHN trả về lỗi không xác định.';
+
+            $response = $exception->response;
+
+            $message = $response?->json('message');
+
+            if (! is_string($message) || trim($message) === '') {
+                $message = 'GHN trả về lỗi không xác định.';
+
+                if ($response) {
+                    $message .= ' HTTP '
+                        . $response->status();
+                }
+            }
 
             throw new RuntimeException(
-                'GHN: '.$message,
+                'GHN: ' . $message,
                 previous: $exception
             );
         }
@@ -247,7 +270,9 @@ class GhnShippingService
     private function token(): string
     {
         $token = trim(
-            (string) config('services.ghn.token')
+            (string) config(
+                'services.ghn.token'
+            )
         );
 
         if ($token === '') {
