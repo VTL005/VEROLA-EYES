@@ -13,14 +13,23 @@ class ChatConversation extends Model
 {
     use HasFactory;
 
+    public const MODE_AUTO = 'auto';
+
+    public const MODE_ASSIST = 'assist';
+
+    public const MODE_MANUAL = 'manual';
+
     /**
      * Các field được phép mass assignment.
      */
     protected $fillable = [
         'customer_id',
         'admin_id',
+        'chat_mode',
         'status',
         'last_message_at',
+        'ai_last_reply_at',
+        'human_takeover_at',
         'closed_at',
     ];
 
@@ -31,6 +40,8 @@ class ChatConversation extends Model
     {
         return [
             'last_message_at' => 'datetime',
+            'ai_last_reply_at' => 'datetime',
+            'human_takeover_at' => 'datetime',
             'closed_at' => 'datetime',
         ];
     }
@@ -64,6 +75,17 @@ class ChatConversation extends Model
     {
         return $this->hasMany(
             ChatMessage::class,
+            'chat_conversation_id'
+        );
+    }
+
+    /**
+     * Các phản hồi nháp AI chỉ hiển thị cho Admin trong chế độ hỗ trợ.
+     */
+    public function aiSuggestions(): HasMany
+    {
+        return $this->hasMany(
+            ChatAiSuggestion::class,
             'chat_conversation_id'
         );
     }
@@ -105,5 +127,43 @@ class ChatConversation extends Model
     public function isClosed(): bool
     {
         return $this->status === 'closed';
+    }
+
+    /**
+     * Các chế độ được phép dùng để định tuyến hội thoại.
+     *
+     * @return array<int, string>
+     */
+    public static function chatModes(): array
+    {
+        return [
+            self::MODE_AUTO,
+            self::MODE_ASSIST,
+            self::MODE_MANUAL,
+        ];
+    }
+
+    public function isAutoMode(): bool
+    {
+        return $this->chat_mode === self::MODE_AUTO;
+    }
+
+    public function isAssistMode(): bool
+    {
+        return $this->chat_mode === self::MODE_ASSIST;
+    }
+
+    public function isManualMode(): bool
+    {
+        return $this->chat_mode === self::MODE_MANUAL;
+    }
+
+    public function chatModeLabel(): string
+    {
+        return match ($this->chat_mode) {
+            self::MODE_AUTO => 'AI tự động',
+            self::MODE_ASSIST => 'AI hỗ trợ Admin',
+            default => 'Admin tiếp quản',
+        };
     }
 }

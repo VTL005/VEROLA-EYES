@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\CustomerController as AdminCustomerController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\EyePrescriptionController as AdminEyePrescriptionController;
 use App\Http\Controllers\Admin\InventoryController as AdminInventoryController;
+use App\Http\Controllers\Admin\GeminiTestController;
 use App\Http\Controllers\Admin\OrderController as AdminOrderController;
 use App\Http\Controllers\Admin\PaymentController as AdminPaymentController;
 use App\Http\Controllers\Admin\ProductController as AdminProductController;
@@ -636,6 +637,22 @@ Route::prefix('admin')
 
         /*
         |--------------------------------------------------------------------------
+        | GEMINI AI
+        |--------------------------------------------------------------------------
+        |
+        | Endpoint nội bộ để xác nhận cấu hình Gemini trước khi tích hợp vào chat.
+        |
+        */
+
+        Route::get(
+            '/gemini/test',
+            GeminiTestController::class
+        )
+            ->middleware('throttle:3,1')
+            ->name('gemini.test');
+
+        /*
+        |--------------------------------------------------------------------------
         | ADMIN CHAT
         |--------------------------------------------------------------------------
         */
@@ -654,6 +671,11 @@ Route::prefix('admin')
             '/chat/{conversation}/accept',
             [AdminChatController::class, 'accept']
         )->name('chat.accept');
+
+        Route::patch(
+            '/chat/{conversation}/mode',
+            [AdminChatController::class, 'updateMode']
+        )->name('chat.mode.update');
 
         Route::post(
             '/chat/{conversation}/messages',

@@ -206,10 +206,12 @@ class ChatMessageSent implements ShouldBroadcastNow
 
                 'sender_id' => $this->message->sender_id,
 
+                'sender_type' => $this->message->sender_type,
+
                 'sender_name' => $this->message
-                    ->sender
-                    ?->name
-                    ?? 'VELORA Eyes',
+                    ->isAi()
+                    ? 'VELORA AI'
+                    : ($this->message->sender?->name ?? 'VELORA Eyes'),
 
                 'message_type' => $this->message
                     ->message_type

@@ -199,6 +199,10 @@
     justify-content: flex-start;
 }
 
+.customer-chat-message-row.is-ai {
+    justify-content: flex-start;
+}
+
 .customer-chat-message {
     width: fit-content;
     max-width: 70%;
@@ -209,6 +213,10 @@
 }
 
 .is-admin .customer-chat-message {
+    margin-right: auto;
+}
+
+.is-ai .customer-chat-message {
     margin-right: auto;
 }
 
@@ -245,6 +253,14 @@
     border: 1.5px solid #BFD9DF;
     border-bottom-left-radius: 4px;
     box-shadow: 0 4px 14px rgba(16, 36, 62, 0.04);
+}
+
+.is-ai .customer-chat-message-content {
+    background: #EFF8F6;
+    color: #123D3A;
+    border: 1.5px solid #B9DDD6;
+    border-bottom-left-radius: 4px;
+    box-shadow: 0 4px 14px rgba(18, 61, 58, 0.05);
 }
 
 /* =========================================================

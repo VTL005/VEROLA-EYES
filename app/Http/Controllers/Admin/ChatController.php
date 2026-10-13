@@ -7,11 +7,13 @@ use App\Events\ChatMessageSent;
 use App\Events\ChatMessagesRead;
 use App\Http\Controllers\Controller;
 use App\Models\ChatConversation;
+use App\Models\ChatAiSuggestion;
 use App\Models\ChatMessage;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rule;
 
 class ChatController extends Controller
 {
@@ -254,6 +256,12 @@ class ChatController extends Controller
                 'conversation' => $conversation,
 
                 'products' => $products,
+
+                'aiSuggestion' => ChatAiSuggestion::query()
+                    ->where('chat_conversation_id', $conversation->id)
+                    ->where('status', ChatAiSuggestion::STATUS_PENDING)
+                    ->latest('id')
+                    ->first(),
             ]
         );
     }
@@ -341,6 +349,91 @@ class ChatController extends Controller
             ->with(
                 'chat_success',
                 'Bạn đã tiếp nhận cuộc trò chuyện.'
+            );
+    }
+
+    /**
+     * Chuyển người phụ trách hội thoại giữa AI và Admin.
+     */
+    public function updateMode(
+        Request $request,
+        ChatConversation $conversation
+    ) {
+        $admin = $request->user();
+
+        abort_unless(
+            $admin && $admin->isAdmin(),
+            403
+        );
+
+        $validated = $request->validate([
+            'chat_mode' => [
+                'required',
+                'string',
+                Rule::in(ChatConversation::chatModes()),
+            ],
+        ]);
+
+        $chatMode = $validated['chat_mode'];
+
+        $updatedConversation = DB::transaction(
+            function () use (
+                $conversation,
+                $admin,
+                $chatMode
+            ) {
+                $lockedConversation = ChatConversation::query()
+                    ->whereKey($conversation->id)
+                    ->lockForUpdate()
+                    ->firstOrFail();
+
+                if (! $lockedConversation->isOpen()) {
+                    abort(409, 'Cuộc trò chuyện đã kết thúc.');
+                }
+
+                if (
+                    $lockedConversation->admin_id
+                    && (int) $lockedConversation->admin_id
+                        !== (int) $admin->id
+                ) {
+                    abort(
+                        403,
+                        'Cuộc trò chuyện đang được quản trị viên khác phụ trách.'
+                    );
+                }
+
+                $updates = [
+                    'chat_mode' => $chatMode,
+                ];
+
+                /*
+                 * AI tự động có thể bắt đầu khi chưa có Admin nhận chat.
+                 * Các chế độ cần Admin sẽ đồng thời nhận hội thoại cho Admin đó.
+                 */
+                if (
+                    $chatMode !== ChatConversation::MODE_AUTO
+                    && ! $lockedConversation->admin_id
+                ) {
+                    $updates['admin_id'] = $admin->id;
+                }
+
+                if ($chatMode === ChatConversation::MODE_MANUAL) {
+                    $updates['human_takeover_at'] = now();
+                }
+
+                $lockedConversation->update($updates);
+
+                return $lockedConversation->fresh();
+            }
+        );
+
+        return redirect()
+            ->route('admin.chat.show', $updatedConversation)
+            ->with(
+                'chat_success',
+                'Đã chuyển sang chế độ '
+                    . $updatedConversation->chatModeLabel()
+                    . '.'
             );
     }
 
@@ -568,6 +661,8 @@ class ChatController extends Controller
 
                                 'sender_id' => $admin->id,
 
+                                'sender_type' => ChatMessage::SENDER_ADMIN,
+
                                 'message_type' => $messageType,
 
                                 'message' => $storedMessageText,
@@ -637,10 +732,21 @@ class ChatController extends Controller
                         |--------------------------------------------------------------------------
                         */
 
-                        $lockedConversation
-                            ->update([
-                                'last_message_at' => $message->created_at,
-                            ]);
+                        $conversationUpdates = [
+                            'last_message_at' => $message->created_at,
+                        ];
+
+                        /*
+                         * Bất kỳ tin nhắn trực tiếp nào từ Admin cũng là
+                         * hành động tiếp quản, tránh AI trả lời cùng lúc ở Phase 3.
+                         */
+                        if (! $lockedConversation->isManualMode()) {
+                            $conversationUpdates['chat_mode'] =
+                                ChatConversation::MODE_MANUAL;
+                            $conversationUpdates['human_takeover_at'] = now();
+                        }
+
+                        $lockedConversation->update($conversationUpdates);
 
                         return $message;
                     }
@@ -870,6 +976,8 @@ class ChatController extends Controller
 
                             'sender_id' => $admin->id,
 
+                            'sender_type' => ChatMessage::SENDER_ADMIN,
+
                             'message_type' => ChatMessage::TYPE_PRODUCT_LIST,
 
                             'message' => 'VELORA Eyes gợi ý một số sản phẩm phù hợp với bạn:',
@@ -907,9 +1015,17 @@ class ChatController extends Controller
                     |--------------------------------------------------------------------------
                     */
 
-                    $lockedConversation->update([
+                    $conversationUpdates = [
                         'last_message_at' => $message->created_at,
-                    ]);
+                    ];
+
+                    if (! $lockedConversation->isManualMode()) {
+                        $conversationUpdates['chat_mode'] =
+                            ChatConversation::MODE_MANUAL;
+                        $conversationUpdates['human_takeover_at'] = now();
+                    }
+
+                    $lockedConversation->update($conversationUpdates);
 
                     return $message;
                 }

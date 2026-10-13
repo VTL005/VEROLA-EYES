@@ -105,7 +105,11 @@ class AdminChatInboxUpdated implements ShouldBroadcastNow
 
                 'latest_sender_id' => $latestMessage?->sender_id,
 
-                'latest_sender_name' => $latestMessage?->sender?->name,
+                'latest_sender_type' => $latestMessage?->sender_type,
+
+                'latest_sender_name' => $latestMessage?->isAi()
+                    ? 'VELORA AI'
+                    : $latestMessage?->sender?->name,
 
                 'last_message_at' => $this->conversation
                     ->last_message_at

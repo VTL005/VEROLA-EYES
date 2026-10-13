@@ -177,6 +177,69 @@
 
 
         {{-- =================================================
+            AI / ADMIN MODE
+        ================================================== --}}
+
+        @if ($isMine && $conversation->isOpen())
+
+            <div class="admin-chat-mode-panel">
+
+                <span class="admin-chat-mode-label">
+                    Chế độ tư vấn
+                </span>
+
+                <strong class="admin-chat-mode-current">
+                    {{ $conversation->chatModeLabel() }}
+                </strong>
+
+                <div class="admin-chat-mode-actions">
+
+                    @foreach ([
+                        \App\Models\ChatConversation::MODE_AUTO => 'AI tự động',
+                        \App\Models\ChatConversation::MODE_ASSIST => 'AI hỗ trợ',
+                        \App\Models\ChatConversation::MODE_MANUAL => 'Admin tiếp quản',
+                    ] as $mode => $label)
+
+                        <form
+                            action="{{ route(
+                                'admin.chat.mode.update',
+                                $conversation
+                            ) }}"
+                            method="POST"
+                        >
+
+                            @csrf
+                            @method('PATCH')
+
+                            <input
+                                type="hidden"
+                                name="chat_mode"
+                                value="{{ $mode }}"
+                            >
+
+                            <button
+                                type="submit"
+                                class="admin-chat-mode-button
+                                {{ $conversation->chat_mode === $mode
+                                    ? 'is-active'
+                                    : '' }}"
+                                @disabled($conversation->chat_mode === $mode)
+                            >
+                                {{ $label }}
+                            </button>
+
+                        </form>
+
+                    @endforeach
+
+                </div>
+
+            </div>
+
+        @endif
+
+
+        {{-- =================================================
             ACCEPT CHAT
         ================================================== --}}
 
@@ -314,6 +377,8 @@
                         (int) $chatMessage->sender_id
                         === (int) auth()->id();
 
+                    $isAiMessage = $chatMessage->isAi();
+
                 @endphp
 
 
@@ -321,7 +386,7 @@
                     class="admin-chat-message-row
                     {{ $isAdminMessage
                         ? 'is-admin'
-                        : 'is-customer'
+                        : ($isAiMessage ? 'is-ai' : 'is-customer')
                     }}"
                 >
 
@@ -336,8 +401,9 @@
 
                             <div class="admin-chat-message-name">
 
-                                {{ $chatMessage->sender?->name
-                                    ?? 'Khách hàng'
+                                {{ $isAiMessage
+                                    ? 'VELORA AI'
+                                    : ($chatMessage->sender?->name ?? 'Khách hàng')
                                 }}
 
                             </div>
@@ -551,6 +617,41 @@
             </div>
 
         @enderror
+
+
+        {{-- =================================================
+            AI ASSIST SUGGESTION
+        ================================================== --}}
+
+        @if ($isMine && $conversation->isAssistMode())
+
+            <section
+                class="admin-chat-ai-suggestion"
+                id="adminChatAiSuggestion"
+                @if (! $aiSuggestion) hidden @endif
+            >
+
+                <div class="admin-chat-ai-suggestion-header">
+
+                    <div>
+                        <span>VELORA AI hỗ trợ</span>
+                        <strong>Gợi ý phản hồi cho bạn</strong>
+                    </div>
+
+                    <button
+                        type="button"
+                        id="adminChatUseAiSuggestion"
+                    >
+                        Dùng gợi ý
+                    </button>
+
+                </div>
+
+                <p id="adminChatAiSuggestionContent">{{ $aiSuggestion?->content }}</p>
+
+            </section>
+
+        @endif
 
 
         {{-- =================================================
@@ -1046,6 +1147,24 @@ document.addEventListener(
         const input =
             document.getElementById(
                 'adminChatInput'
+            );
+
+
+        const aiSuggestionPanel =
+            document.getElementById(
+                'adminChatAiSuggestion'
+            );
+
+
+        const aiSuggestionContent =
+            document.getElementById(
+                'adminChatAiSuggestionContent'
+            );
+
+
+        const useAiSuggestion =
+            document.getElementById(
+                'adminChatUseAiSuggestion'
             );
 
 
@@ -1715,8 +1834,12 @@ document.addEventListener(
                 );
 
 
+            const isAiMessage =
+                chatMessage.sender_type === 'ai';
+
             row.className =
-                'admin-chat-message-row is-customer';
+                'admin-chat-message-row '
+                + (isAiMessage ? 'is-ai' : 'is-customer');
 
 
             const messageBox =
@@ -1741,7 +1864,7 @@ document.addEventListener(
 
             sender.textContent =
                 chatMessage.sender_name
-                || 'Khách hàng';
+                || (isAiMessage ? 'VELORA AI' : 'Khách hàng');
 
 
             const content =
@@ -1935,7 +2058,9 @@ if (
              * Admin đang mở chat
              * nên tin Customer được xem là đã đọc.
              */
-            markCustomerMessagesAsRead();
+            if (!isAiMessage) {
+                markCustomerMessagesAsRead();
+            }
 
         }
 
@@ -2001,6 +2126,38 @@ if (
             );
 
 
+            const suggestionChannel =
+                window.Echo.private(
+                    'admin.chat.suggestion.'
+                    + conversationId
+                    + '.'
+                    + currentUserId
+                );
+
+
+            suggestionChannel.listen(
+                '.chat.ai.suggestion.created',
+                function (event) {
+
+                    if (
+                        ! event
+                        || ! event.content
+                        || ! aiSuggestionPanel
+                        || ! aiSuggestionContent
+                    ) {
+                        return;
+                    }
+
+                    aiSuggestionContent.textContent =
+                        event.content;
+
+                    aiSuggestionPanel.hidden =
+                        false;
+
+                }
+            );
+
+
             /*
              * Customer đã đọc tin Admin.
              */
@@ -2011,6 +2168,27 @@ if (
                     markAdminMessagesAsReadRealtime(
                         event
                     );
+
+                }
+            );
+
+        }
+
+
+        if (useAiSuggestion) {
+
+            useAiSuggestion.addEventListener(
+                'click',
+                function () {
+
+                    if (! input || ! aiSuggestionContent) {
+                        return;
+                    }
+
+                    input.value =
+                        aiSuggestionContent.textContent.trim();
+
+                    input.focus();
 
                 }
             );

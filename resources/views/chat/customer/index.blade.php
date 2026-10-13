@@ -266,13 +266,15 @@ $complaintOrderCode !== ''
   $chatMessage->sender_id
   === auth()->id();
 
+  $isAiMessage = $chatMessage->isAi();
+
   @endphp
 
 
   <div class="customer-chat-message-row
                             {{ $isMine
                                 ? 'is-customer'
-                                : 'is-admin'
+                                : ($isAiMessage ? 'is-ai' : 'is-admin')
                             }}">
 
     <div class="customer-chat-message">
@@ -286,9 +288,10 @@ $complaintOrderCode !== ''
 
       <div class="customer-chat-message-sender">
 
-        {{ $chatMessage->sender?->name
-                                            ?? 'Admin VELORA Eyes'
-                                        }}
+        {{ $isAiMessage
+            ? 'VELORA AI'
+            : ($chatMessage->sender?->name ?? 'Admin VELORA Eyes')
+        }}
 
       </div>
 
@@ -1604,8 +1607,12 @@ document.addEventListener(
         );
 
 
+      const isAiMessage =
+        chatMessage.sender_type === 'ai';
+
       row.className =
-        'customer-chat-message-row is-admin';
+        'customer-chat-message-row '
+        + (isAiMessage ? 'is-ai' : 'is-admin');
 
 
       /*
@@ -1642,7 +1649,7 @@ document.addEventListener(
 
       sender.textContent =
         chatMessage.sender_name ||
-        'Admin VELORA Eyes';
+        (isAiMessage ? 'VELORA AI' : 'Admin VELORA Eyes');
 
 
       /*

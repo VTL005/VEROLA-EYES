@@ -109,3 +109,26 @@ Broadcast::channel(
             && (int) $user->id === (int) $adminId;
     }
 );
+
+/*
+|--------------------------------------------------------------------------
+| ADMIN-ONLY AI SUGGESTIONS
+|--------------------------------------------------------------------------
+*/
+
+Broadcast::channel(
+    'admin.chat.suggestion.{conversationId}.{adminId}',
+    function ($user, $conversationId, $adminId) {
+        if (
+            ! $user->isAdmin()
+            || (int) $user->id !== (int) $adminId
+        ) {
+            return false;
+        }
+
+        return ChatConversation::query()
+            ->whereKey($conversationId)
+            ->where('admin_id', $user->id)
+            ->exists();
+    }
+);

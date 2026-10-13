@@ -36,6 +36,12 @@ class ChatMessage extends Model
 
     public const TYPE_PRODUCT_LIST = 'product_list';
 
+    public const SENDER_CUSTOMER = 'customer';
+
+    public const SENDER_ADMIN = 'admin';
+
+    public const SENDER_AI = 'ai';
+
     /*
     |--------------------------------------------------------------------------
     | FILLABLE
@@ -45,6 +51,7 @@ class ChatMessage extends Model
     protected $fillable = [
         'chat_conversation_id',
         'sender_id',
+        'sender_type',
         'message_type',
         'message',
         'read_at',
@@ -138,5 +145,10 @@ class ChatMessage extends Model
     {
         return $this->message_type
             === self::TYPE_PRODUCT_LIST;
+    }
+
+    public function isAi(): bool
+    {
+        return $this->sender_type === self::SENDER_AI;
     }
 }

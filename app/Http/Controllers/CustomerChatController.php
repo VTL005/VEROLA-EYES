@@ -5,9 +5,11 @@ namespace App\Http\Controllers;
 use App\Events\ChatMessageSent;
 use App\Events\ChatMessagesRead;
 use App\Events\AdminChatInboxUpdated;
+use App\Jobs\GenerateAiChatResponse;
 use App\Models\ChatConversation;
 use App\Models\ChatMessage;
 use App\Models\Product;
+use App\Services\ChatAiResponder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -89,7 +91,10 @@ class CustomerChatController extends Controller
      * - Ảnh
      * - Chữ + ảnh
      */
-    public function store(Request $request)
+    public function store(
+        Request $request,
+        ChatAiResponder $aiResponder
+    )
     {
         $user = $request->user();
 
@@ -236,6 +241,7 @@ class CustomerChatController extends Controller
                         $conversation = ChatConversation::create([
                             'customer_id' => $user->id,
                             'admin_id' => null,
+                            'chat_mode' => ChatConversation::MODE_AUTO,
                             'status' => 'open',
                             'last_message_at' => now(),
                             'closed_at' => null,
@@ -255,6 +261,7 @@ class CustomerChatController extends Controller
                     $message = ChatMessage::create([
                         'chat_conversation_id' => $conversation->id,
                         'sender_id' => $user->id,
+                        'sender_type' => ChatMessage::SENDER_CUSTOMER,
                         'message_type' => $messageType,
                         'message' => $storedMessageText,
                         'read_at' => null,
@@ -325,6 +332,11 @@ class CustomerChatController extends Controller
             $message->conversation
         );
 
+        $this->respondWithAiAfterResponse(
+            $message->id,
+            $aiResponder
+        );
+
         return redirect()
             ->route(
                 'customer.chat.index'
@@ -336,7 +348,8 @@ class CustomerChatController extends Controller
      */
     public function storeProduct(
         Request $request,
-        Product $product
+        Product $product,
+        ChatAiResponder $aiResponder
     ) {
         $user = $request->user();
 
@@ -372,6 +385,7 @@ class CustomerChatController extends Controller
                     $conversation = ChatConversation::create([
                         'customer_id' => $user->id,
                         'admin_id' => null,
+                    'chat_mode' => ChatConversation::MODE_AUTO,
                         'status' => 'open',
                         'last_message_at' => now(),
                         'closed_at' => null,
@@ -381,6 +395,7 @@ class CustomerChatController extends Controller
                 $message = ChatMessage::create([
                     'chat_conversation_id' => $conversation->id,
                     'sender_id' => $user->id,
+                    'sender_type' => ChatMessage::SENDER_CUSTOMER,
                     'message_type' => ChatMessage::TYPE_PRODUCT_LIST,
                     'message' => 'Tôi đang quan tâm sản phẩm này và cần được tư vấn:',
                     'read_at' => null,
@@ -412,6 +427,11 @@ class CustomerChatController extends Controller
 
         AdminChatInboxUpdated::dispatch(
             $message->conversation
+        );
+
+        $this->respondWithAiAfterResponse(
+            $message->id,
+            $aiResponder
         );
 
         return redirect()
@@ -468,5 +488,21 @@ class CustomerChatController extends Controller
             'success' => true,
             'updated' => $updated,
         ]);
+    }
+
+    /**
+     * Đưa việc gọi Gemini ra queue để phản hồi HTTP đến Customer không bị chậm.
+     */
+    private function respondWithAiAfterResponse(
+        int $messageId,
+        ChatAiResponder $aiResponder
+    ): void {
+        if (app()->environment('testing')) {
+            $aiResponder->respondToMessageId($messageId);
+
+            return;
+        }
+
+        GenerateAiChatResponse::dispatch($messageId)->afterCommit();
     }
 }

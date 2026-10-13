@@ -65,4 +65,13 @@ return [
         'secure_secret' => env('ONEPAY_SECURE_SECRET'),
     ],
 
+    'apiz' => [
+        'api_key' => env('APIZ_API_KEY'),
+        'model' => env('APIZ_MODEL', 'gemini-3.8-flash'),
+        'base_url' => env(
+            'APIZ_BASE_URL',
+            'https://api.apiz.vn/v1'
+        ),
+    ],
+
 ];
