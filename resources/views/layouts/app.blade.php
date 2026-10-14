@@ -22,6 +22,9 @@
   <link rel="stylesheet" href="{{ asset('css/velora-motion.css') }}">
   <link rel="stylesheet" href="{{ asset('css/footer.css') }}">
   <link rel="stylesheet" href="{{ asset('css/velora-vision-care.css') }}">
+  <link rel="stylesheet" href="{{ asset('css/velora-interactions.css') }}">
+  <link rel="stylesheet" href="{{ asset('css/velora-showcase-motion.css') }}">
+  <link rel="stylesheet" href="{{ asset('css/velora-lucian-extras.css') }}">
 
   @stack('styles')
 
@@ -39,7 +42,7 @@
 
   @if (session('wishlist_success'))
 
-  <div class="wishlist-toast" role="status" aria-live="polite">
+  <div class="wishlist-toast" role="status" aria-live="polite" data-velora-toast data-toast-type="success">
 
     <span class="wishlist-toast-icon">
       ✓
@@ -60,7 +63,7 @@
 
     <div class="velora-container" style="padding-top:20px;">
 
-      <div class="alert alert-success">
+      <div class="alert alert-success" data-velora-toast data-toast-type="success">
         {{ session('success') }}
       </div>
 
@@ -73,7 +76,7 @@
 
     <div class="velora-container" style="padding-top:20px;">
 
-      <div class="alert alert-danger">
+      <div class="alert alert-danger" data-velora-toast data-toast-type="error">
         {{ session('error') }}
       </div>
 
@@ -123,12 +126,10 @@
         CUSTOMER FLOATING CHAT
     ========================================================== --}}
 
-  @auth
-
   @if (
-  auth()->user()->isCustomer()
-  && Route::has('customer.chat.index')
+  Route::has('customer.chat.index')
   && ! request()->routeIs('customer.chat.*')
+  && (! auth()->check() || auth()->user()->isCustomer())
   )
 
   @php
@@ -159,17 +160,19 @@
   : null
   );
 
+  $floatingChatUrl = auth()->check()
+  ? route(
+      'customer.chat.index',
+      $floatingChatProductId
+          ? ['product' => $floatingChatProductId]
+          : []
+    )
+  : route('login');
+
   @endphp
 
 
-  <a href="{{ route(
-                    'customer.chat.index',
-                    $floatingChatProductId
-                        ? [
-                            'product' => $floatingChatProductId,
-                        ]
-                        : []
-                ) }}" class="customer-floating-chat" aria-label="Tư vấn trực tuyến" title="Tư vấn trực tuyến">
+  <a href="{{ $floatingChatUrl }}" class="customer-floating-chat" aria-label="Tư vấn trực tuyến" title="Tư vấn trực tuyến" data-velora-tooltip="Tư vấn trực tuyến">
 
     <span class="customer-floating-chat-icon">
 
@@ -194,11 +197,12 @@
 
   @endif
 
-  @endauth
-
 
   <script src="{{ asset('js/velora-motion.js') }}" defer></script>
   <script src="{{ asset('js/adaptive-images.js') }}" defer></script>
+  <script src="{{ asset('js/velora-interactions.js') }}" defer></script>
+  <script src="{{ asset('js/velora-showcase-motion.js') }}" defer></script>
+  <script src="{{ asset('js/velora-lucian-extras.js') }}" defer></script>
 
   @vite('resources/js/app.js')
 

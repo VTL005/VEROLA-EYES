@@ -1036,6 +1036,11 @@ $product->style_tags ?? []
 
             <input type="file" name="images[]" id="edit-image-input" accept=".jpg,.jpeg,.png,.webp" multiple required>
 
+            <div class="velora-upload-progress" id="edit-image-upload-progress" hidden aria-live="polite">
+              <span data-upload-progress-label>Sẵn sàng tải ảnh</span>
+              <i><b data-upload-progress-bar></b></i>
+            </div>
+
 
             <div class="admin-field-error" id="edit-image-error"></div>
 
@@ -1336,7 +1341,7 @@ $product->style_tags ?? []
               </td>
 
 
-              <td>
+              <td class="velora-variant-color" data-variant-color="{{ $variant->color }}">
                 {{ ucfirst($variant->color) }}
               </td>
 
@@ -2837,21 +2842,10 @@ document.addEventListener(
         try {
 
           const response =
-            await fetch(
-              imageForm.action, {
-                method: 'POST',
-
-                body: new FormData(
-                  imageForm
-                ),
-
-                headers: {
-
-                  'Accept': 'application/json',
-
-                  'X-Requested-With': 'XMLHttpRequest',
-                },
-              }
+            await window.VeloraUploadWithProgress(
+              imageForm.action,
+              new FormData(imageForm),
+              document.getElementById('edit-image-upload-progress')
             );
 
 
@@ -3016,7 +3010,7 @@ document.addEventListener(
                         </td>
 
 
-                        <td>
+                        <td class="velora-variant-color" data-variant-color="${escapeHtml(variant.color)}">
                             ${escapeHtml(variant.color)}
                         </td>
 

@@ -10,6 +10,9 @@
 
 @php
     $wishlistItems = $wishlist?->items ?? collect();
+    if (session('wishlist_undo.expires_at') && now()->timestamp > session('wishlist_undo.expires_at')) {
+        session()->forget('wishlist_undo');
+    }
 @endphp
 
 {{-- =========================================================
@@ -33,6 +36,15 @@
 <section class="wishlist-section">
     <div class="vl-container">
 
+        @if(session('wishlist_undo'))
+            <form action="{{ route('wishlist.undo') }}" method="POST" class="velora-undo-snackbar" data-velora-undo-snackbar data-expires-at="{{ session('wishlist_undo.expires_at') }}" role="status">
+                @csrf
+                <span>Đã bỏ khỏi yêu thích</span>
+                <button type="submit">Hoàn tác</button>
+                <span class="velora-undo-snackbar__time" data-undo-countdown aria-hidden="true">8s</span>
+            </form>
+        @endif
+
         <div class="wishlist-toolbar">
             <div class="product-count-summary">
                 Tìm thấy <strong>{{ $wishlistItems->count() }}</strong> sản phẩm trong danh sách đã lưu
@@ -45,7 +57,7 @@
         </div>
 
         @if($wishlistItems->isEmpty())
-            <div class="wishlist-empty-state">
+            <div class="wishlist-empty-state" data-velora-empty-state>
                 <div class="wishlist-empty-icon" aria-hidden="true">
                     <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>

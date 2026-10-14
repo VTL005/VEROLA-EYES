@@ -99,7 +99,7 @@
                 Tổng sản phẩm
             </span>
 
-            <strong>
+            <strong data-velora-count="{{ $productCount }}">
                 {{ number_format(
                     $productCount
                 ) }}
@@ -128,7 +128,7 @@
                 Tổng đơn hàng
             </span>
 
-            <strong>
+            <strong data-velora-count="{{ $orderCount }}">
                 {{ number_format(
                     $orderCount
                 ) }}
@@ -157,7 +157,7 @@
                 Doanh thu
             </span>
 
-            <strong>
+            <strong data-velora-count="{{ (int) $revenue }}" data-count-suffix="đ">
 
                 {{ number_format(
                     (float) $revenue,
@@ -191,7 +191,7 @@
                 Khách hàng
             </span>
 
-            <strong>
+            <strong data-velora-count="{{ $customerCount }}">
                 {{ number_format(
                     $customerCount
                 ) }}
@@ -231,7 +231,7 @@
             Đơn chờ xác nhận
         </span>
 
-        <strong>
+        <strong data-velora-count="{{ $pendingOrderCount }}">
             {{ $pendingOrderCount }}
         </strong>
 
@@ -258,7 +258,7 @@
             Lịch chờ xác nhận
         </span>
 
-        <strong>
+        <strong data-velora-count="{{ $pendingAppointmentCount }}">
             {{ $pendingAppointmentCount }}
         </strong>
 
@@ -287,7 +287,7 @@
             Lịch hôm nay
         </span>
 
-        <strong>
+        <strong data-velora-count="{{ $todayAppointmentCount }}">
             {{ $todayAppointmentCount }}
         </strong>
 
@@ -310,7 +310,7 @@
             Đánh giá
         </span>
 
-        <strong>
+        <strong data-velora-count="{{ $reviewCount }}">
             {{ $reviewCount }}
         </strong>
 

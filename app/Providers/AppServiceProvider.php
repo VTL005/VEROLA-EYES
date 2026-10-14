@@ -3,6 +3,8 @@
 namespace App\Providers;
 use Illuminate\Support\Facades\URL;
 use App\Models\ChatConversation;
+use App\Models\Order;
+use App\Models\Review;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
@@ -39,6 +41,8 @@ class AppServiceProvider extends ServiceProvider
             function ($view) {
 
                 $adminChatUnreadCount = 0;
+                $adminPendingReviewCount = 0;
+                $adminPendingOrderCount = 0;
 
                 $user = auth()->user();
 
@@ -107,6 +111,14 @@ class AppServiceProvider extends ServiceProvider
                         (int) $conversations->sum(
                             'unread_messages_count'
                         );
+
+                    $adminPendingReviewCount = Review::query()
+                        ->doesntHave('adminReply')
+                        ->count();
+
+                    $adminPendingOrderCount = Order::query()
+                        ->where('order_status', Order::STATUS_PENDING)
+                        ->count();
                 }
 
                 /*
@@ -114,10 +126,11 @@ class AppServiceProvider extends ServiceProvider
                  *
                  * resources/views/layouts/admin.blade.php
                  */
-                $view->with(
-                    'adminChatUnreadCount',
-                    $adminChatUnreadCount
-                );
+                $view->with([
+                    'adminChatUnreadCount' => $adminChatUnreadCount,
+                    'adminPendingReviewCount' => $adminPendingReviewCount,
+                    'adminPendingOrderCount' => $adminPendingOrderCount,
+                ]);
             }
         );
     }

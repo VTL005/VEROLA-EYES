@@ -1290,6 +1290,113 @@
 }
 
 /* =========================================================
+   CATALOG PRICE RANGE + RECOVERY STATE
+========================================================= */
+
+.price-filter-heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.price-filter-output {
+  color: #c5a880;
+  font-size: .72rem;
+  font-weight: 700;
+  text-align: right;
+}
+
+.price-range-control {
+  --range-start: 0%;
+  --range-end: 100%;
+  position: relative;
+  padding: 10px 2px 13px;
+}
+
+.price-range-histogram {
+  display: flex;
+  align-items: end;
+  height: 38px;
+  gap: 3px;
+  padding: 0 3px 7px;
+}
+
+.price-range-histogram span {
+  height: var(--bar-height);
+  flex: 1;
+  min-width: 2px;
+  border-radius: 2px 2px 0 0;
+  background: linear-gradient(180deg, rgba(197, 168, 128, .92), rgba(197, 168, 128, .35));
+  opacity: .65;
+}
+
+.price-range-sliders {
+  position: relative;
+  height: 18px;
+}
+
+.price-range-sliders::before {
+  position: absolute;
+  top: 8px;
+  right: 0;
+  left: 0;
+  height: 4px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #56677b 0 var(--range-start), #c5a880 var(--range-start) var(--range-end), #56677b var(--range-end) 100%);
+  content: '';
+}
+
+.price-range-slider {
+  position: absolute;
+  z-index: 1;
+  width: 100%;
+  height: 18px;
+  margin: 0;
+  appearance: none;
+  background: transparent;
+  pointer-events: none;
+}
+
+.price-range-slider::-webkit-slider-thumb {
+  width: 17px;
+  height: 17px;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  appearance: none;
+  background: #c5a880;
+  box-shadow: 0 1px 5px rgba(8, 22, 40, .32);
+  cursor: grab;
+  pointer-events: auto;
+}
+
+.price-range-slider::-moz-range-thumb {
+  width: 13px;
+  height: 13px;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  background: #c5a880;
+  box-shadow: 0 1px 5px rgba(8, 22, 40, .32);
+  cursor: grab;
+  pointer-events: auto;
+}
+
+.price-range-slider:focus-visible::-webkit-slider-thumb,
+.price-range-slider:focus-visible::-moz-range-thumb { outline: 3px solid #38bdf8; outline-offset: 2px; }
+
+.product-empty-suggestions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin: 16px auto 20px;
+  font-size: .83rem;
+}
+
+.product-empty-suggestions span { color: #64748b; }
+.product-empty-suggestions a { color: #0e223d; font-weight: 700; text-underline-offset: 3px; }
+
+/* =========================================================
    10. CATEGORY & WISHLIST PAGES
 ========================================================= */
 

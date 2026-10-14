@@ -34,6 +34,10 @@ return
   }
   );
 
+  if (session('cart_undo.expires_at') && now()->timestamp > session('cart_undo.expires_at')) {
+    session()->forget('cart_undo');
+  }
+
   @endphp
 
 
@@ -56,6 +60,15 @@ return
 
     <div class="velora-container">
 
+      @if(session('cart_undo'))
+      <form action="{{ route('cart.undo') }}" method="POST" class="velora-undo-snackbar" data-velora-undo-snackbar data-expires-at="{{ session('cart_undo.expires_at') }}" role="status">
+        @csrf
+        <span>Đã xóa sản phẩm</span>
+        <button type="submit">Hoàn tác</button>
+        <span class="velora-undo-snackbar__time" data-undo-countdown aria-hidden="true">8s</span>
+      </form>
+      @endif
+
 
       @if($voucherError)
 
@@ -67,7 +80,7 @@ return
 
       @if(session('voucher_success'))
 
-      <div class="voucher-toast" role="status" aria-live="polite">
+      <div class="voucher-toast" role="status" aria-live="polite" data-velora-toast data-toast-type="success">
 
         <span class="voucher-toast-icon">
           ✓
@@ -83,7 +96,7 @@ return
 
       @if($cart->items->isEmpty())
 
-      <div class="cart-empty">
+      <div class="cart-empty" data-velora-empty-state>
 
         <div class="cart-empty-icon">
           ◯

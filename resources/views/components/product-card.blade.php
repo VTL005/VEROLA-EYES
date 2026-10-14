@@ -1,10 +1,26 @@
-<article class="product-card">
+@php
+    $activeVariants = $product->relationLoaded('variants')
+        ? $product->variants
+        : collect();
+    $variantColors = $activeVariants->pluck('color')->filter()->unique()->take(2)->implode(' · ');
+    $availableStock = $activeVariants->sum('stock_quantity');
+    $customerWishlist = auth()->check() && auth()->user()->isCustomer()
+        ? auth()->user()->wishlist()->first()
+        : null;
+    $isWishlisted = $customerWishlist
+        && $customerWishlist->items()->where('product_id', $product->id)->exists();
+@endphp
+
+<article class="product-card" data-velora-expand-card>
 
     <a
         href="{{ route('products.show', $product) }}"
         class="product-card-image adaptive-image-container"
         aria-label="{{ $product->name }}"
     >
+        @if($isWishlisted)
+            <span class="velora-wishlist-ribbon"><i class="bi bi-bookmark-heart-fill" aria-hidden="true"></i> Đã lưu</span>
+        @endif
         @if($product->primaryImage)
             <img
                 src="{{ asset($product->primaryImage->image_path) }}"
@@ -82,6 +98,12 @@
                     {{ number_format((float) $product->price, 0, ',', '.') }}đ
                 </span>
             @endif
+        </div>
+
+        <div class="product-card-hover-meta" aria-label="Thông tin nhanh về sản phẩm">
+            <span>{{ $product->shape ? ucfirst($product->shape) : 'Thiết kế chọn lọc' }}</span>
+            <span>{{ $variantColors ?: ($product->material ? ucfirst($product->material) : 'Nhiều phiên bản') }}</span>
+            <span>{{ $activeVariants->isNotEmpty() ? ($availableStock > 0 ? 'Còn ' . $availableStock : 'Liên hệ tư vấn') : 'Xem phiên bản' }}</span>
         </div>
 
         <div class="product-card-footer">

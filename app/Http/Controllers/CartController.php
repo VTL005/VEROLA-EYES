@@ -224,6 +224,17 @@ class CartController extends Controller
         ProductVariant $variant,
         CartService $cartService
     ) {
+        $cart = $cartService->getOrCreateCart(auth()->user());
+        $item = $cart->items()->where('variant_id', $variant->id)->first();
+
+        if ($item) {
+            session()->put('cart_undo', [
+                'variant_id' => $variant->id,
+                'quantity' => $item->quantity,
+                'expires_at' => now()->addSeconds(8)->timestamp,
+            ]);
+        }
+
         $cartService->remove(
             auth()->user(),
             $variant
@@ -235,6 +246,27 @@ class CartController extends Controller
                 'success',
                 'Đã xóa sản phẩm khỏi giỏ hàng.'
             );
+    }
+
+    /** Khôi phục sản phẩm vừa xóa, nếu còn trong thời gian hoàn tác. */
+    public function undoDestroy(CartService $cartService)
+    {
+        $undo = session('cart_undo');
+
+        if (! $undo || now()->timestamp > ($undo['expires_at'] ?? 0)) {
+            return redirect()->route('cart.index')->with('error', 'Thời gian hoàn tác đã kết thúc.');
+        }
+
+        $variant = ProductVariant::find($undo['variant_id'] ?? null);
+
+        if (! $variant) {
+            return redirect()->route('cart.index')->with('error', 'Sản phẩm không còn tồn tại để khôi phục.');
+        }
+
+        $cartService->add(auth()->user(), $variant, (int) ($undo['quantity'] ?? 1));
+        session()->forget('cart_undo');
+
+        return redirect()->route('cart.index')->with('success', 'Đã khôi phục sản phẩm vào giỏ hàng.');
     }
 
     /**
@@ -251,6 +283,7 @@ class CartController extends Controller
             'checkout_cart_item_ids',
             'checkout_buy_now',
             'checkout_amount_after_discount',
+            'cart_undo',
         ]);
 
         return redirect()

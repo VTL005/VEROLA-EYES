@@ -63,6 +63,9 @@
             )
         );
 
+    $donutTotal = max(1, $totalOrders);
+    $donutOffset = 0;
+
 @endphp
 
 
@@ -99,6 +102,12 @@
 ========================================================= --}}
 
 <div class="admin-report-filter">
+
+    <div class="velora-report-range-tabs" aria-label="Chọn nhanh kỳ báo cáo">
+        <a href="{{ route('admin.reports.index', ['from_date' => now()->format('Y-m-d'), 'to_date' => now()->format('Y-m-d')]) }}">Hôm nay</a>
+        <a href="{{ route('admin.reports.index', ['from_date' => now()->subDays(6)->format('Y-m-d'), 'to_date' => now()->format('Y-m-d')]) }}">7 ngày</a>
+        <a href="{{ route('admin.reports.index', ['from_date' => now()->subDays(29)->format('Y-m-d'), 'to_date' => now()->format('Y-m-d')]) }}">30 ngày</a>
+    </div>
 
     <form
         action="{{ route(
@@ -308,15 +317,8 @@
                 Doanh thu
             </span>
 
-            <strong>
-
-                {{ number_format(
-                    $revenue,
-                    0,
-                    ',',
-                    '.'
-                ) }}đ
-
+            <strong data-velora-count="{{ round($revenue) }}" data-count-suffix="đ">
+                {{ number_format($revenue, 0, ',', '.') }}đ
             </strong>
 
             <small>
@@ -342,9 +344,7 @@
                 Tổng đơn
             </span>
 
-            <strong>
-                {{ $totalOrders }}
-            </strong>
+            <strong data-velora-count="{{ $totalOrders }}">{{ $totalOrders }}</strong>
 
             <small>
                 {{ $completedOrders }}
@@ -370,15 +370,8 @@
                 Giá trị đơn trung bình
             </span>
 
-            <strong>
-
-                {{ number_format(
-                    $averageOrderValue,
-                    0,
-                    ',',
-                    '.'
-                ) }}đ
-
+            <strong data-velora-count="{{ round($averageOrderValue) }}" data-count-suffix="đ">
+                {{ number_format($averageOrderValue, 0, ',', '.') }}đ
             </strong>
 
             <small>
@@ -404,9 +397,7 @@
                 Sản phẩm đã bán
             </span>
 
-            <strong>
-                {{ $totalItemsSold }}
-            </strong>
+            <strong data-velora-count="{{ $totalItemsSold }}">{{ $totalItemsSold }}</strong>
 
             <small>
                 Tổng số lượng sản phẩm
@@ -443,7 +434,7 @@
 
         <div class="admin-report-progress success">
 
-            <span
+            <span class="velora-reveal-bar"
                 style="
                     width:
                     {{ min(
@@ -486,7 +477,7 @@
 
         <div class="admin-report-progress danger">
 
-            <span
+            <span class="velora-reveal-bar"
                 style="
                     width:
                     {{ min(
@@ -581,7 +572,7 @@
 
                 <div class="admin-report-revenue-track">
 
-                    <span
+                    <span class="velora-reveal-bar"
                         style="
                             width:
                             {{ max(
@@ -613,6 +604,18 @@
 
 </section>
 
+<section class="admin-panel velora-activity-heatmap">
+    <div class="admin-panel-header"><div><h2>Nhịp hoạt động theo ngày</h2><p>Mật độ đơn hàng hoàn thành trong kỳ</p></div></div>
+    @php($maxOrdersPerDay = max(1, $revenueByDate->max('order_count')))
+    <div class="velora-activity-heatmap__grid" aria-label="Mật độ đơn hàng theo ngày">
+        @foreach($revenueByDate as $daily)
+            @php($intensity = round(($daily->order_count / $maxOrdersPerDay) * 4))
+            <span class="level-{{ $intensity }}" tabindex="0" aria-label="{{ \Illuminate\Support\Carbon::parse($daily->report_date)->format('d/m/Y') }}: {{ $daily->order_count }} đơn hoàn thành" title="{{ \Illuminate\Support\Carbon::parse($daily->report_date)->format('d/m/Y') }} · {{ $daily->order_count }} đơn"></span>
+        @endforeach
+    </div>
+    <small class="velora-activity-heatmap__legend">Ít <i class="level-0"></i><i class="level-1"></i><i class="level-2"></i><i class="level-3"></i><i class="level-4"></i> Nhiều</small>
+</section>
+
 
 
 {{-- =========================================================
@@ -640,6 +643,17 @@
 
             </div>
 
+        </div>
+
+        <div class="velora-report-donut" role="img" aria-label="Cơ cấu trạng thái đơn hàng">
+            <svg viewBox="0 0 42 42" aria-hidden="true">
+                @foreach($orderStatusCounts as $status => $count)
+                    @php($portion = ($count / $donutTotal) * 100)
+                    <circle class="velora-report-donut__slice status-{{ $status }}" cx="21" cy="21" r="15.9" pathLength="100" stroke-dasharray="{{ $portion }} {{ 100 - $portion }}" stroke-dashoffset="{{ -$donutOffset }}"></circle>
+                    @php($donutOffset += $portion)
+                @endforeach
+            </svg>
+            <div><strong>{{ $totalOrders }}</strong><span>đơn trong kỳ</span></div>
         </div>
 
 
@@ -691,7 +705,7 @@
 
                     <div class="admin-report-breakdown-bar">
 
-                        <span
+                        <span class="velora-reveal-bar"
                             style="
                                 width:
                                 {{

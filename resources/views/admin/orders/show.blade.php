@@ -648,7 +648,7 @@ $paymentStatusLabels = [
       </div>
 
 
-      <div class="admin-order-process">
+      <div class="admin-order-process" @if(session('order_status_updated')) data-velora-status-highlight @endif>
 
         <div class="admin-order-current-status">
 

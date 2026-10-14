@@ -2,6 +2,10 @@
 
 @section('title', 'Kết quả đơn hàng - VELORA Eyes')
 
+@push('styles')
+<link rel="stylesheet" href="{{ asset('css/checkout-voucher.css') }}">
+@endpush
+
 @section('content')
 
 @php
@@ -23,11 +27,16 @@ default => strtoupper((string) $order->payment_method),
 };
 @endphp
 
-<section class="order-success-section">
+<section class="order-success-section" data-velora-payment-success data-velora-confetti>
   <div class="velora-container">
     <div class="order-success-card">
 
-      <div class="order-success-icon">✓</div>
+      <div class="order-success-icon" aria-label="Hoàn tất">
+        <svg viewBox="0 0 72 72" aria-hidden="true">
+          <circle class="velora-success-ring" cx="36" cy="36" r="30"></circle>
+          <path class="velora-success-check" d="m22 37 9 9 19-20"></path>
+        </svg>
+      </div>
 
       <span class="badge badge-success">
         @if($isOnlinePayment && $paymentIsPaid)

@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Review extends Model
 {
@@ -15,14 +16,12 @@ class Review extends Model
         'product_id',
         'rating',
         'comment',
-        'is_visible',
     ];
 
     protected function casts(): array
     {
         return [
             'rating' => 'integer',
-            'is_visible' => 'boolean',
         ];
     }
 
@@ -43,10 +42,10 @@ class Review extends Model
     }
 
     /**
-     * Chỉ lấy Review đang được hiển thị.
+     * Phản hồi chính thức của VELORA cho đánh giá này.
      */
-    public function scopeVisible($query)
+    public function adminReply(): HasOne
     {
-        return $query->where('is_visible', true);
+        return $this->hasOne(ReviewReply::class);
     }
 }

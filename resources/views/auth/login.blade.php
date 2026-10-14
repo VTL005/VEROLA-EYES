@@ -142,6 +142,8 @@
                 <form
                     action="{{ route('login.store') }}"
                     method="POST"
+                    class="auth-login-form"
+                    data-velora-login-feedback
                 >
 
                     @csrf

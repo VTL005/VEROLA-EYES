@@ -71,6 +71,7 @@
                     <a
                         href="{{ route('products.index') }}"
                         class="vl-btn vl-btn-primary"
+                        data-velora-shimmer
                     >
                         Khám phá sản phẩm
                     </a>
@@ -78,6 +79,7 @@
                     <a
                         href="{{ route('appointments.create') }}"
                         class="vl-btn vl-btn-outline"
+                        data-velora-shimmer
                     >
                         Đặt lịch đo mắt
                     </a>
@@ -829,6 +831,34 @@
                 </div>
 
             </div>
+
+        </div>
+    </section>
+
+    <section class="lens-comparison-section" aria-labelledby="lens-comparison-title">
+        <div class="vl-container">
+            <div class="lens-comparison vl-reveal vl-reveal-up" data-lens-comparison>
+                <div class="lens-comparison-copy">
+                    <span class="vl-kicker">LENS EXPERIENCE</span>
+                    <h3 id="lens-comparison-title">So sánh cảm nhận màu sắc</h3>
+                    <p>Di chuyển thanh kéo để xem mô phỏng cảm nhận giữa ánh sáng thường và lớp lọc ấm. Đây là minh hoạ trực quan; hiệu quả thực tế phụ thuộc vào loại tròng và điều kiện ánh sáng.</p>
+                </div>
+
+                <div class="lens-comparison-demo">
+                    <div class="lens-comparison-scene" aria-hidden="true">
+                        <div class="lens-scene-sun"></div>
+                        <div class="lens-scene-horizon"></div>
+                        <div class="lens-scene-frame"></div>
+                        <div class="lens-scene-overlay"></div>
+                        <span class="lens-scene-label lens-scene-label-before">Ánh sáng thường</span>
+                        <span class="lens-scene-label lens-scene-label-after">Lớp lọc ấm</span>
+                        <span class="lens-comparison-divider"></span>
+                    </div>
+                    <label class="lens-comparison-range-label" for="lensComparisonRange">Kéo để thay đổi phần minh hoạ lớp lọc ấm</label>
+                    <input id="lensComparisonRange" class="lens-comparison-range" type="range" min="0" max="100" value="50" data-lens-comparison-range>
+                    <output class="lens-comparison-output" data-lens-comparison-output aria-live="polite">Đang xem 50% lớp lọc ấm</output>
+                </div>
+            </div>
         </div>
     </section>
 
@@ -889,8 +919,6 @@
 
         </div>
     </section>
-
-
 
     {{-- =========================================================
         8. WARRANTY & SUPPORT — COMPACT CONCIERGE BANNER

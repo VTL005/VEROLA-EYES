@@ -13,6 +13,13 @@
 
 @section('content')
 
+@php
+    $catalogMinimumPrice = (int) floor((float) ($priceBounds->minimum_price ?? 0));
+    $catalogMaximumPrice = (int) ceil((float) ($priceBounds->maximum_price ?? 0));
+    $selectedMinimumPrice = max($catalogMinimumPrice, (int) (request('min_price') ?: $catalogMinimumPrice));
+    $selectedMaximumPrice = max($selectedMinimumPrice, (int) (request('max_price') ?: $catalogMaximumPrice));
+@endphp
+
 {{-- =========================================================
     COMPACT DARK EDITORIAL CATALOG BANNER
 ========================================================= --}}
@@ -101,7 +108,7 @@
                     @endif
                 </div>
 
-                <form action="{{ route('products.index') }}" method="GET">
+                <form action="{{ route('products.index') }}" method="GET" id="productFilterForm">
                     {{-- SEARCH --}}
                     <div class="filter-group">
                         <label for="keyword" class="filter-label">Tìm kiếm</label>
@@ -133,21 +140,50 @@
 
                     {{-- PRICE --}}
                     <div class="filter-group">
-                        <label class="filter-label">Khoảng giá (VNĐ)</label>
+                        <div class="price-filter-heading">
+                            <label class="filter-label" for="min_price">Khoảng giá</label>
+                            <output class="price-filter-output" id="priceFilterOutput" aria-live="polite">
+                                {{ number_format($selectedMinimumPrice, 0, ',', '.') }}đ – {{ number_format($selectedMaximumPrice, 0, ',', '.') }}đ
+                            </output>
+                        </div>
+
+                        @if($catalogMaximumPrice > $catalogMinimumPrice)
+                            <div
+                                class="price-range-control"
+                                data-price-range
+                                data-minimum="{{ $catalogMinimumPrice }}"
+                                data-maximum="{{ $catalogMaximumPrice }}"
+                            >
+                                <div class="price-range-histogram" aria-hidden="true">
+                                    @for($bar = 1; $bar <= 12; $bar++)
+                                        <span style="--bar-height: {{ 28 + (($bar * 17) % 64) }}%"></span>
+                                    @endfor
+                                </div>
+                                <div class="price-range-sliders">
+                                    <input type="range" class="price-range-slider" id="priceRangeMinimum" min="{{ $catalogMinimumPrice }}" max="{{ $catalogMaximumPrice }}" value="{{ $selectedMinimumPrice }}" step="10000" aria-label="Giá thấp nhất">
+                                    <input type="range" class="price-range-slider" id="priceRangeMaximum" min="{{ $catalogMinimumPrice }}" max="{{ $catalogMaximumPrice }}" value="{{ $selectedMaximumPrice }}" step="10000" aria-label="Giá cao nhất">
+                                </div>
+                            </div>
+                        @endif
+
                         <div class="price-filter-grid">
                             <input
                                 type="number"
+                                id="min_price"
                                 name="min_price"
                                 class="form-control filter-input"
-                                min="0"
+                                min="{{ $catalogMinimumPrice }}"
+                                max="{{ $catalogMaximumPrice }}"
                                 value="{{ request('min_price') }}"
                                 placeholder="Từ"
                             >
                             <input
                                 type="number"
+                                id="max_price"
                                 name="max_price"
                                 class="form-control filter-input"
-                                min="0"
+                                min="{{ $catalogMinimumPrice }}"
+                                max="{{ $catalogMaximumPrice }}"
                                 value="{{ request('max_price') }}"
                                 placeholder="Đến"
                             >
@@ -358,6 +394,32 @@
                         <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="var(--vl-champagne-dark, #a08656)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="margin-bottom:12px;"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
                         <h3>Không tìm thấy sản phẩm</h3>
                         <p>Thử thay đổi từ khóa hoặc điều chỉnh các điều kiện lọc.</p>
+                        @if(request()->hasAny(['keyword', 'category_id', 'shape', 'material', 'gender', 'color', 'min_price', 'max_price']))
+                            <div class="product-empty-suggestions" aria-label="Gợi ý điều chỉnh bộ lọc">
+                                <span>Gợi ý nhanh:</span>
+                                @if(request('keyword'))
+                                    <a href="{{ request()->fullUrlWithQuery(['keyword' => null]) }}">Bỏ từ khóa</a>
+                                @endif
+                                @if(request('min_price') || request('max_price'))
+                                    <a href="{{ request()->fullUrlWithQuery(['min_price' => null, 'max_price' => null]) }}">Bỏ khoảng giá</a>
+                                @endif
+                                @if(request('category_id'))
+                                    <a href="{{ request()->fullUrlWithQuery(['category_id' => null]) }}">Xem mọi danh mục</a>
+                                @endif
+                                @if(request('shape'))
+                                    <a href="{{ request()->fullUrlWithQuery(['shape' => null]) }}">Bỏ kiểu dáng</a>
+                                @endif
+                                @if(request('material'))
+                                    <a href="{{ request()->fullUrlWithQuery(['material' => null]) }}">Bỏ chất liệu</a>
+                                @endif
+                                @if(request('gender'))
+                                    <a href="{{ request()->fullUrlWithQuery(['gender' => null]) }}">Bỏ đối tượng</a>
+                                @endif
+                                @if(request('color'))
+                                    <a href="{{ request()->fullUrlWithQuery(['color' => null]) }}">Bỏ màu sắc</a>
+                                @endif
+                            </div>
+                        @endif
                         <a
                             href="{{ route('products.index') }}"
                             class="vl-btn vl-btn-primary"
@@ -382,6 +444,7 @@ document.addEventListener('DOMContentLoaded', function() {
     var closeBtn  = document.getElementById('filterCloseBtn');
     var overlay   = document.getElementById('filterOverlay');
     var panel     = document.getElementById('filterPanel');
+    var filterForm = document.getElementById('productFilterForm');
 
     if (!toggleBtn || !panel) return;
 
@@ -415,6 +478,57 @@ document.addEventListener('DOMContentLoaded', function() {
             closeFilter();
         }
     });
+
+    var rangeMinimum = document.getElementById('priceRangeMinimum');
+    var rangeMaximum = document.getElementById('priceRangeMaximum');
+    var fieldMinimum = document.getElementById('min_price');
+    var fieldMaximum = document.getElementById('max_price');
+    var priceOutput = document.getElementById('priceFilterOutput');
+    var rangeControl = document.querySelector('[data-price-range]');
+    var countTimer;
+
+    if (rangeMinimum && rangeMaximum && fieldMinimum && fieldMaximum && priceOutput && rangeControl) {
+        var floor = Number(rangeControl.dataset.minimum);
+        var ceiling = Number(rangeControl.dataset.maximum);
+        var formatter = new Intl.NumberFormat('vi-VN');
+
+        function syncPriceRange(source) {
+            var minimum = Number(source === rangeMinimum ? rangeMinimum.value : (fieldMinimum.value || floor));
+            var maximum = Number(source === rangeMaximum ? rangeMaximum.value : (fieldMaximum.value || ceiling));
+            minimum = Math.max(floor, Math.min(minimum, ceiling));
+            maximum = Math.max(minimum, Math.min(maximum, ceiling));
+            rangeMinimum.value = minimum;
+            rangeMaximum.value = maximum;
+            fieldMinimum.value = minimum === floor ? '' : minimum;
+            fieldMaximum.value = maximum === ceiling ? '' : maximum;
+            priceOutput.textContent = formatter.format(minimum) + 'đ – ' + formatter.format(maximum) + 'đ';
+            rangeControl.style.setProperty('--range-start', ((minimum - floor) / (ceiling - floor)) * 100 + '%');
+            rangeControl.style.setProperty('--range-end', ((maximum - floor) / (ceiling - floor)) * 100 + '%');
+            clearTimeout(countTimer);
+            countTimer = setTimeout(updateFilteredCount, 260);
+        }
+
+        function updateFilteredCount() {
+            if (!filterForm || !window.fetch) return;
+            var params = new URLSearchParams(new FormData(filterForm));
+            params.set('count_only', '1');
+            fetch(filterForm.action + '?' + params.toString(), { headers: { 'Accept': 'application/json' } })
+                .then(function(response) { return response.ok ? response.json() : null; })
+                .then(function(data) {
+                    if (!data || typeof data.count !== 'number') return;
+                    priceOutput.setAttribute('aria-label', formatter.format(data.count) + ' sản phẩm trong khoảng giá đã chọn');
+                    var summary = document.querySelector('.product-count-summary');
+                    if (summary) summary.innerHTML = 'Hiển thị <strong>' + data.count + '</strong> sản phẩm theo khoảng giá đã chọn';
+                })
+                .catch(function() {});
+        }
+
+        [rangeMinimum, rangeMaximum, fieldMinimum, fieldMaximum].forEach(function(control) {
+            control.addEventListener('input', function() { syncPriceRange(control); });
+            control.addEventListener('change', function() { syncPriceRange(control); });
+        });
+        syncPriceRange(rangeMinimum);
+    }
 });
 </script>
 

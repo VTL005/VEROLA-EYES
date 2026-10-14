@@ -3619,6 +3619,40 @@ textarea.form-control {
     color: var(--velora-text-soft);
 }
 
+.appointment-wizard-steps {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    margin: 20px 0 0;
+    padding: 0;
+    list-style: none;
+}
+
+.appointment-wizard-steps li {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--velora-text-soft);
+    font-size: .78rem;
+    font-weight: 700;
+}
+
+.appointment-wizard-steps li span {
+    display: grid;
+    width: 24px;
+    height: 24px;
+    place-items: center;
+    border: 1px solid var(--velora-border);
+    border-radius: 999px;
+    background: #fff;
+    font-size: .73rem;
+}
+
+.appointment-wizard-steps li.is-active,
+.appointment-wizard-steps li.is-done { color: var(--velora-blue); }
+.appointment-wizard-steps li.is-active span { border-color: var(--velora-blue); background: var(--velora-blue); color: #fff; }
+.appointment-wizard-steps li.is-done span { border-color: var(--velora-blue); background: var(--velora-blue-light); }
+
 .appointment-form-grid {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -3648,6 +3682,10 @@ textarea.form-control {
     justify-content: flex-end;
     gap: 9px;
 }
+
+/* The full form and submit action remain usable when JavaScript is unavailable. */
+[data-appointment-wizard] [data-wizard-next] { display: none; }
+[data-appointment-wizard].is-enhanced [data-wizard-next] { display: inline-flex; }
 
 @media (max-width: 900px) {
     .appointment-list {
@@ -3685,6 +3723,8 @@ textarea.form-control {
     .appointment-form-actions .btn {
         width: 100%;
     }
+    .appointment-wizard-steps { gap: 5px; }
+    .appointment-wizard-steps li { font-size: .7rem; }
 }
 
 /* =========================================================
@@ -12319,6 +12359,16 @@ textarea.form-control {
     background: #ecfdf3;
 }
 
+.admin-review-stat .waiting {
+    color: #b54708;
+    background: #fffaeb;
+}
+
+.admin-review-stat .replied {
+    color: #067647;
+    background: #ecfdf3;
+}
+
 .admin-review-stat .hidden {
     color: #667085;
     background: #f2f4f7;
@@ -12367,6 +12417,10 @@ textarea.form-control {
     grid-template-columns: minmax(280px, 1fr) 140px 170px auto;
     gap: 10px;
     align-items: end;
+}
+
+.admin-review-filter-form--reply {
+    grid-template-columns: minmax(280px, 1fr) 140px auto;
 }
 
 .admin-review-filter-form label {
@@ -12690,6 +12744,64 @@ textarea.form-control {
     margin: 0;
 }
 
+/* Official reply thread (Lucian-style expanding comment input). */
+.admin-review-reply-panel .admin-panel-header {
+    align-items: center;
+}
+
+.admin-review-reply-panel .admin-page-kicker {
+    display: block;
+    margin-bottom: 4px;
+}
+
+.admin-review-official-reply {
+    display: flex;
+    gap: 11px;
+    margin: 14px;
+    padding: 13px;
+    border: 1px solid #b9e4f3;
+    border-radius: 9px;
+    background: #f0faff;
+}
+
+.admin-review-official-avatar {
+    width: 32px;
+    height: 32px;
+    flex: 0 0 auto;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: #174654;
+    color: #fff;
+    font-size: .74rem;
+}
+
+.admin-review-official-reply > div:last-child { min-width: 0; }
+.admin-review-official-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+.admin-review-official-head strong { color: #174654; font-size: .65rem; }
+.admin-review-official-head span { color: #7b8999; font-size: .51rem; }
+.admin-review-official-reply p { margin: 6px 0 0; color: #475467; font-size: .63rem; line-height: 1.65; white-space: pre-line; }
+
+.admin-review-reply-empty {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 14px 14px 0;
+    padding: 10px 12px;
+    border-radius: 8px;
+    background: #fffaeb;
+    color: #9a6700;
+    font-size: .59rem;
+}
+
+.admin-review-reply-form { padding: 14px; }
+.admin-review-reply-form label { display: block; margin-bottom: 6px; color: #475467; font-size: .61rem; font-weight: 700; }
+.admin-review-reply-input { min-height: 72px; resize: vertical; line-height: 1.55; transition: min-height .2s ease, border-color .2s ease, box-shadow .2s ease; }
+.admin-review-reply-input:focus { min-height: 116px; border-color: #38bdf8; box-shadow: 0 0 0 3px rgba(56, 189, 248, .15); }
+.admin-review-reply-actions { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 10px; }
+.admin-review-reply-actions small { color: #7b8999; font-size: .52rem; }
+.admin-review-reply-error { margin: 6px 0 0; color: #b42318; font-size: .57rem; }
+
 /* META */
 
 .admin-review-meta {
@@ -12730,6 +12842,9 @@ textarea.form-control {
     .admin-review-filter-actions {
         grid-column: 1 / -1;
     }
+    .admin-review-filter-form--reply {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
 }
 
 @media (max-width: 650px) {
@@ -12754,6 +12869,14 @@ textarea.form-control {
     }
     .admin-review-filter-actions {
         grid-column: auto;
+        flex-direction: column;
+    }
+    .admin-review-filter-form--reply {
+        grid-template-columns: 1fr;
+    }
+    .admin-review-official-head,
+    .admin-review-reply-actions {
+        align-items: flex-start;
         flex-direction: column;
     }
 }
@@ -19303,7 +19426,7 @@ input[type="radio"]:checked {
     position: fixed;
     right: 24px;
     bottom: 24px;
-    z-index: 999;
+    z-index: 1100;
     display: inline-flex;
     align-items: center;
     gap: 8px;

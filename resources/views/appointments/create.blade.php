@@ -93,12 +93,18 @@
                         bên dưới.
                     </p>
 
+                    <ol class="appointment-wizard-steps" aria-label="Tiến trình đặt lịch">
+                        <li class="is-active" data-wizard-indicator="1"><span>1</span> Chọn lịch</li>
+                        <li data-wizard-indicator="2"><span>2</span> Thông tin</li>
+                    </ol>
+
                 </div>
 
 
                 <form
                     action="{{ route('appointments.store') }}"
                     method="POST"
+                    data-appointment-wizard
                 >
 
                     @csrf
@@ -109,7 +115,7 @@
 
                         {{-- NAME --}}
 
-                        <div class="form-group">
+                        <div class="form-group" data-wizard-step="2">
 
                             <label
                                 for="customer_name"
@@ -147,7 +153,7 @@
 
                         {{-- PHONE --}}
 
-                        <div class="form-group">
+                        <div class="form-group" data-wizard-step="2">
 
                             <label
                                 for="phone"
@@ -186,7 +192,7 @@
 
                         {{-- EMAIL --}}
 
-                        <div class="form-group appointment-grid-full">
+                        <div class="form-group appointment-grid-full" data-wizard-step="2">
 
                             <label
                                 for="email"
@@ -223,7 +229,7 @@
 
                         {{-- DATE --}}
 
-                        <div class="form-group">
+                        <div class="form-group" data-wizard-step="1">
 
                             <label
                                 for="appointment_date"
@@ -243,6 +249,35 @@
                                 required
                             >
 
+                            <div
+                                class="appointment-availability-calendar"
+                                data-appointment-availability
+                                data-availability-url="{{ route('appointments.availability') }}"
+                            >
+                                <div class="appointment-availability-calendar__heading">
+                                    <strong>Chọn nhanh trong 14 ngày tới</strong>
+                                    <span data-availability-status>Chọn ngày để xem chỗ trống</span>
+                                </div>
+                                <div class="appointment-availability-calendar__days" role="list" aria-label="Ngày có thể đặt lịch">
+                                    @for($offset = 0; $offset < 14; $offset++)
+                                        @php($calendarDate = now()->startOfDay()->addDays($offset))
+                                        <button
+                                            type="button"
+                                            class="appointment-availability-calendar__day"
+                                            data-appointment-date="{{ $calendarDate->format('Y-m-d') }}"
+                                            aria-label="Chọn ngày {{ $calendarDate->format('d/m/Y') }}"
+                                        >
+                                            <small>{{ $offset === 0 ? 'Hôm nay' : 'T' . $calendarDate->isoFormat('dd') }}</small>
+                                            <strong>{{ $calendarDate->format('d') }}</strong>
+                                            <em>{{ $calendarDate->format('m') }}</em>
+                                        </button>
+                                    @endfor
+                                </div>
+                                <button type="button" class="appointment-availability-calendar__retry" data-appointment-retry hidden>
+                                    Thử lại
+                                </button>
+                            </div>
+
 
                             @error('appointment_date')
 
@@ -258,7 +293,7 @@
 
                         {{-- TIME SLOT --}}
 
-                        <div class="form-group">
+                        <div class="form-group" data-wizard-step="1">
 
                             <label
                                 for="time_slot"
@@ -321,7 +356,7 @@
 
                         {{-- SERVICE --}}
 
-                        <div class="form-group appointment-grid-full">
+                        <div class="form-group appointment-grid-full" data-wizard-step="1">
 
                             <label
                                 for="service_type"
@@ -399,7 +434,7 @@
 
                         {{-- NOTE --}}
 
-                        <div class="form-group appointment-grid-full">
+                        <div class="form-group appointment-grid-full" data-wizard-step="2">
 
                             <label
                                 for="note"
@@ -433,7 +468,7 @@
 
 
 
-                    <div class="appointment-form-notice">
+                    <div class="appointment-form-notice" data-wizard-step="2">
 
                         <strong>
                             Lưu ý
@@ -455,14 +490,25 @@
                         <a
                             href="{{ route('appointments.index') }}"
                             class="btn btn-outline"
+                            data-wizard-cancel
                         >
                             Hủy
                         </a>
 
+                        <button type="button" class="btn btn-outline" data-wizard-back hidden>
+                            Quay lại
+                        </button>
+
+
+                        <button type="button" class="btn btn-primary" data-wizard-next>
+                            Tiếp tục
+                        </button>
 
                         <button
                             type="submit"
                             class="btn btn-primary"
+                            data-wizard-submit
+                            data-velora-shimmer
                         >
                             Đặt lịch đo mắt
                         </button>
@@ -478,5 +524,69 @@
     </div>
 
 </section>
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    var form = document.querySelector('[data-appointment-wizard]');
+    if (!form) return;
+
+    form.classList.add('is-enhanced');
+
+    var step = 1;
+    var next = form.querySelector('[data-wizard-next]');
+    var submit = form.querySelector('[data-wizard-submit]');
+    var back = form.querySelector('[data-wizard-back]');
+    var cancel = form.querySelector('[data-wizard-cancel]');
+    var steps = Array.prototype.slice.call(form.querySelectorAll('[data-wizard-step]'));
+    var indicators = Array.prototype.slice.call(document.querySelectorAll('[data-wizard-indicator]'));
+
+    function render() {
+        steps.forEach(function (element) {
+            element.hidden = Number(element.dataset.wizardStep) !== step;
+        });
+        indicators.forEach(function (indicator) {
+            var current = Number(indicator.dataset.wizardIndicator) === step;
+            indicator.classList.toggle('is-active', current);
+            indicator.classList.toggle('is-done', Number(indicator.dataset.wizardIndicator) < step);
+            indicator.setAttribute('aria-current', current ? 'step' : 'false');
+        });
+        next.hidden = step === 2;
+        submit.hidden = step !== 2;
+        if (back) back.hidden = step !== 2;
+        if (cancel) cancel.hidden = false;
+    }
+
+    next.addEventListener('click', function () {
+        var fields = Array.prototype.slice.call(form.querySelectorAll('[data-wizard-step="1"] input, [data-wizard-step="1"] select, [data-wizard-step="1"] textarea'));
+        var invalid = fields.find(function (field) { return !field.checkValidity(); });
+        if (invalid) {
+            invalid.reportValidity();
+            return;
+        }
+        step = 2;
+        render();
+        var firstField = form.querySelector('[data-wizard-step="2"] input, [data-wizard-step="2"] textarea');
+        if (firstField) firstField.focus();
+    });
+
+    back.addEventListener('click', function () {
+        step = 1;
+        render();
+        var firstField = form.querySelector('[data-wizard-step="1"] input, [data-wizard-step="1"] select');
+        if (firstField) firstField.focus();
+    });
+
+    form.addEventListener('keydown', function (event) {
+        if (event.key === 'Enter' && step === 1 && event.target.tagName !== 'TEXTAREA') {
+            event.preventDefault();
+            next.click();
+        }
+    });
+
+    render();
+});
+</script>
+@endpush
 
 @endsection

@@ -1117,6 +1117,79 @@
 }
 
 /* ---------------------------------------------------------
+   Lens comparison: a compact, independent educational block.
+--------------------------------------------------------- */
+.lens-comparison-section {
+    padding: 34px 0 42px;
+    background: #F7F4EE;
+}
+
+.lens-comparison {
+    display: grid;
+    grid-template-columns: minmax(250px, .8fr) minmax(320px, 1.2fr);
+    gap: 30px;
+    align-items: center;
+    max-width: 940px;
+    margin: 0 auto;
+    padding: 24px 26px;
+    border: 1px solid rgba(191, 217, 223, .52);
+    border-radius: 18px;
+    background: rgba(255, 254, 251, .78);
+    box-shadow: 0 14px 36px rgba(16, 36, 62, .06);
+}
+
+.lens-comparison-copy h3 {
+    margin: 10px 0 12px;
+    color: #10243E;
+    font-family: var(--vl-font-serif, "Noto Serif", Georgia, serif);
+    font-size: clamp(1.5rem, 2.5vw, 2.05rem);
+    line-height: 1.22;
+}
+
+.lens-comparison-copy p {
+    margin: 0;
+    color: #5B6878;
+    font-size: .92rem;
+    line-height: 1.72;
+}
+
+.lens-comparison-demo { min-width: 0; }
+
+.lens-comparison-scene {
+    --lens-compare-position: 50%;
+    position: relative;
+    min-height: 190px;
+    overflow: hidden;
+    border: 1px solid rgba(16, 36, 62, .12);
+    border-radius: 14px;
+    background: linear-gradient(160deg, #74c7ef 0%, #d8f1f7 54%, #d5e7c9 55%, #7aa476 100%);
+    isolation: isolate;
+}
+
+.lens-scene-sun { position: absolute; top: 24px; left: 19%; width: 45px; height: 45px; border-radius: 50%; background: #fff7c9; box-shadow: 0 0 0 11px rgba(255, 248, 206, .25), 0 0 35px rgba(255, 242, 163, .88); }
+.lens-scene-horizon { position: absolute; right: -3%; bottom: 25px; left: -3%; height: 58px; background: repeating-linear-gradient(155deg, rgba(48, 100, 83, .3) 0 2px, transparent 2px 20px); transform: skewY(-3deg); }
+.lens-scene-frame { position: absolute; z-index: 1; top: 50%; left: 50%; width: 168px; height: 75px; border: 8px solid rgba(8, 24, 46, .78); border-radius: 44% 44% 38% 38%; box-shadow: 96px 0 0 -8px rgba(8, 24, 46, .78), -96px 0 0 -8px rgba(8, 24, 46, .78); transform: translate(-50%, -30%); }
+.lens-scene-overlay { position: absolute; inset: 0; z-index: 2; background: linear-gradient(145deg, rgba(244, 185, 91, .45), rgba(143, 89, 36, .26)); clip-path: inset(0 calc(100% - var(--lens-compare-position)) 0 0); }
+.lens-comparison-divider { position: absolute; z-index: 4; top: 0; bottom: 0; left: var(--lens-compare-position); width: 2px; background: #fffefb; box-shadow: 0 0 0 1px rgba(16,36,62,.25); transform: translateX(-50%); }
+.lens-comparison-divider::before { content: "↔"; position: absolute; top: 50%; left: 50%; display: grid; width: 34px; height: 34px; place-items: center; border: 2px solid #fffefb; border-radius: 50%; background: #174654; color: #fffefb; font-size: 1rem; font-weight: 800; transform: translate(-50%, -50%); }
+.lens-scene-label { position: absolute; z-index: 5; top: 13px; padding: 5px 9px; border-radius: 999px; background: rgba(8, 24, 46, .7); color: #fff; font-size: .69rem; font-weight: 800; letter-spacing: .04em; }
+.lens-scene-label-before { left: 13px; }
+.lens-scene-label-after { right: 13px; background: rgba(109, 66, 27, .78); }
+.lens-comparison-range-label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; }
+.lens-comparison-range { width: 100%; margin: 18px 0 7px; accent-color: #174654; cursor: ew-resize; }
+.lens-comparison-range:focus-visible { outline: 3px solid #38bdf8; outline-offset: 3px; border-radius: 4px; }
+.lens-comparison-output { display: block; color: #5B6878; font-size: .78rem; text-align: center; }
+
+@media (max-width: 760px) {
+    .lens-comparison-section { padding: 26px 0 32px; }
+    .lens-comparison { grid-template-columns: 1fr; gap: 22px; padding: 20px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .lens-comparison * { scroll-behavior: auto; }
+}
+
+/* ---------------------------------------------------------
    6. CUSTOMER ACCOUNT & ADDRESSES
 --------------------------------------------------------- */
 .profile-layout {

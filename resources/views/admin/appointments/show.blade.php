@@ -616,6 +616,25 @@
 
                 </div>
 
+                <div class="velora-appointment-checkin" data-appointment-checkin data-appointment-code="{{ $appointment->appointment_code }}">
+                    <img class="velora-appointment-checkin__qr" src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&amp;data={{ rawurlencode($appointment->appointment_code) }}" alt="Mã QR lịch hẹn {{ $appointment->appointment_code }}">
+                    <div>
+                        <strong>Check-in tại cửa hàng</strong>
+                        <p>Đối chiếu mã <code>{{ $appointment->appointment_code }}</code> trước khi hoàn tất lịch.</p>
+                        <button type="button" class="admin-btn admin-btn-secondary" data-qr-scan><i class="bi bi-camera"></i> Quét QR bằng camera</button>
+                        <span class="velora-appointment-checkin__scan-result" data-qr-scan-result aria-live="polite"></span>
+                        @if(in_array('completed', $nextStatuses, true))
+                            <form action="{{ route('admin.appointments.update-status', $appointment) }}" method="POST">
+                                @csrf @method('PATCH')
+                                <input type="hidden" name="status" value="completed">
+                                <button type="submit" class="admin-btn admin-btn-secondary"><i class="bi bi-qr-code-scan"></i> Xác nhận khách đã đến</button>
+                            </form>
+                        @else
+                            <small>Mã này được dùng để đối chiếu tại quầy.</small>
+                        @endif
+                    </div>
+                </div>
+
 
                 @if(!empty($nextStatuses))
 

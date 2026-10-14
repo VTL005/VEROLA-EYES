@@ -106,18 +106,49 @@ class WishlistController extends Controller
         }
 
 
-        $wishlist
+        $wishlistItem = $wishlist
             ->items()
             ->where(
                 'product_id',
                 $product->id
             )
-            ->delete();
+            ->first();
+
+        if ($wishlistItem) {
+            session()->put('wishlist_undo', [
+                'product_id' => $product->id,
+                'expires_at' => now()->addSeconds(8)->timestamp,
+            ]);
+        }
+
+        $wishlistItem?->delete();
 
 
         return back()->with(
     'wishlist_success',
     'Đã bỏ khỏi danh sách yêu thích.'
 );
+    }
+
+    /** Khôi phục sản phẩm vừa bỏ khỏi danh sách yêu thích. */
+    public function undoDestroy()
+    {
+        $undo = session('wishlist_undo');
+
+        if (! $undo || now()->timestamp > ($undo['expires_at'] ?? 0)) {
+            return redirect()->route('wishlist.index')->with('error', 'Thời gian hoàn tác đã kết thúc.');
+        }
+
+        $product = Product::find($undo['product_id'] ?? null);
+
+        if (! $product) {
+            return redirect()->route('wishlist.index')->with('error', 'Sản phẩm không còn tồn tại để khôi phục.');
+        }
+
+        $wishlist = auth()->user()->wishlist()->firstOrCreate();
+        $wishlist->items()->firstOrCreate(['product_id' => $product->id]);
+        session()->forget('wishlist_undo');
+
+        return redirect()->route('wishlist.index')->with('wishlist_success', 'Đã khôi phục sản phẩm yêu thích.');
     }
 }

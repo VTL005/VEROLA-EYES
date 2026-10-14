@@ -45,7 +45,7 @@
 
     @if(session('success'))
 
-    <div class="alert alert-success">
+    <div class="alert alert-success" data-velora-toast data-toast-type="success">
       {{ session('success') }}
     </div>
 
@@ -54,7 +54,7 @@
 
     @if(session('error'))
 
-    <div class="alert alert-danger">
+    <div class="alert alert-danger" data-velora-toast data-toast-type="error">
       {{ session('error') }}
     </div>
 
@@ -204,20 +204,28 @@
           </div>
 
 
-          <div class="voucher-wallet-code">
+          <div class="voucher-wallet-code" data-velora-copy>
 
-            <span>
-              Mã voucher
-            </span>
+            <div>
+              <span>
+                Mã voucher
+              </span>
 
-            <strong>
-              {{ $voucher->code }}
-            </strong>
+              <strong>
+                {{ $voucher->code }}
+              </strong>
+            </div>
+
+            <button type="button" class="velora-copy-button" data-copy-value="{{ $voucher->code }}" aria-label="Sao chép mã voucher">
+              Sao chép
+            </button>
 
           </div>
 
 
-          <ul class="voucher-wallet-conditions">
+          <details class="velora-inline-disclosure">
+            <summary>Điều kiện áp dụng</summary>
+            <ul class="voucher-wallet-conditions">
 
             <li>
 
@@ -284,7 +292,8 @@
 
             @endif
 
-          </ul>
+            </ul>
+          </details>
 
 
           <div class="voucher-wallet-actions">

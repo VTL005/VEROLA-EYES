@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Review;
-use App\Services\ReviewModerationService;
+use App\Models\ReviewReply;
 use Illuminate\Http\Request;
 
 class ReviewController extends Controller
@@ -27,12 +27,6 @@ class ReviewController extends Controller
             $request->query('rating');
 
 
-        $visibility =
-            $request->query(
-                'visibility'
-            );
-
-
         /*
         |--------------------------------------------------------------------------
         | NORMALIZE FILTER
@@ -52,21 +46,6 @@ class ReviewController extends Controller
         }
 
 
-        if (
-            $visibility
-            && !in_array(
-                $visibility,
-                [
-                    'visible',
-                    'hidden',
-                ],
-                true
-            )
-        ) {
-            $visibility = null;
-        }
-
-
         /*
         |--------------------------------------------------------------------------
         | LIST
@@ -79,6 +58,7 @@ class ReviewController extends Controller
                 ->with([
                     'user',
                     'product',
+                    'adminReply.admin',
                 ])
 
                 /*
@@ -159,30 +139,6 @@ class ReviewController extends Controller
                         )
                 )
 
-                /*
-                 * Visible.
-                 */
-                ->when(
-                    $visibility === 'visible',
-                    fn ($query) =>
-                        $query->where(
-                            'is_visible',
-                            true
-                        )
-                )
-
-                /*
-                 * Hidden.
-                 */
-                ->when(
-                    $visibility === 'hidden',
-                    fn ($query) =>
-                        $query->where(
-                            'is_visible',
-                            false
-                        )
-                )
-
                 ->latest()
 
                 ->paginate(15)
@@ -201,22 +157,8 @@ class ReviewController extends Controller
                 ->count();
 
 
-        $visibleReviews =
-            Review::query()
-                ->where(
-                    'is_visible',
-                    true
-                )
-                ->count();
-
-
-        $hiddenReviews =
-            Review::query()
-                ->where(
-                    'is_visible',
-                    false
-                )
-                ->count();
+        $repliedReviews = Review::query()->whereHas('adminReply')->count();
+        $waitingReplies = max(0, $totalReviews - $repliedReviews);
 
 
         $fiveStarReviews =
@@ -248,10 +190,9 @@ class ReviewController extends Controller
                 'reviews',
                 'keyword',
                 'rating',
-                'visibility',
                 'totalReviews',
-                'visibleReviews',
-                'hiddenReviews',
+                'repliedReviews',
+                'waitingReplies',
                 'fiveStarReviews',
                 'averageRating'
             )
@@ -268,6 +209,7 @@ class ReviewController extends Controller
         $review->load([
             'user',
             'product',
+            'adminReply.admin',
         ]);
 
 
@@ -279,25 +221,21 @@ class ReviewController extends Controller
 
 
     /**
-     * Ẩn / hiện Review.
+     * Tạo hoặc cập nhật phản hồi chính thức của VELORA.
      */
-    public function toggleVisibility(
-        Review $review,
-        ReviewModerationService $reviewModerationService
-    ) {
-        $updatedReview =
-            $reviewModerationService
-                ->toggleVisibility(
-                    auth()->user(),
-                    $review
-                );
+    public function reply(Request $request, Review $review)
+    {
+        $data = $request->validate([
+            'content' => ['required', 'string', 'min:2', 'max:1000'],
+        ], [
+            'content.required' => 'Vui lòng nhập nội dung phản hồi.',
+            'content.max' => 'Phản hồi không được vượt quá 1.000 ký tự.',
+        ]);
 
-
-        $message =
-            $updatedReview->is_visible
-                ? 'Đã hiển thị lại đánh giá.'
-                : 'Đã ẩn đánh giá khỏi website.';
-
+        ReviewReply::updateOrCreate(
+            ['review_id' => $review->id],
+            ['admin_id' => auth()->id(), 'content' => trim($data['content'])]
+        );
 
         return redirect()
             ->route(
@@ -306,7 +244,8 @@ class ReviewController extends Controller
             )
             ->with(
                 'success',
-                $message
-            );
+                'Đã gửi phản hồi chính thức đến khách hàng.'
+            )
+            ->with('review_reply_updated', true);
     }
 }

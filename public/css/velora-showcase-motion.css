@@ -1,0 +1,66 @@
+/* Showcase motion inspired by Lucian UX/UI: focused, decorative, and optional. */
+
+.velora-scroll-progress {
+  position: fixed;
+  z-index: 2100;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  pointer-events: none;
+  transform: scaleX(0);
+  transform-origin: left center;
+  background: linear-gradient(90deg, #38bdf8, #c5a880 55%, #f3d7a0);
+  box-shadow: 0 1px 10px rgba(56, 189, 248, .42);
+}
+
+@keyframes velora-accent-glint {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+.vl-home-page .vl-hero-accent {
+  background: linear-gradient(105deg, #c5a880 10%, #fff3cf 48%, #c5a880 85%);
+  background-size: 220% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: velora-accent-glint 5s ease-in-out infinite;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .velora-magnetic {
+    will-change: transform;
+    transition: transform 180ms cubic-bezier(.16, 1, .3, 1), box-shadow 180ms ease;
+  }
+
+  .velora-magnetic:hover {
+    box-shadow: 0 12px 28px -10px rgba(56, 189, 248, .35);
+  }
+
+  .velora-tilt-card {
+    transform-style: preserve-3d;
+    will-change: transform;
+    transition: transform 200ms cubic-bezier(.16, 1, .3, 1), box-shadow 200ms ease;
+  }
+
+  .velora-tilt-card.velora-tilt-active {
+    transform: perspective(980px) rotateX(var(--velora-tilt-x, 0deg)) rotateY(var(--velora-tilt-y, 0deg)) translateY(-3px);
+    box-shadow: 0 22px 48px -18px rgba(8, 24, 46, .38);
+  }
+
+  .velora-tilt-card .home-category-card__content,
+  .velora-tilt-card .home-new-product-card__body {
+    transform: translateZ(12px);
+  }
+
+  .velora-tilt-card .home-category-card__media img,
+  .velora-tilt-card .home-new-product-card__media img {
+    transform: translateZ(6px) scale(1.018);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .velora-scroll-progress { display: none; }
+  .vl-home-page .vl-hero-accent { animation: none; background-position: 0 50%; }
+}

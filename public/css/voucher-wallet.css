@@ -285,6 +285,18 @@
   font-family: var(--vl-font-sans, 'Be Vietnam Pro', sans-serif) !important;
 }
 
+.voucher-wallet-code.is-copied {
+  border-color: rgba(39, 132, 83, .55) !important;
+  background: #edf9f1 !important;
+  transition: border-color .22s ease, background .22s ease;
+}
+
+.velora-copy-button.is-copied {
+  background: #278453 !important;
+  border-color: #278453 !important;
+  color: #fff !important;
+}
+
 /* CONDITIONS */
 .voucher-wallet-conditions {
   display: grid !important;

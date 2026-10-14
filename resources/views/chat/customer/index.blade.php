@@ -455,6 +455,13 @@ $complaintOrderCode !== ''
 
   @endforeach
 
+  @if(session('chat_ai_pending') && !($conversation->messages->last()?->isAi()))
+    <div class="velora-waiting-message" id="customerChatAiWaiting" role="status">
+      <span class="velora-waiting-dots" aria-hidden="true"><span></span><span></span><span></span></span>
+      VELORA AI đang chuẩn bị phản hồi…
+    </div>
+  @endif
+
 
   @else
 
@@ -540,7 +547,7 @@ $complaintOrderCode !== ''
 
   <div class="customer-chat-faq-list">
 
-    <details class="customer-chat-faq-item">
+    <details class="customer-chat-faq-item" data-velora-accordion>
 
       <summary>
         Sản phẩm này còn hàng không?
@@ -562,7 +569,7 @@ $complaintOrderCode !== ''
     </details>
 
 
-    <details class="customer-chat-faq-item">
+    <details class="customer-chat-faq-item" data-velora-accordion>
 
       <summary>
         Kính này có lắp được tròng cận không?
@@ -584,7 +591,7 @@ $complaintOrderCode !== ''
     </details>
 
 
-    <details class="customer-chat-faq-item">
+    <details class="customer-chat-faq-item" data-velora-accordion>
 
       <summary>
         Kính phù hợp với khuôn mặt nào?
@@ -607,7 +614,7 @@ $complaintOrderCode !== ''
     </details>
 
 
-    <details class="customer-chat-faq-item">
+    <details class="customer-chat-faq-item" data-velora-accordion>
 
       <summary>
         Chính sách bảo hành và đổi trả thế nào?
@@ -663,6 +670,15 @@ $complaintOrderCode !== ''
   id="customerChatForm">
 
   @csrf
+
+  <div class="velora-upload-progress" id="customerChatUploadProgress" hidden aria-live="polite">
+    <div class="velora-upload-progress__heading">
+      <span id="customerChatUploadLabel">Đang gửi tin nhắn</span>
+      <span id="customerChatUploadPercent"></span>
+    </div>
+    <progress id="customerChatUploadBar" max="100" value="0"></progress>
+    <span class="velora-upload-progress__detail" id="customerChatUploadDetail">Đừng đóng trang cho đến khi gửi xong.</span>
+  </div>
 
 
   {{-- =====================================================
@@ -817,6 +833,12 @@ document.addEventListener(
       document.getElementById(
         'customerChatFormNote'
       );
+
+    const uploadProgress = document.getElementById('customerChatUploadProgress');
+    const uploadBar = document.getElementById('customerChatUploadBar');
+    const uploadLabel = document.getElementById('customerChatUploadLabel');
+    const uploadPercent = document.getElementById('customerChatUploadPercent');
+    const uploadDetail = document.getElementById('customerChatUploadDetail');
 
 
     const quickQuestionButtons =
@@ -1630,6 +1652,10 @@ document.addEventListener(
       messageBox.className =
         'customer-chat-message';
 
+      if (isAiMessage) {
+        document.getElementById('customerChatAiWaiting')?.remove();
+      }
+
 
       /*
       |--------------------------------------------------------------------------
@@ -1666,6 +1692,10 @@ document.addEventListener(
 
       content.className =
         'customer-chat-message-content';
+
+      if (isAiMessage) {
+        content.dataset.veloraStream = 'true';
+      }
 
 
       /*
@@ -2343,6 +2373,65 @@ document.addEventListener(
            */
           updateImageInputFiles();
 
+        }
+      );
+
+      form.addEventListener(
+        'submit',
+        function(event) {
+          if (event.defaultPrevented || form.dataset.uploading === 'true') {
+            return;
+          }
+
+          event.preventDefault();
+          form.dataset.uploading = 'true';
+
+          const hasImages = selectedImageFiles.length > 0;
+          const sendButton = document.getElementById('customerChatSend');
+          const imageButton = document.getElementById('customerChatImageButton');
+
+          if (uploadProgress) uploadProgress.hidden = false;
+          if (uploadLabel) uploadLabel.textContent = hasImages ? 'Đang tải ảnh và gửi tin nhắn' : 'Đang gửi tin nhắn';
+          if (uploadDetail) uploadDetail.textContent = hasImages ? 'Ảnh sẽ được gửi ngay khi tải lên hoàn tất.' : 'Đang liên hệ VELORA Eyes.';
+          if (uploadBar) {
+            if (hasImages) {
+              uploadBar.value = 0;
+            } else {
+              uploadBar.removeAttribute('value');
+            }
+          }
+          if (uploadPercent) uploadPercent.textContent = '';
+          if (sendButton) sendButton.disabled = true;
+          if (imageButton) imageButton.disabled = true;
+
+          const request = new XMLHttpRequest();
+          request.open('POST', form.action, true);
+          request.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+          request.upload.addEventListener('progress', function(progressEvent) {
+            if (!progressEvent.lengthComputable || !uploadBar) return;
+            const percent = Math.round((progressEvent.loaded / progressEvent.total) * 100);
+            uploadBar.value = percent;
+            if (uploadPercent) uploadPercent.textContent = percent + '%';
+          });
+          request.addEventListener('load', function() {
+            if (request.status >= 200 && request.status < 400) {
+              window.location.assign(request.responseURL || '{{ route('customer.chat.index') }}');
+              return;
+            }
+            finishWithUploadError();
+          });
+          request.addEventListener('error', finishWithUploadError);
+
+          function finishWithUploadError() {
+            form.dataset.uploading = 'false';
+            if (uploadProgress) uploadProgress.hidden = true;
+            if (sendButton) sendButton.disabled = false;
+            if (imageButton) imageButton.disabled = false;
+            if (formNote) formNote.textContent = 'Không thể gửi lúc này. Vui lòng kiểm tra kết nối và thử lại.';
+            window.VeloraToast?.show('Không thể gửi tin nhắn. Vui lòng thử lại.', 'error');
+          }
+
+          request.send(new FormData(form));
         }
       );
 

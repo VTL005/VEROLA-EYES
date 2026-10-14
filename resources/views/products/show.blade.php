@@ -55,7 +55,7 @@
                 LEFT: LIGHT GALLERY PANEL (Warm Alabaster / Optical Glow)
             ================================================== --}}
             <div class="product-gallery">
-                <div class="product-main-image adaptive-image-container">
+                <div class="product-main-image adaptive-image-container" data-velora-image-zoom>
                     @if($primaryProductImage)
                         <img
                             id="mainProductImage"
@@ -70,6 +70,13 @@
                     @endif
                 </div>
 
+                @if($primaryProductImage)
+                    <button type="button" class="product-zoom-button" id="productZoomButton" aria-haspopup="dialog">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6"></circle><path d="m16 16 4 4"></path><path d="M11 8v6M8 11h6"></path></svg>
+                        Phóng to ảnh
+                    </button>
+                @endif
+
                 @if($product->images->count() > 1)
                     <div class="product-thumbnails">
                         @foreach($product->images as $image)
@@ -77,6 +84,8 @@
                                 type="button"
                                 class="product-thumbnail {{ $image->id === $primaryProductImage?->id ? 'active' : '' }}"
                                 aria-label="Xem ảnh {{ $loop->iteration }}"
+                                data-product-image="{{ asset($image->image_path) }}"
+                                data-product-alt="{{ $image->alt_text ?? $product->name }}"
                                 onclick="
                                     const mainImg = document.getElementById('mainProductImage');
                                     mainImg.src='{{ asset($image->image_path) }}';
@@ -212,7 +221,7 @@
                 <div class="product-purchase-box">
                     @auth
                         @if(auth()->user()->isCustomer())
-                            <form action="{{ route('cart.store') }}" method="POST">
+                            <form action="{{ route('cart.store') }}" method="POST" data-cart-flight-form>
                                 @csrf
 
                                 <div class="purchase-form-row">
@@ -258,6 +267,7 @@
                                         name="checkout_action"
                                         value="add_to_cart"
                                         class="btn product-add-cart-button"
+                                        data-flight-action="cart"
                                     >
                                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>
                                         <span>Thêm vào giỏ hàng</span>
@@ -268,6 +278,7 @@
                                         name="checkout_action"
                                         value="buy_now"
                                         class="btn product-buy-now-button"
+                                        data-velora-shimmer
                                     >
                                         <span>Mua ngay</span>
                                     </button>
@@ -286,9 +297,9 @@
                                         </button>
                                     </form>
                                 @else
-                                    <form action="{{ route('wishlist.store', $product) }}" method="POST">
+                                    <form action="{{ route('wishlist.store', $product) }}" method="POST" data-wishlist-flight-form>
                                         @csrf
-                                        <button type="submit" class="product-wishlist-btn">
+                                        <button type="submit" class="product-wishlist-btn" data-flight-action="wishlist">
                                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
                                             <span>Lưu vào danh sách yêu thích</span>
                                         </button>
@@ -315,6 +326,24 @@
         </div>
     </div>
 </section>
+
+@if($primaryProductImage)
+    <div class="product-lightbox" id="productLightbox" hidden>
+        <div class="product-lightbox-backdrop" data-lightbox-close></div>
+        <section class="product-lightbox-dialog" role="dialog" aria-modal="true" aria-labelledby="productLightboxTitle">
+            <div class="product-lightbox-header">
+                <strong id="productLightboxTitle">{{ $product->name }}</strong>
+                <button type="button" class="product-lightbox-close" data-lightbox-close aria-label="Đóng ảnh phóng to">×</button>
+            </div>
+            <div class="product-lightbox-stage">
+                <button type="button" class="product-lightbox-nav" id="productLightboxPrevious" aria-label="Ảnh trước"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m14.5 5-7 7 7 7"></path></svg></button>
+                <img id="productLightboxImage" src="{{ asset($primaryProductImage->image_path) }}" alt="{{ $primaryProductImage->alt_text ?? $product->name }}">
+                <button type="button" class="product-lightbox-nav" id="productLightboxNext" aria-label="Ảnh tiếp theo"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9.5 5 7 7-7 7"></path></svg></button>
+            </div>
+            <p class="product-lightbox-hint">Dùng phím mũi tên để xem ảnh khác · Esc để đóng</p>
+        </section>
+    </div>
+@endif
 
 {{-- =========================================================
     PRODUCT DETAILS & SPECIFICATIONS (EDITORIAL SPLIT)
@@ -579,6 +608,20 @@
                         @if($review->comment)
                             <p class="review-card-body">{{ $review->comment }}</p>
                         @endif
+                        @if($review->adminReply)
+                            <div class="review-official-reply">
+                                <div class="review-official-reply-icon" aria-hidden="true">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path><path d="M12 22a10 10 0 1 0-10-10 10 10 0 0 0 10 10Z"></path></svg>
+                                </div>
+                                <div>
+                                    <div class="review-official-reply-head">
+                                        <strong>Phản hồi từ VELORA Eyes</strong>
+                                        <span>{{ $review->adminReply->updated_at?->format('d/m/Y') }}</span>
+                                    </div>
+                                    <p>{{ $review->adminReply->content }}</p>
+                                </div>
+                            </div>
+                        @endif
                     </article>
                 @endforeach
             </div>
@@ -618,6 +661,113 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    var lightbox = document.getElementById('productLightbox');
+    var lightboxImage = document.getElementById('productLightboxImage');
+    var zoomButton = document.getElementById('productZoomButton');
+    var thumbnails = Array.prototype.slice.call(document.querySelectorAll('.product-thumbnail[data-product-image]'));
+    var previouslyFocusedElement = null;
+    var activeImageIndex = Math.max(0, thumbnails.findIndex(function(thumbnail) { return thumbnail.classList.contains('active'); }));
+
+    function showLightbox(index) {
+        if (!lightbox || !lightboxImage || !thumbnails.length) return;
+        activeImageIndex = (index + thumbnails.length) % thumbnails.length;
+        var thumbnail = thumbnails[activeImageIndex];
+        lightboxImage.src = thumbnail.dataset.productImage;
+        lightboxImage.alt = thumbnail.dataset.productAlt || '{{ $product->name }}';
+        lightbox.hidden = false;
+        document.body.classList.add('product-lightbox-open');
+        previouslyFocusedElement = document.activeElement;
+        lightbox.querySelector('.product-lightbox-close').focus();
+    }
+
+    function closeLightbox() {
+        if (!lightbox || lightbox.hidden) return;
+        lightbox.hidden = true;
+        document.body.classList.remove('product-lightbox-open');
+        if (previouslyFocusedElement) previouslyFocusedElement.focus();
+    }
+
+    if (zoomButton) zoomButton.addEventListener('click', function() { showLightbox(activeImageIndex); });
+    thumbnails.forEach(function(thumbnail, index) {
+        thumbnail.addEventListener('click', function() { activeImageIndex = index; });
+    });
+    if (lightbox) {
+        lightbox.querySelectorAll('[data-lightbox-close]').forEach(function(button) { button.addEventListener('click', closeLightbox); });
+        document.getElementById('productLightboxPrevious').addEventListener('click', function() { showLightbox(activeImageIndex - 1); });
+        document.getElementById('productLightboxNext').addEventListener('click', function() { showLightbox(activeImageIndex + 1); });
+        document.addEventListener('keydown', function(event) {
+            if (lightbox.hidden) return;
+            if (event.key === 'Escape') closeLightbox();
+            if (event.key === 'ArrowLeft') showLightbox(activeImageIndex - 1);
+            if (event.key === 'ArrowRight') showLightbox(activeImageIndex + 1);
+            if (event.key === 'Tab') {
+                var focusable = Array.prototype.slice.call(lightbox.querySelectorAll('button:not([disabled]), [href], input:not([disabled])'));
+                var first = focusable[0];
+                var last = focusable[focusable.length - 1];
+                if (event.shiftKey && document.activeElement === first) {
+                    event.preventDefault();
+                    last.focus();
+                } else if (!event.shiftKey && document.activeElement === last) {
+                    event.preventDefault();
+                    first.focus();
+                }
+            }
+        });
+    }
+
+    function flyProductTo(targetId) {
+        var source = document.getElementById('mainProductImage');
+        var target = document.getElementById(targetId);
+        if (!source || !target || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+            return Promise.resolve();
+        }
+        var sourceBox = source.getBoundingClientRect();
+        var targetBox = target.getBoundingClientRect();
+        var startSize = 54;
+        var startX = sourceBox.left + (sourceBox.width / 2) - (startSize / 2);
+        var startY = sourceBox.top + (sourceBox.height / 2) - (startSize / 2);
+        var endX = targetBox.left + (targetBox.width / 2) - (startX + startSize / 2);
+        var endY = targetBox.top + (targetBox.height / 2) - (startY + startSize / 2);
+        var flyer = document.createElement('img');
+        flyer.className = 'product-flight-image';
+        flyer.src = source.currentSrc || source.src;
+        flyer.alt = '';
+        flyer.style.left = startX + 'px';
+        flyer.style.top = startY + 'px';
+        document.body.appendChild(flyer);
+        target.classList.add('is-flight-target');
+        var animation = flyer.animate([
+            { transform: 'translate(0, 0) scale(1) rotate(0deg)', opacity: 1 },
+            { transform: 'translate(' + endX + 'px, ' + endY + 'px) scale(.22) rotate(9deg)', opacity: .45 }
+        ], { duration: 620, easing: 'cubic-bezier(.16, 1, .3, 1)', fill: 'forwards' });
+        return animation.finished.catch(function() {}).then(function() {
+            flyer.remove();
+            target.classList.remove('is-flight-target');
+        });
+    }
+
+    function addFlightSubmit(form, action, targetId) {
+        if (!form) return;
+        form.addEventListener('submit', function(event) {
+            if (form.dataset.flightComplete === 'true') return;
+            if (form.dataset.flightRunning === 'true') {
+                event.preventDefault();
+                return;
+            }
+            if (!form.checkValidity()) return;
+            event.preventDefault();
+            form.dataset.flightRunning = 'true';
+            var submitter = event.submitter || form.querySelector('[data-flight-action="' + action + '"]');
+            flyProductTo(targetId).then(function() {
+                form.dataset.flightComplete = 'true';
+                form.requestSubmit(submitter);
+            });
+        });
+    }
+
+    addFlightSubmit(document.querySelector('[data-cart-flight-form]'), 'cart', 'headerCartTarget');
+    addFlightSubmit(document.querySelector('[data-wishlist-flight-form]'), 'wishlist', 'headerWishlistTarget');
+
     // ----------------------------------------------------
     // Update main price when selecting variant
     // ----------------------------------------------------

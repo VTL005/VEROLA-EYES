@@ -306,7 +306,8 @@ class OrderController extends Controller
             ->with(
                 'success',
                 'Cập nhật trạng thái đơn hàng thành công.'
-            );
+            )
+            ->with('order_status_updated', true);
     }
 
     /**
@@ -330,6 +331,7 @@ class OrderController extends Controller
             ->with(
                 'success',
                 'Hủy đơn hàng thành công. Tồn kho đã được hoàn lại.'
-            );
+            )
+            ->with('order_status_updated', true);
     }
 }

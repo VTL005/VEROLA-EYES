@@ -671,6 +671,24 @@
 
                 </div>
 
+                @php($notificationPreferences = $user->notification_preferences ?? [])
+                <section class="profile-card velora-notification-preferences">
+                    <div class="profile-card-heading">
+                        <div>
+                            <span class="hero-kicker">NOTIFICATIONS</span>
+                            <h2>Thông báo bạn muốn nhận</h2>
+                        </div>
+                    </div>
+                    <form action="{{ route('profile.notifications.update') }}" method="POST">
+                        @csrf
+                        @method('PATCH')
+                        <label><span><strong>Đơn hàng</strong><small>Cập nhật xác nhận, vận chuyển và hoàn tất.</small></span><input type="checkbox" name="order_updates" value="1" @checked($notificationPreferences['order_updates'] ?? true)></label>
+                        <label><span><strong>Lịch đo mắt</strong><small>Nhắc lịch và thông báo thay đổi trạng thái.</small></span><input type="checkbox" name="appointment_updates" value="1" @checked($notificationPreferences['appointment_updates'] ?? true)></label>
+                        <label><span><strong>Voucher</strong><small>Ưu đãi phù hợp và voucher sắp hết hạn.</small></span><input type="checkbox" name="voucher_updates" value="1" @checked($notificationPreferences['voucher_updates'] ?? false)></label>
+                        <button type="submit" class="btn btn-outline btn-sm">Lưu lựa chọn</button>
+                    </form>
+                </section>
+
             </main>
 
         </div>

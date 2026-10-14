@@ -163,12 +163,6 @@ class ReviewService
                     'comment' =>
                         $data['comment'] ?? null,
 
-                    /*
-                     * Review mới mặc định hiển thị.
-                     * Admin/Admin có thể ẩn sau.
-                     */
-                    'is_visible' =>
-                        true,
                 ]);
             }
         );

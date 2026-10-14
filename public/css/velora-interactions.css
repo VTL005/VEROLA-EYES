@@ -1,0 +1,65 @@
+/* Shared, restrained feedback patterns for the VELORA customer and admin UI. */
+
+.velora-toast-region {
+  position: fixed;
+  z-index: 1200;
+  right: 24px;
+  bottom: 24px;
+  display: grid;
+  width: min(380px, calc(100vw - 32px));
+  gap: 10px;
+  pointer-events: none;
+}
+
+.velora-toast {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 14px 16px;
+  border: 1px solid var(--vl-border-subtle, #dbe3eb);
+  border-left: 4px solid var(--vl-optical-cyan, #38bdf8);
+  border-radius: var(--vl-radius-md, 12px);
+  background: rgba(255, 255, 255, .97);
+  color: var(--vl-ink, #08182e);
+  box-shadow: var(--vl-shadow-lg, 0 18px 42px -8px rgba(8, 22, 40, .12));
+  pointer-events: auto;
+  animation: velora-toast-in 220ms var(--vl-ease-luxury, ease-out) both;
+}
+
+.velora-toast--success { border-left-color: var(--vl-success, #15803d); }
+.velora-toast--error { border-left-color: var(--vl-error, #991b1b); }
+.velora-toast--info { border-left-color: var(--vl-optical-cyan, #38bdf8); }
+
+.velora-toast__icon { font-weight: 800; line-height: 1.45; }
+.velora-toast--success .velora-toast__icon { color: var(--vl-success, #15803d); }
+.velora-toast--error .velora-toast__icon { color: var(--vl-error, #991b1b); }
+
+.velora-toast__message { flex: 1; font-size: .9rem; line-height: 1.45; }
+.velora-toast__close { min-width: 28px; min-height: 28px; margin: -4px -5px -4px 0; border: 0; border-radius: 6px; background: transparent; color: inherit; cursor: pointer; font-size: 1.15rem; line-height: 1; }
+.velora-toast__close:hover { background: #f1f5f9; }
+
+[data-velora-copy] { display: inline-flex; align-items: center; gap: 7px; }
+.velora-copy-button { min-height: 34px; padding: 0 10px; border: 1px solid var(--vl-border-subtle, #dbe3eb); border-radius: 7px; background: #fff; color: var(--vl-ink, #08182e); cursor: pointer; font: inherit; font-size: .78rem; font-weight: 700; }
+.velora-copy-button:hover { border-color: var(--vl-champagne, #c5a880); background: var(--vl-champagne-light, #fbf7f0); }
+
+.velora-upload-progress { display: grid; gap: 8px; margin: 0 0 12px; padding: 12px 14px; border: 1px solid var(--vl-ice-border, #bae6fd); border-radius: 10px; background: var(--vl-ice-tint, #f0f7fd); color: var(--vl-ink, #08182e); }
+.velora-upload-progress[hidden] { display: none; }
+.velora-upload-progress__heading { display: flex; justify-content: space-between; gap: 12px; font-size: .84rem; font-weight: 700; }
+.velora-upload-progress progress { width: 100%; height: 7px; accent-color: var(--vl-optical-cyan, #38bdf8); }
+.velora-upload-progress__detail { color: var(--vl-text-muted, #64748b); font-size: .78rem; }
+
+.velora-waiting-message { display: flex; align-items: center; gap: 9px; width: fit-content; max-width: 85%; margin: 12px 0 0; padding: 10px 13px; border: 1px solid #bfe0ed; border-radius: 12px 12px 12px 3px; background: #edf8fc; color: #174654; font-size: .82rem; }
+.velora-waiting-dots { display: inline-flex; gap: 3px; }
+.velora-waiting-dots span { width: 5px; height: 5px; border-radius: 999px; background: currentColor; animation: velora-waiting-dot 1s ease-in-out infinite; }
+.velora-waiting-dots span:nth-child(2) { animation-delay: 130ms; }
+.velora-waiting-dots span:nth-child(3) { animation-delay: 260ms; }
+
+[data-velora-count] { font-variant-numeric: tabular-nums; }
+.velora-reveal-bar { transform: scaleX(0); transform-origin: left center; animation: velora-grow-bar 650ms var(--vl-ease-luxury, ease-out) forwards; }
+
+@keyframes velora-toast-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes velora-waiting-dot { 0%, 70%, 100% { transform: translateY(0); opacity: .38; } 35% { transform: translateY(-3px); opacity: 1; } }
+@keyframes velora-grow-bar { to { transform: scaleX(1); } }
+
+@media (max-width: 640px) { .velora-toast-region { right: 16px; bottom: 76px; } }
+@media (prefers-reduced-motion: reduce) { .velora-toast, .velora-waiting-dots span, .velora-reveal-bar { animation: none; transform: none; } }

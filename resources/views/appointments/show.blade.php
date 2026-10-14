@@ -50,6 +50,18 @@
             ← Lịch hẹn của tôi
         </a>
 
+        @if(session('appointment_just_created'))
+            <div class="appointment-booking-success" data-velora-confetti aria-live="polite">
+                <div class="appointment-booking-success__mark" aria-hidden="true">
+                    <svg viewBox="0 0 64 64" fill="none"><circle class="velora-success-ring" cx="32" cy="32" r="30"></circle><path class="velora-success-check" d="m18 33 9 9 19-20"></path></svg>
+                </div>
+                <div>
+                    <strong>VELORA đã ghi nhận lịch hẹn của bạn</strong>
+                    <span>{{ $appointment->appointment_date->format('d/m/Y') }} · {{ str_replace('-', ' - ', $appointment->time_slot) }} · {{ $statusLabels[$appointment->status] ?? $appointment->status }}</span>
+                </div>
+            </div>
+        @endif
+
 
         <div class="appointment-detail-hero-row">
 
@@ -162,7 +174,7 @@
                     APPOINTMENT SCHEDULE
                 ============================================== --}}
 
-                <div class="appointment-detail-card">
+                <div class="appointment-detail-card" @if(session('appointment_just_created')) data-velora-status-highlight @endif>
 
                     <div class="appointment-detail-card-heading">
 

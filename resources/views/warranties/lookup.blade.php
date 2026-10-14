@@ -63,12 +63,15 @@
 
                     <div class="alert alert-danger">
                         {{ session('error') }}
+                        <button type="submit" form="warranty-lookup-form" class="velora-inline-retry">
+                            Thử lại
+                        </button>
                     </div>
 
                 @endif
 
 
-                <form
+                <form id="warranty-lookup-form"
                     action="{{ route(
                         'warranties.lookup'
                     ) }}"

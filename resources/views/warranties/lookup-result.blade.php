@@ -60,7 +60,7 @@
 
             <div class="warranty-public-card">
 
-                <div class="warranty-public-header">
+                <div class="warranty-public-header" data-velora-copy>
 
                     <div>
 
@@ -73,6 +73,10 @@
                         </strong>
 
                     </div>
+
+                    <button type="button" class="velora-copy-button" data-copy-value="{{ $warranty->warranty_code }}" aria-label="Sao chép mã bảo hành">
+                        Sao chép
+                    </button>
 
 
                     @if($isCancelled)

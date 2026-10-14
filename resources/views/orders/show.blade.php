@@ -63,6 +63,11 @@ $statusSteps,
 true
 );
 
+$historyByStatus =
+$order->statusHistories
+->groupBy('status')
+->map(fn ($histories) => $histories->first());
+
 @endphp
 
 
@@ -242,7 +247,7 @@ true
 
           @else
 
-          <div class="order-progress">
+          <div class="order-progress" aria-label="Tiến trình đơn hàng" @if(session('success')) data-velora-status-highlight @endif>
 
             @foreach(
             $statusSteps
@@ -255,16 +260,21 @@ true
             $currentStatusIndex !== false
             && $index <= $currentStatusIndex; $isCurrent=$order->order_status
               === $step;
+            $history = $historyByStatus->get($step);
 
               @endphp
 
 
-              <div class="order-progress-item {{ $isDone ? 'done' : '' }} {{ $isCurrent ? 'current' : '' }}">
+              <div class="order-progress-item {{ $isDone ? 'done' : '' }} {{ $isCurrent ? 'current' : '' }} {{ $step === 'shipping' ? 'is-shipping-step' : '' }}">
 
                 <div class="order-progress-dot">
 
-                  @if($isDone)
-                  ✓
+                  @if($step === 'shipping')
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M3 6h11v10H3z"></path><path d="M14 9h4l3 3v4h-7z"></path><circle cx="7" cy="18" r="2"></circle><circle cx="18" cy="18" r="2"></circle>
+                  </svg>
+                  @elseif($isDone)
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 4 4L19 6"></path></svg>
                   @else
                   {{ $index + 1 }}
                   @endif
@@ -277,6 +287,16 @@ true
                   <strong>
                     {{ $statusLabels[$step] }}
                   </strong>
+
+                  <span class="order-progress-state">
+                    @if($history)
+                    {{ $history->created_at->format('d/m H:i') }}
+                    @elseif($isCurrent)
+                    Đang cập nhật
+                    @else
+                    Đang chờ
+                    @endif
+                  </span>
 
                 </div>
 

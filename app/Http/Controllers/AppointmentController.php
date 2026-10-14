@@ -83,6 +83,23 @@ class AppointmentController extends Controller
         );
     }
 
+    /**
+     * Cập nhật chỗ trống theo ngày cho lịch hẹn phía khách hàng.
+     */
+    public function availability(
+        Request $request,
+        AppointmentService $appointmentService
+    ) {
+        $validated = $request->validate([
+            'date' => ['required', 'date', 'after_or_equal:today'],
+        ]);
+
+        return response()->json([
+            'date' => $validated['date'],
+            'slots' => $appointmentService->availabilityForDate($validated['date']),
+        ]);
+    }
+
 
     /**
      * Lưu lịch hẹn.
@@ -106,7 +123,8 @@ class AppointmentController extends Controller
             ->with(
                 'success',
                 'Đặt lịch đo mắt thành công. Lịch đang chờ xác nhận.'
-            );
+            )
+            ->with('appointment_just_created', true);
     }
 
 

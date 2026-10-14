@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileUpdateRequest;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
 class ProfileController extends Controller
@@ -149,5 +150,25 @@ class ProfileController extends Controller
                 'success',
                 'Cập nhật hồ sơ thành công.'
             );
+    }
+
+    /** Lưu các kênh thông báo mà khách hàng chủ động lựa chọn. */
+    public function updateNotifications(Request $request)
+    {
+        $request->validate([
+            'order_updates' => ['nullable', 'boolean'],
+            'appointment_updates' => ['nullable', 'boolean'],
+            'voucher_updates' => ['nullable', 'boolean'],
+        ]);
+
+        auth()->user()->update([
+            'notification_preferences' => [
+                'order_updates' => $request->boolean('order_updates'),
+                'appointment_updates' => $request->boolean('appointment_updates'),
+                'voucher_updates' => $request->boolean('voucher_updates'),
+            ],
+        ]);
+
+        return redirect()->route('profile.show')->with('success', 'Đã cập nhật cài đặt thông báo.');
     }
 }

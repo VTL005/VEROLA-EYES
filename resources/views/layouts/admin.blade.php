@@ -18,6 +18,8 @@
   <link rel="stylesheet" href="{{ asset(
             'css/style.css'
         ) }}">
+  <link rel="stylesheet" href="{{ asset('css/velora-interactions.css') }}">
+  <link rel="stylesheet" href="{{ asset('css/velora-lucian-extras.css') }}">
   @stack('styles')
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
@@ -107,7 +109,7 @@
 
       <a href="{{ route(
                 'admin.dashboard'
-            ) }}" class="{{
+            ) }}" data-velora-tour="dashboard" class="{{
                 request()->routeIs(
                     'admin.dashboard'
                 )
@@ -147,7 +149,7 @@
 
       <a href="{{ route(
                 'admin.chat.index'
-            ) }}" class="{{
+            ) }}" data-velora-tour="chat" class="{{
                 request()->routeIs(
                     'admin.chat.*'
                 )
@@ -259,7 +261,7 @@
 
       <a href="{{ route(
                 'admin.orders.index'
-            ) }}" class="{{
+            ) }}" data-velora-tour="orders" class="{{
                 request()->routeIs(
                     'admin.orders.*'
                 )
@@ -356,7 +358,7 @@
 
       <a href="{{ route(
                 'admin.reviews.index'
-            ) }}" class="{{
+            ) }}" data-velora-tour="reviews" class="{{
                 request()->routeIs(
                     'admin.reviews.*'
                 )
@@ -434,6 +436,10 @@
           ☰
         </button>
 
+        <button type="button" class="velora-sidebar-collapse" data-admin-sidebar-collapse aria-label="Thu gọn menu quản trị" aria-pressed="false">
+          <i class="bi bi-layout-sidebar-inset"></i>
+        </button>
+
 
         <div class="admin-topbar-title">
 
@@ -452,6 +458,28 @@
 
       </div>
 
+
+      <div class="admin-topbar-actions">
+        <button type="button" class="velora-tour-trigger" data-velora-tour-trigger>
+          <i class="bi bi-compass"></i><span>Hướng dẫn nhanh</span>
+        </button>
+
+        <div class="velora-admin-notifications" data-velora-notifications>
+          <button type="button" class="velora-admin-notifications__trigger" aria-expanded="false" aria-controls="veloraAdminNotificationMenu" aria-label="Thông báo cần xử lý">
+            <i class="bi bi-bell"></i>
+            @if(($adminChatUnreadCount + $adminPendingReviewCount + $adminPendingOrderCount) > 0)
+              <span class="velora-admin-notifications__badge">{{ min(99, $adminChatUnreadCount + $adminPendingReviewCount + $adminPendingOrderCount) }}</span>
+            @endif
+          </button>
+          <div class="velora-admin-notifications__menu" id="veloraAdminNotificationMenu" hidden>
+            <div class="velora-admin-notifications__heading"><strong>Cần xử lý</strong><span>Dữ liệu trực tiếp</span></div>
+            <a href="{{ route('admin.chat.index') }}"><i class="bi bi-chat-dots"></i><span><strong>{{ $adminChatUnreadCount }}</strong> tin nhắn chưa đọc</span></a>
+            <a href="{{ route('admin.reviews.index') }}"><i class="bi bi-star"></i><span><strong>{{ $adminPendingReviewCount }}</strong> đánh giá chờ phản hồi</span></a>
+            <a href="{{ route('admin.orders.index', ['order_status' => 'pending']) }}"><i class="bi bi-receipt"></i><span><strong>{{ $adminPendingOrderCount }}</strong> đơn chờ xác nhận</span></a>
+          </div>
+        </div>
+
+      </div>
 
       <div class="admin-topbar-user">
 
@@ -487,7 +515,7 @@
 
       @if(session('success'))
 
-      <div class="admin-alert admin-alert-success">
+      <div class="admin-alert admin-alert-success" data-velora-toast data-toast-type="success">
 
         <strong>
           Thành công
@@ -507,7 +535,7 @@
 
       @if(session('error'))
 
-      <div class="admin-alert admin-alert-danger">
+      <div class="admin-alert admin-alert-danger" data-velora-toast data-toast-type="error">
 
         <strong>
           Có lỗi xảy ra
@@ -527,7 +555,7 @@
 
       @if($errors->any())
 
-      <div class="admin-alert admin-alert-danger">
+      <div class="admin-alert admin-alert-danger" data-velora-toast data-toast-type="error">
 
         <strong>
           Vui lòng kiểm tra lại dữ liệu
@@ -610,6 +638,8 @@
 
 
   @vite('resources/js/app.js')
+  <script src="{{ asset('js/velora-interactions.js') }}" defer></script>
+  <script src="{{ asset('js/velora-lucian-extras.js') }}" defer></script>
 
 
   <script>

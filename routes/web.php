@@ -303,6 +303,11 @@ Route::middleware([
         [AppointmentController::class, 'create']
     )->name('appointments.create');
 
+    Route::get(
+        '/appointments/availability',
+        [AppointmentController::class, 'availability']
+    )->name('appointments.availability');
+
     Route::post(
         '/appointments',
         [AppointmentController::class, 'store']
@@ -346,6 +351,11 @@ Route::middleware([
     )->name('wishlist.index');
 
     Route::post(
+        '/wishlist/undo',
+        [WishlistController::class, 'undoDestroy']
+    )->name('wishlist.undo');
+
+    Route::post(
         '/wishlist/{product}',
         [WishlistController::class, 'store']
     )->name('wishlist.store');
@@ -384,6 +394,11 @@ Route::middleware([
         '/cart/{variant}',
         [CartController::class, 'destroy']
     )->name('cart.destroy');
+
+    Route::post(
+        '/cart/undo',
+        [CartController::class, 'undoDestroy']
+    )->name('cart.undo');
 
     Route::delete(
         '/cart',
@@ -584,6 +599,11 @@ Route::delete(
         '/profile',
         [ProfileController::class, 'update']
     )->name('profile.update');
+
+    Route::patch(
+        '/profile/notifications',
+        [ProfileController::class, 'updateNotifications']
+    )->name('profile.notifications.update');
 
 });
 
@@ -1030,10 +1050,10 @@ Route::prefix('admin')
             [AdminReviewController::class, 'show']
         )->name('reviews.show');
 
-        Route::patch(
-            '/reviews/{review}/visibility',
-            [AdminReviewController::class, 'toggleVisibility']
-        )->name('reviews.toggle-visibility');
+        Route::post(
+            '/reviews/{review}/reply',
+            [AdminReviewController::class, 'reply']
+        )->name('reviews.reply');
 
         /*
         |--------------------------------------------------------------------------

@@ -880,6 +880,11 @@ $styles = [
             <input type="file" id="create-product-image-input" name="images[]" accept=".jpg,.jpeg,.png,.webp" multiple
               required>
 
+            <div class="velora-upload-progress" id="create-image-upload-progress" hidden aria-live="polite">
+              <span data-upload-progress-label>Sẵn sàng tải ảnh</span>
+              <i><b data-upload-progress-bar></b></i>
+            </div>
+
 
             <div class="product-completion-error" id="create-image-error"></div>
 
@@ -2399,21 +2404,10 @@ document.addEventListener(
         try {
 
           const response =
-            await fetch(
-              productUrls.upload_images, {
-                method: 'POST',
-
-                body: new FormData(
-                  imageForm
-                ),
-
-                headers: {
-
-                  'Accept': 'application/json',
-
-                  'X-Requested-With': 'XMLHttpRequest',
-                },
-              }
+            await window.VeloraUploadWithProgress(
+              productUrls.upload_images,
+              new FormData(imageForm),
+              document.getElementById('create-image-upload-progress')
             );
 
 
@@ -2571,7 +2565,7 @@ document.addEventListener(
                         </td>
 
 
-                        <td>
+                        <td class="velora-variant-color" data-variant-color="${escapeHtml(variant.color)}">
                             ${escapeHtml(variant.color)}
                         </td>
 

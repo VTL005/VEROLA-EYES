@@ -54,6 +54,23 @@ class ProductController extends Controller
                 }
             );
 
+        /*
+        |--------------------------------------------------------------------------
+        | PRICE RANGE FOR THE CATALOG CONTROLS
+        |--------------------------------------------------------------------------
+        |
+        | These bounds deliberately come from the same sellable catalog as the
+        | listing.  The range control therefore never suggests a price that a
+        | customer cannot actually select.
+        */
+
+        $priceBounds = (clone $query)
+            ->selectRaw(
+                'MIN(COALESCE(sale_price, price)) as minimum_price, '
+                .'MAX(COALESCE(sale_price, price)) as maximum_price'
+            )
+            ->first();
+
 
         /*
         |--------------------------------------------------------------------------
@@ -286,6 +303,22 @@ class ProductController extends Controller
                 break;
         }
 
+        /*
+        |--------------------------------------------------------------------------
+        | LIGHTWEIGHT FILTER COUNT
+        |--------------------------------------------------------------------------
+        |
+        | The catalogue range selector asks only for a count while the customer
+        | drags.  It uses the exact same filtered query as the final page, so the
+        | hint remains honest without loading product cards repeatedly.
+        */
+
+        if ($request->boolean('count_only')) {
+            return response()->json([
+                'count' => (clone $query)->count(),
+            ]);
+        }
+
 
         /*
         |--------------------------------------------------------------------------
@@ -297,6 +330,9 @@ class ProductController extends Controller
             ->with([
                 'category',
                 'primaryImage',
+                'variants' => function ($query) {
+                    $query->where('is_active', true);
+                },
             ])
             ->paginate(12)
             ->withQueryString();
@@ -352,7 +388,8 @@ return view(
         'categories',
         'shapes',
         'materials',
-        'genders'
+        'genders',
+        'priceBounds'
     )
 );
     }
@@ -429,19 +466,12 @@ return view(
 
 
             /*
-             * Chỉ lấy Review đang hiển thị.
+             * Tất cả đánh giá đều được công khai; phản hồi chính thức được
+             * tải kèm để khách hàng thấy phần trao đổi với VELORA.
              */
             'reviews' => function ($query) {
 
-                $query
-                    ->where(
-                        'is_visible',
-                        true
-                    )
-                    ->with(
-                        'user'
-                    )
-                    ->latest();
+                $query->with(['user', 'adminReply.admin'])->latest();
             },
 
         ]);

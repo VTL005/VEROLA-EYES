@@ -944,19 +944,9 @@
                                 </div>
 
 
-                                @if($review->is_visible)
-
-                                    <span class="admin-status success">
-                                        Hiển thị
-                                    </span>
-
-                                @else
-
-                                    <span class="admin-status danger">
-                                        Đã ẩn
-                                    </span>
-
-                                @endif
+                                <span class="admin-status success">
+                                    Đã gửi
+                                </span>
 
                             </a>
 

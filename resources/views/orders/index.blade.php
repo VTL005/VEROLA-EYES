@@ -50,7 +50,7 @@
             FILTER
         ================================================== --}}
 
-    <div class="order-filter-tabs">
+    <div class="order-filter-tabs velora-underline-tabs" data-velora-underline-tabs>
 
       <a href="{{ route('orders.index') }}" class="order-filter-tab {{ !$status ? 'active' : '' }}">
         Tất cả
@@ -130,7 +130,7 @@
 
     @if($orders->isEmpty())
 
-    <div class="orders-empty">
+    <div class="orders-empty" data-velora-empty-state>
 
       <div class="orders-empty-icon">
         □

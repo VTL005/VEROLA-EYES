@@ -340,6 +340,10 @@ class CustomerChatController extends Controller
         return redirect()
             ->route(
                 'customer.chat.index'
+            )
+            ->with(
+                'chat_ai_pending',
+                true
             );
     }
 
@@ -441,6 +445,10 @@ class CustomerChatController extends Controller
             ->with(
                 'chat_success',
                 'Đã gửi sản phẩm bạn đang quan tâm cho VELORA Eyes.'
+            )
+            ->with(
+                'chat_ai_pending',
+                true
             );
     }
 

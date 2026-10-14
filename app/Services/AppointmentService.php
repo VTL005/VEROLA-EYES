@@ -15,6 +15,54 @@ class AppointmentService
      */
     private const MAX_APPOINTMENTS_PER_SLOT = 5;
 
+    /**
+     * Các khung giờ được hiển thị cho khách đặt lịch.
+     */
+    private const TIME_SLOTS = [
+        '08:00-09:00',
+        '09:00-10:00',
+        '10:00-11:00',
+        '14:00-15:00',
+        '15:00-16:00',
+        '16:00-17:00',
+    ];
+
+    /**
+     * Trả về số chỗ còn lại theo từng khung giờ của một ngày.
+     * Dữ liệu này chỉ là tham khảo tại thời điểm xem; khi đặt lịch,
+     * create() vẫn khoá và kiểm tra lại để tránh nhận quá chỗ.
+     */
+    public function availabilityForDate(string $date): array
+    {
+        $appointmentDate = Carbon::parse($date)->startOfDay();
+
+        $bookedBySlot = Appointment::query()
+            ->whereDate('appointment_date', $appointmentDate)
+            ->whereIn('status', [
+                Appointment::STATUS_PENDING,
+                Appointment::STATUS_CONFIRMED,
+            ])
+            ->selectRaw('time_slot, COUNT(*) as booked')
+            ->groupBy('time_slot')
+            ->pluck('booked', 'time_slot');
+
+        return collect(self::TIME_SLOTS)
+            ->map(function (string $slot) use ($appointmentDate, $bookedBySlot) {
+                $booked = (int) ($bookedBySlot[$slot] ?? 0);
+                $isPast = $appointmentDate->isToday()
+                    && $this->getSlotStartDateTime($appointmentDate, $slot)->lessThanOrEqualTo(now());
+
+                return [
+                    'slot' => $slot,
+                    'booked' => $booked,
+                    'remaining' => $isPast ? 0 : max(0, self::MAX_APPOINTMENTS_PER_SLOT - $booked),
+                    'is_available' => ! $isPast && $booked < self::MAX_APPOINTMENTS_PER_SLOT,
+                ];
+            })
+            ->values()
+            ->all();
+    }
+
 
     /**
      * Customer tạo lịch hẹn.

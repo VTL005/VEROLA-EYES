@@ -136,7 +136,7 @@
 
       @if(Route::has('wishlist.index'))
 
-      <a href="{{ route('wishlist.index') }}" class="vl-btn vl-btn-outline vl-btn-sm" aria-label="Danh sách yêu thích">
+      <a href="{{ route('wishlist.index') }}" class="vl-btn vl-btn-outline vl-btn-sm" id="headerWishlistTarget" aria-label="Danh sách yêu thích" data-velora-tooltip="Danh sách yêu thích">
         <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
           <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
         </svg>
@@ -151,7 +151,7 @@
 
       @if(Route::has('cart.index'))
 
-      <a href="{{ route('cart.index') }}" class="vl-btn vl-btn-outline vl-btn-sm" aria-label="Giỏ hàng">
+      <a href="{{ route('cart.index') }}" class="vl-btn vl-btn-outline vl-btn-sm" id="headerCartTarget" aria-label="Giỏ hàng" data-velora-tooltip="Giỏ hàng">
         <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
           <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
           <line x1="3" y1="6" x2="21" y2="6"></line>
