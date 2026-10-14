@@ -606,10 +606,14 @@
 
 <section class="admin-panel velora-activity-heatmap">
     <div class="admin-panel-header"><div><h2>Nhịp hoạt động theo ngày</h2><p>Mật độ đơn hàng hoàn thành trong kỳ</p></div></div>
-    @php($maxOrdersPerDay = max(1, $revenueByDate->max('order_count')))
+    @php
+        $maxOrdersPerDay = max(1, $revenueByDate->max('order_count'));
+    @endphp
     <div class="velora-activity-heatmap__grid" aria-label="Mật độ đơn hàng theo ngày">
         @foreach($revenueByDate as $daily)
-            @php($intensity = round(($daily->order_count / $maxOrdersPerDay) * 4))
+            @php
+                $intensity = round(($daily->order_count / $maxOrdersPerDay) * 4);
+            @endphp
             <span class="level-{{ $intensity }}" tabindex="0" aria-label="{{ \Illuminate\Support\Carbon::parse($daily->report_date)->format('d/m/Y') }}: {{ $daily->order_count }} đơn hoàn thành" title="{{ \Illuminate\Support\Carbon::parse($daily->report_date)->format('d/m/Y') }} · {{ $daily->order_count }} đơn"></span>
         @endforeach
     </div>
@@ -648,9 +652,13 @@
         <div class="velora-report-donut" role="img" aria-label="Cơ cấu trạng thái đơn hàng">
             <svg viewBox="0 0 42 42" aria-hidden="true">
                 @foreach($orderStatusCounts as $status => $count)
-                    @php($portion = ($count / $donutTotal) * 100)
+                    @php
+                        $portion = ($count / $donutTotal) * 100;
+                    @endphp
                     <circle class="velora-report-donut__slice status-{{ $status }}" cx="21" cy="21" r="15.9" pathLength="100" stroke-dasharray="{{ $portion }} {{ 100 - $portion }}" stroke-dashoffset="{{ -$donutOffset }}"></circle>
-                    @php($donutOffset += $portion)
+                    @php
+                        $donutOffset += $portion;
+                    @endphp
                 @endforeach
             </svg>
             <div><strong>{{ $totalOrders }}</strong><span>đơn trong kỳ</span></div>

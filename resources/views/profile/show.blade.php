@@ -671,7 +671,9 @@
 
                 </div>
 
-                @php($notificationPreferences = $user->notification_preferences ?? [])
+                @php
+                    $notificationPreferences = $user->notification_preferences ?? [];
+                @endphp
                 <section class="profile-card velora-notification-preferences">
                     <div class="profile-card-heading">
                         <div>
